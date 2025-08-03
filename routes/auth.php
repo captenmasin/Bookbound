@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\PwaDevice;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -21,7 +20,6 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [RegisteredUserController::class, 'store']);
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->middleware(PwaDevice::class)
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);

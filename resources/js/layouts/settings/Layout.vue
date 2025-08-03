@@ -30,7 +30,7 @@ const sidebarNavItems: NavItem[] = [
 const page = usePage()
 const currentPath = ref(page.props.currentUrl)
 
-const selectedSettingPage = ref(sidebarNavItems.find(item => item.href === currentPath.value).href)
+const selectedSettingPage = ref(sidebarNavItems.find(item => item.href === currentPath.value)?.href)
 
 watch(selectedSettingPage, (newValue) => {
     if (newValue) {

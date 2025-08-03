@@ -19,11 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
-        $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
+        $middleware->encryptCookies(except: ['appearance', 'sidebar_state', 'pwa-mode', 'pwa-device']);
 
         $middleware->web(
             append: [
                 //                TrackPageview::class,
+                \App\Http\Middleware\PwaDevice::class,
                 HandleAppearance::class,
                 ClientHintsHeaders::class,
                 HandleInertiaRequests::class,
