@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Middleware\PwaDevice;
 use App\Http\Middleware\StripCookies;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\HandleAppearance;
+use Pirsch\Http\Middleware\TrackPageview;
 use App\Http\Middleware\ClientHintsHeaders;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(
             append: [
+                //                TrackPageview::class,
+                PwaDevice::class,
                 HandleAppearance::class,
                 ClientHintsHeaders::class,
                 HandleInertiaRequests::class,
