@@ -80,7 +80,6 @@
     @inertiaHead
 </head>
 <body class="font-sans antialiased bg-background">
-{{  $isPwaIos ? 'ios' : 'not ios' }}
 @inertia
 </body>
 </html>
