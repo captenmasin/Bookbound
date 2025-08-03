@@ -24,7 +24,7 @@ const form = useForm({
     login: '',
     password: '',
     remember: true,
-    redirect: props.redirect || null,
+    redirect: props.redirect || null
 })
 
 const submit = async () => {

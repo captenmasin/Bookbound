@@ -126,9 +126,6 @@ defineOptions({ layout: AppLayout })
 <template>
     <div>
         <header class="mt-0 md:mt-6 mb-4 flex w-full gap-2.5 md:items-center justify-between flex-col xs:flex-row">
-            PWA: {{ isPwa }}<hr>
-            Android: {{ isAndroid }}<hr>
-            iOS: {{ isIos }}<hr>
             <div
                 v-if="authedUser"
                 class="flex flex-col">
