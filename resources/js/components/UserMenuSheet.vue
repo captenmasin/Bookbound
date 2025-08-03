@@ -78,14 +78,12 @@ router.on('navigate', (event) => {
                     </template>
 
                     <Separator class="mt-auto" />
-                    <div :as-child="true">
-                        <button
-                            class="flex items-center py-2 text-lg font-medium gap-4 w-full"
-                            @click="logout">
-                            <LogOut class="size-4.5" />
-                            Log out
-                        </button>
-                    </div>
+                    <button
+                        class="flex items-center py-2 text-lg font-medium gap-4 w-full"
+                        @click="logout">
+                        <LogOut class="size-4.5" />
+                        Log out
+                    </button>
                 </div>
             </SheetContent>
         </Sheet>
