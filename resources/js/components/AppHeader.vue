@@ -68,7 +68,7 @@ const userMenuItems = ref([
         title: 'Settings',
         url: useRoute('user.settings.profile.edit'),
         icon: Settings
-    }
+    },
     {
         title: 'Admin',
         url: '/admin',
