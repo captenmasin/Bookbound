@@ -1,5 +1,6 @@
 <script setup>
 import Icon from '@/components/Icon.vue'
+import VueBarcode from '@chenfengyuan/vue-barcode'
 import BarcodeScanned from '~/audio/barcode-scanned.mp3'
 import HorizontalSkeleton from '@/components/books/HorizontalSkeleton.vue'
 import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
@@ -11,7 +12,6 @@ import { useRequest } from '@/composables/useRequest'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button/index.js'
 import { BrowserMultiFormatReader } from '@zxing/browser'
-import { DialogFooter } from '@/components/ui/dialog/index.js'
 
 // refs for UI state
 const video = ref(null)
@@ -100,6 +100,14 @@ function stopScan () {
 
 const emit = defineEmits(['close'])
 
+function fake () {
+    useRequest(useRoute('api.books.fetch_or_create', '9780307763051'), 'GET')
+        .then(response => {
+            book.value = response.book
+            result.value = '9780307763051'
+        })
+}
+
 // cleanup if user navigates away --------------------------------------------
 onBeforeUnmount(stopScan)
 
@@ -112,16 +120,17 @@ onMounted(() => {
     <div class="relative">
         <!-- mirrored only on front cam -->
         <div
-            v-show="scanning && !result"
-            class="relative h-48 overflow-hidden rounded shadow">
-            <video
-                ref="video"
-                class="mx-auto bg-muted absolute top-1/2 -translate-y-1/2 left-0 w-full"
-                autoplay
-                playsinline
-                muted
-            />
-            <div class="absolute top-1/2 left-0 w-full bg-red-500 opacity-75 shadow-xl shadow-red-500 h-[2px] animate-scan" />
+            v-show="scanning && !result">
+            <div class="relative h-56 overflow-hidden shadow rounded">
+                <video
+                    ref="video"
+                    class="mx-auto bg-muted absolute top-1/2 -translate-y-1/2 left-0 size-full object-cover"
+                    autoplay
+                    playsinline
+                    muted
+                />
+                <div class="absolute top-1/2 left-0 w-full bg-red-500 opacity-75 shadow-xl shadow-red-500 h-[2px] animate-scan" />
+            </div>
         </div>
 
         <div
@@ -140,10 +149,11 @@ onMounted(() => {
 
         <div
             v-if="result"
-            class="mt-2 rounded border-2 p-2 justify-between gap-4 flex items-center font-mono text-sm bg-muted border-primary/10 text-primary">
-            <Icon
-                name="Barcode"
-                class="size-5" /> <strong>{{ result }}</strong>
+            class="relative h-56 overflow-hidden bg-white shadow rounded">
+            <VueBarcode
+                tag="svg"
+                :value="result"
+                class="w-full absolute top-1/2 -translate-y-1/2 left-0" />
         </div>
 
         <HorizontalSkeleton
@@ -161,27 +171,21 @@ onMounted(() => {
                 :narrow="true" />
         </div>
 
-        <DialogFooter>
-            <div
-                class="flex justify-between gap-2 items-center mt-5 mb-5 md:mb-0 w-full"
-                style="padding-bottom: env(safe-area-inset-bottom)">
-                <div>
-                    <Button
-                        v-if="result"
-                        variant="secondary"
-                        @click="startScan">
-                        <Icon
-                            name="ScanBarcode"
-                            class="w-4" />
-                        Scan again
-                    </Button>
-                </div>
-                <Button
-                    variant="outline"
-                    @click="emit('close')">
-                    Cancel
-                </Button>
-            </div>
-        </DialogFooter>
+        <button @click="fake">
+            Fake
+        </button>
+
+        <div class="w-full mt-8">
+            <Button
+                v-if="result"
+                variant="default"
+                class="w-full"
+                @click="startScan">
+                <Icon
+                    name="ScanBarcode"
+                    class="w-4" />
+                Scan again
+            </Button>
+        </div>
     </div>
 </template>

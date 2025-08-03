@@ -32,6 +32,7 @@
         "vue-tsc": "^2.2.4"
     },
     "dependencies": {
+        "@chenfengyuan/vue-barcode": "^2.0.2",
         "@cyhnkckali/vue3-color-picker": "^2.1.2",
         "@inertiajs/vue3": "^2.0.0",
         "@simplewebauthn/browser": "^13.1.2",
@@ -48,6 +49,7 @@
         "clsx": "^2.1.1",
         "concurrently": "^9.0.1",
         "isomorphic-dompurify": "^2.25.0",
+        "jsbarcode": "^3.12.1",
         "laravel-vite-plugin": "^1.0",
         "lucide-vue-next": "^0.468.0",
         "marked": "^16.0.0",

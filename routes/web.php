@@ -2,13 +2,11 @@
 
 use Inertia\Inertia;
 use App\Actions\ErrorPage;
-use Illuminate\Support\Benchmark;
 use App\Http\Middleware\PwaDevice;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NoteController;
-use App\Contracts\BookApiServiceInterface;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserBookController;
@@ -29,17 +27,6 @@ Route::get('privacy-policy', [GeneralPageController::class, 'privacy'])
     ->withoutMiddleware(['auth', 'verified'])
     ->name('privacy-policy');
 
-// Test benchmarking route
-Route::get('test', function () {
-    $booksApi = app(BookApiServiceInterface::class);
-
-    Benchmark::dd([
-        '1' => fn () => $booksApi->search(query: 'minecraft', maxResults: 1),
-        '10' => fn () => $booksApi->search(query: 'minecraft', maxResults: 10),
-        '50' => fn () => $booksApi->search(query: 'minecraft', maxResults: 50),
-    ]);
-})->name('test');
-
 // Book routes
 Route::prefix('books')
     ->name('books.')
@@ -48,6 +35,7 @@ Route::prefix('books')
     ->group(function () {
         Route::middleware('auth')->group(function () {
             Route::get('search', 'index')->name('search');
+            Route::get('scan', 'scan')->name('scan');
             Route::patch('{book}', 'update')->name('update');
             Route::delete('{book}', 'destroy')->name('destroy');
         });

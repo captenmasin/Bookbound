@@ -15,8 +15,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useUrlSearchParams } from '@vueuse/core'
 import { useRoute } from '@/composables/useRoute'
-import { Link, router, usePage } from '@inertiajs/vue3'
 import { useUserSettings } from '@/composables/useUserSettings'
+import { Link, router, usePage, usePoll } from '@inertiajs/vue3'
 import { useUserBookStatus } from '@/composables/useUserBookStatus'
 import { computed, ref, watch, type PropType, nextTick } from 'vue'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -120,6 +120,10 @@ function submitForm () {
         { preserveScroll: true, preserveState: true, replace: true }
     )
 }
+
+usePoll(5000, {
+    only: ['books']
+})
 
 defineOptions({ layout: AppLayout })
 </script>

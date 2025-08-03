@@ -67,6 +67,21 @@ class BookController extends Controller
         ]);
     }
 
+    public function scan(Request $request)
+    {
+        return Inertia::render('books/Scan', [
+            'scan' => $request->get('scan', false),
+            'breadcrumbs' => [
+                ['title' => 'Home', 'href' => route('home')],
+                ['title' => 'Books', 'href' => route('user.books.index')],
+                ['title' => 'Scan Book', 'href' => route('books.scan')],
+            ],
+        ])->withMeta([
+            'title' => 'Add Book',
+            'description' => 'Add a new book to your collection by searching for it online or scanning its barcode.',
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
