@@ -15,7 +15,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     @class([
     'transition-colors duration-300 ease-in-out' => true,
-    'dark' => ($appearance ?? 'system') == 'dark',
+    'dark' => $isPwa ? 'system' : (($appearance ?? 'system') == 'dark'),
     'pwa' => $isPwa,
     'pwa-ios' => $isPwaIos,
     'pwa-android' => $isPwaAndroid,

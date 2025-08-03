@@ -5,6 +5,7 @@ import AppearanceTabs from '@/components/AppearanceTabs.vue'
 import { ref, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import { Label } from '@/components/ui/label'
+import { usePwa } from '@/composables/usePwa'
 import { Switch } from '@/components/ui/switch'
 import { useUserSettings } from '@/composables/useUserSettings'
 
@@ -16,6 +17,8 @@ const formError = ref(null)
 const settings = ref({
     'library.tilt_books': page.props.auth.user.settings?.library?.tilt_books
 })
+
+const { isPwa } = usePwa()
 
 function submitForm () {
     updateMultipleSettings(settings.value)
@@ -39,7 +42,9 @@ defineOptions({
 
 <template>
     <div class="space-y-6">
-        <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+        <div
+            v-if="!isPwa"
+            class="grid grid-cols-1 gap-2 md:grid-cols-2">
             <Label
                 for="name"
                 class="grid gap-1">
