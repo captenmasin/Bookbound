@@ -18,7 +18,6 @@ const showAvatar = computed(() => props.user.avatar && props.user.avatar !== '')
 
 <template>
     <UserAvatar
-        v-if="showAvatar"
         :user="user"
         class="size-8" />
 

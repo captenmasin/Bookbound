@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
-import UserMenuContent from '@/components/UserMenuContent.vue'
-import { Link, router } from '@inertiajs/vue3'
-import { Button } from '@/components/ui/button'
+import UserMenuSheet from '@/components/UserMenuSheet.vue'
+import UserMenuDropdown from '@/components/UserMenuDropdown.vue'
+import { useMediaQuery } from '@vueuse/core'
 import { useRoute } from '@/composables/useRoute'
 import type { BreadcrumbItem, NavItem } from '@/types'
+import { UserPermission } from '@/enums/UserPermission'
+import { Link, router, usePage } from '@inertiajs/vue3'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Activity, BriefcaseBusiness, ChartLine, NotebookPen, Settings, Shield, Star } from 'lucide-vue-next'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
 
 interface Props {
@@ -24,8 +25,6 @@ withDefaults(defineProps<Props>(), {
 })
 
 const { authed, authedUser } = useAuthedUser()
-
-const mobileMenuOpen = ref(false)
 
 const activeItemStyles = computed(
     () => (url: string) => (useIsCurrentUrl(url) ? 'text-primary hover:text-primary dark:bg-neutral-800 dark:text-neutral-100' : '')
@@ -46,6 +45,51 @@ const handleScroll = () => {
     lastScroll = currentScroll
 }
 
+const page = usePage()
+const { hasPermission } = useAuthedUser()
+
+const userMenuItems = ref([
+    {
+        title: 'Notes',
+        url: useRoute('user.notes.index'),
+        icon: NotebookPen
+    },
+    {
+        title: 'Reviews',
+        url: useRoute('user.reviews.index'),
+        icon: Star
+    },
+    {
+        title: 'Activities',
+        url: useRoute('user.activities.index'),
+        icon: Activity
+    },
+    {
+        title: 'Settings',
+        url: useRoute('user.settings.profile.edit'),
+        icon: Settings
+    },
+    {
+        title: 'Admin',
+        url: '/admin',
+        icon: Shield,
+        if: hasPermission(UserPermission.VIEW_ADMIN_PANEL),
+        target: '_blank'
+    },
+    {
+        title: 'Analytics',
+        url: `https://dashboard.pirsch.io/?domain=${page.props.app.domain}&start=600&interval=live&scale=day`,
+        icon: ChartLine,
+        if: hasPermission(UserPermission.VIEW_ANALYTICS)
+    },
+    {
+        title: 'Horizon',
+        url: '/horizon',
+        icon: BriefcaseBusiness,
+        if: hasPermission(UserPermission.VIEW_HORIZON_PANEL)
+    }
+])
+
 onMounted(() => {
     window.addEventListener('scroll', handleScroll, { passive: true })
 })
@@ -54,9 +98,7 @@ onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
 })
 
-router.on('navigate', (event) => {
-    mobileMenuOpen.value = false
-})
+const isDesktop = useMediaQuery('(min-width: 768px)')
 </script>
 
 <template>
@@ -86,9 +128,6 @@ router.on('navigate', (event) => {
                         Go to Home
                     </span>
                     <AppLogo class="flex items-center" />
-                    <!--                    <div class="hidden lg:flex aspect-square items-center justify-center size-9 md:size-12">-->
-                    <!--                        <AppLogoIcon class="rounded-lg fill-current text-white size-full dark:text-black" />-->
-                    <!--                    </div>-->
                 </Link>
 
                 <!-- Desktop Menu -->
@@ -120,23 +159,19 @@ router.on('navigate', (event) => {
                     </NavigationMenu>
                 </div>
 
-                <div class="md:ml-auto absolute top-1/2 -translate-y-1/2 md:static md:translate-0 right-4 flex items-center space-x-2">
-                    <DropdownMenu v-if="authed && authedUser">
-                        <DropdownMenuTrigger :as-child="true">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                class="relative w-auto rounded-full p-1 size-10 focus-within:ring-primary focus-within:ring-2"
-                            >
-                                <UserAvatar :user="authedUser" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align="end"
-                            class="w-56">
-                            <UserMenuContent :user="authedUser" />
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                <div
+                    v-if="authed && authedUser"
+                    class="md:ml-auto absolute top-1/2 -translate-y-1/2 md:static md:translate-0 right-4 flex items-center space-x-2">
+                    <UserMenuDropdown
+                        v-if="isDesktop"
+                        :user="authedUser"
+                        :items="userMenuItems" />
+
+                    <UserMenuSheet
+                        v-else
+                        :user="authedUser"
+                        :items="userMenuItems"
+                    />
                 </div>
             </div>
         </div>

@@ -40,6 +40,7 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
             data-slot="sidebar"
             data-mobile="true"
             :side="side"
+            :close-button="true"
             class="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
             :style="{
                 '--sidebar-width': SIDEBAR_WIDTH_MOBILE,

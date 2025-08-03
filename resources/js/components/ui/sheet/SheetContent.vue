@@ -15,7 +15,8 @@ import {
 
 interface SheetContentProps extends DialogContentProps {
     class?: HTMLAttributes['class']
-    side?: 'top' | 'right' | 'bottom' | 'left'
+    side?: 'top' | 'right' | 'bottom' | 'left',
+    closeButton?: boolean
 }
 
 defineOptions({
@@ -53,6 +54,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
             <slot />
 
             <DialogClose
+                v-if="closeButton"
                 class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-6 right-6 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
             >
                 <X class="size-4" />

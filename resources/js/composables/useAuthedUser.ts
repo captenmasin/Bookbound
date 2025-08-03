@@ -1,6 +1,7 @@
-import { usePage } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import { UserPermission } from '@/enums/UserPermission'
+import { useRoute } from '@/composables/useRoute'
 
 export function useAuthedUser () {
     const page = usePage()
@@ -15,9 +16,16 @@ export function useAuthedUser () {
         return permissions.value.includes(permission)
     }
 
+    function logout () {
+        router.flushAll()
+        router.post(useRoute('logout'))
+        window.location.href = useRoute('login')
+    }
+
     return {
         hasPermission,
         authedUser,
-        authed
+        authed,
+        logout
     }
 }

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import UserInfo from '@/components/UserInfo.vue'
-import UserMenuContent from './UserMenuContent.vue'
 import { type User } from '@/types'
 import { usePage } from '@inertiajs/vue3'
 import { ChevronsUpDown } from 'lucide-vue-next'
@@ -29,9 +28,7 @@ const { isMobile, state } = useSidebar()
                     :side="isMobile ? 'bottom' : state === 'collapsed' ? 'left' : 'bottom'"
                     align="end"
                     :side-offset="4"
-                >
-                    <UserMenuContent :user="user" />
-                </DropdownMenuContent>
+                />
             </DropdownMenu>
         </SidebarMenuItem>
     </SidebarMenu>
