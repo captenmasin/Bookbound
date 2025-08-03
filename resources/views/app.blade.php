@@ -9,14 +9,16 @@
     $buildId = Vite::manifestHash('build');
 
     $isPwa = \Illuminate\Support\Facades\Cookie::get('pwa-mode') === 'true';
+    $isPwaIos = \Illuminate\Support\Facades\Cookie::get('pwa-device') === 'ios';
+    $isPwaAndroid = \Illuminate\Support\Facades\Cookie::get('pwa-device') === 'android';
 @endphp
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     @class([
     'transition-colors duration-300 ease-in-out' => true,
     'dark' => ($appearance ?? 'system') == 'dark',
-    'pwa' => \Illuminate\Support\Facades\Cookie::get('pwa-mode') === 'true',
-    'pwa-ios' => \Illuminate\Support\Facades\Cookie::get('pwa-device') === 'ios',
-    'pwa-android' => \Illuminate\Support\Facades\Cookie::get('pwa-device') === 'android',
+    'pwa' => $isPwa,
+    'pwa-ios' => $isPwaIos,
+    'pwa-android' => $isPwaAndroid,
     ])
 >
 <head>
@@ -78,6 +80,7 @@
     @inertiaHead
 </head>
 <body class="font-sans antialiased bg-background">
+{{  $isPwaIos ? 'ios' : '' }}
 @inertia
 </body>
 </html>
