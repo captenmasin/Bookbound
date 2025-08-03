@@ -8,6 +8,7 @@ import { Tag } from '@/types/tag'
 import { Book } from '@/types/book'
 import { Author } from '@/types/author'
 import { Activity } from '@/types/activity'
+import { usePwa } from '@/composables/usePwa'
 import { Link, router } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
@@ -117,12 +118,17 @@ onMounted(() => {
     )
 })
 
+const { isPwa, isAndroid, isIos } = usePwa()
+
 defineOptions({ layout: AppLayout })
 </script>
 
 <template>
     <div>
         <header class="mt-0 md:mt-6 mb-4 flex w-full gap-2.5 md:items-center justify-between flex-col xs:flex-row">
+            PWA: {{ isPwa }}<hr>
+            Android: {{ isAndroid }}<hr>
+            iOS: {{ isIos }}<hr>
             <div
                 v-if="authedUser"
                 class="flex flex-col">
