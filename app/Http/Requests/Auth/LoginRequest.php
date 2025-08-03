@@ -29,6 +29,8 @@ class LoginRequest extends FormRequest
         return [
             'login' => ['required', 'string'],
             'password' => ['required', 'string'],
+            'pwa-mode' => ['boolean', 'nullable'],
+            'pwa-device' => ['nullable', 'string', 'in:ios,android,macos'],
             'remember' => ['boolean'],
             'redirect' => ['nullable', 'string', 'url', 'max:2048'],
         ];

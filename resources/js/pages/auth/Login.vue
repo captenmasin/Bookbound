@@ -18,13 +18,17 @@ const props = defineProps<{
     status?: string;
     canResetPassword: boolean;
     redirect?: string;
+    pwaMode?: boolean;
+    pwaDevice?: 'android' | 'ios' | 'macos';
 }>()
 
 const form = useForm({
     login: '',
     password: '',
     remember: true,
-    redirect: props.redirect || null
+    redirect: props.redirect || null,
+    'pwa-mode': props.pwaMode || false,
+    'pwa-device': props.pwaDevice || null
 })
 
 const submit = async () => {
