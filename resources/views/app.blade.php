@@ -80,7 +80,8 @@
     @inertiaHead
 </head>
 <body class="font-sans antialiased bg-background">
-{{  $isPwaIos ? 'ios' : '' }}
+{{  $isPwaIos ? 'ios' : 'not ios' }}
+@php dump(\Illuminate\Support\Facades\Cookie::get()) @endphp
 @inertia
 </body>
 </html>
