@@ -44,7 +44,6 @@ class BookController extends Controller
 
         return Inertia::render('books/Search', [
             'initialQuery' => $originalQuery,
-            'scan' => $request->get('scan', false),
             'page' => $page,
             'perPage' => $perPage,
             'previousSearches' => Inertia::defer(fn () => PreviousSearchResource::collection($request->user()->previousSearches()->limit(10)->orderBy('id', 'desc')->get())),
@@ -70,7 +69,6 @@ class BookController extends Controller
     public function scan(Request $request)
     {
         return Inertia::render('books/Scan', [
-            'scan' => $request->get('scan', false),
             'breadcrumbs' => [
                 ['title' => 'Home', 'href' => route('home')],
                 ['title' => 'Books', 'href' => route('user.books.index')],

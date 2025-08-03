@@ -3,7 +3,6 @@ import Icon from '@/components/Icon.vue'
 import Loader from '@/components/Loader.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import PageTitle from '@/components/PageTitle.vue'
-import BarcodeScanner from '@/components/books/BarcodeScanner.vue'
 import HorizontalSkeleton from '@/components/books/HorizontalSkeleton.vue'
 import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
 import { BookApiResult } from '@/types/book'
@@ -13,7 +12,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input/index.js'
 import { Button } from '@/components/ui/button/index.js'
 import { Deferred, Link, router } from '@inertiajs/vue3'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from '@/components/ui/drawer'
 
 const props = defineProps({
     results: {
@@ -22,10 +20,6 @@ const props = defineProps({
             total: 0,
             books: []
         })
-    },
-    scan: {
-        type: Boolean,
-        default: false
     },
     perPage: {
         type: Number,
@@ -55,8 +49,6 @@ const loadingMore = ref(false)
 
 // const showAuthorField = ref(author.value !== '' && author.value !== null)
 // const showAuthorField = ref(true)
-
-const showBarcodeScanner = ref(props.scan)
 
 function searchBooks () {
     router.get(
@@ -158,24 +150,6 @@ defineOptions({
                             Search by author using <code class="bg-muted px-1 rounded-sm">author: name</code>
                         </span>
                     </div>
-                    <div class="md:hidden">
-                        <Drawer v-model:open="showBarcodeScanner">
-                            <DrawerTrigger as-child>
-                                <Button
-                                    variant="default"
-                                    class="w-full flex-1">
-                                    <Icon name="ScanBarcode" />
-                                    Scan
-                                </Button>
-                            </DrawerTrigger>
-                            <DrawerContent>
-                                <DrawerHeader />
-                                <div class="flex flex-col overflow-auto px-4">
-                                    <BarcodeScanner @close="showBarcodeScanner = false" />
-                                </div>
-                            </DrawerContent>
-                        </Drawer>
-                    </div>
                     <Deferred
                         data="previousSearches">
                         <template #fallback />
@@ -231,7 +205,7 @@ defineOptions({
                     <h3 class="font-serif text-2xl font-semibold">
                         Start searching
                     </h3>
-                    <p>Search for books by title or author, or scan a book's barcode to add it to your library.</p>
+                    <p>Search for books by title or author.</p>
                 </div>
 
                 <Deferred

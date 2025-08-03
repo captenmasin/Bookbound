@@ -34,7 +34,7 @@ const mainNavItems = ref<NavItem[]>([
     },
     {
         title: 'Scan Book',
-        href: useRoute('books.search', { scan: true }),
+        href: useRoute('books.scan'),
         icon: ScanBarcode,
         isActive: false,
         mobileOnly: true

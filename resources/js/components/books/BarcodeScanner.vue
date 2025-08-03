@@ -149,7 +149,7 @@ onMounted(() => {
 
         <div
             v-if="result"
-            class="relative h-56 overflow-hidden bg-white shadow rounded">
+            class="relative h-40 overflow-hidden bg-white shadow rounded">
             <VueBarcode
                 tag="svg"
                 :value="result"

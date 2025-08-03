@@ -166,7 +166,7 @@ return [
                 'name' => 'Scan new book',
                 'short_name' => 'Scan new book',
                 'description' => 'Scan the barcode of a book to add it to your collection.',
-                'url' => 'route:books.search'.'?scan=true',
+                'url' => 'route:books.scan',
                 'icons' => [
                     ['src' => config('app.url').'/images/pwa/shortcuts/scan-192.png', 'sizes' => '192x192'],
                     //                    ['src' => config('app.url').'/images/pwa/shortcuts/scan-96.png', 'sizes' => '96x96'],
