@@ -19,13 +19,13 @@ class PwaDevice
 
         if ($request->boolean('pwa-mode') && in_array($request->input('pwa-device'), ['ios', 'android', 'macos'])) {
             // Set the PWA device cookie
-            $response->headers->setCookie(cookie('pwa-mode', 'true', 60 * 24 * 365, '/', null, false, true));
-            $response->headers->setCookie(cookie('pwa-device', $request->input('pwa-device'), 60 * 24 * 365, '/', null, false, true));
+            $response->headers->setCookie(cookie('pwa-mode', 'true', 60 * 24 * 365, '/', null, false, false));
+            $response->headers->setCookie(cookie('pwa-device', $request->input('pwa-device'), 60 * 24 * 365, '/', null, false, false));
         } else {
             // Remove the PWA device cookie if it exists
             if ($request->hasCookie('pwa-mode') || $request->hasCookie('pwa-device')) {
-                $response->headers->setCookie(cookie('pwa-mode', '', -1, '/', null, false, true));
-                $response->headers->setCookie(cookie('pwa-device', '', -1, '/', null, false, true));
+                $response->headers->setCookie(cookie('pwa-mode', '', -1, '/', null, false, false));
+                $response->headers->setCookie(cookie('pwa-device', '', -1, '/', null, false, false));
             }
         }
 
