@@ -52,7 +52,7 @@ router.on('navigate', (event) => {
             <SheetContent class="max-h-screen overflow-auto">
                 <SheetHeader>
                     <SheetTitle>
-                        <div class="flex items-center gap-2 px-1 text-left text-sm py-1.5">
+                        <div class="flex items-center gap-2 px-1 text-left text-sm">
                             <UserInfo
                                 :user="user"
                                 :show-email="true" />
