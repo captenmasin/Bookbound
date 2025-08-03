@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Uri;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
@@ -39,14 +40,39 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if ($request->boolean('pwa-mode') && $request->has('pwa-device')) {
+            $intendedUrl = session()->pull('url.intended');
+            $intendedUrl = Uri::of($intendedUrl)
+                ->withQuery([
+                    'pwa-mode' => 'true',
+                    'pwa-device' => $request->input('pwa-device'),
+                ]);
+
+            session()->put('url.intended', $intendedUrl);
+
+            $defaultRedirect = Uri::of(route('home'))
+                ->withQuery([
+                    'pwa-mode' => 'true',
+                    'pwa-device' => $request->input('pwa-device'),
+                ]);
+        }
+
         if ($request->has('redirect')) {
             $redirectUrl = $request->input('redirect');
+            if ($request->boolean('pwa-mode') && $request->has('pwa-device')) {
+                $redirectUrl = Uri::of($redirectUrl)
+                    ->withQuery([
+                        'pwa-mode' => 'true',
+                        'pwa-device' => $request->input('pwa-device'),
+                    ]);
+            }
+
             if (filter_var($redirectUrl, FILTER_VALIDATE_URL)) {
                 return redirect()->to($redirectUrl);
             }
         }
 
-        return redirect()->intended(route('home', absolute: false));
+        return redirect()->intended($defaultRedirect);
     }
 
     /**
