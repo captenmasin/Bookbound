@@ -23,20 +23,22 @@ interface Props {
 
 const { logout } = useAuthedUser()
 
-const userMobileMenuOpen = ref(true)
+const userMobileMenuOpen = ref(false)
 
 defineProps<Props>()
 
 router.on('navigate', (event) => {
     nextTick(() => {
-        // userMobileMenuOpen.value = false
+        userMobileMenuOpen.value = false
     })
 })
 </script>
 
 <template>
     <div>
-        <Sheet v-model:open="userMobileMenuOpen">
+        <Sheet
+            v-model:open="userMobileMenuOpen"
+        >
             <SheetTrigger
                 :as-child="true">
                 <Button
@@ -66,7 +68,7 @@ router.on('navigate', (event) => {
                             :as-child="true">
                             <component
                                 :is="item.target === '_blank' ? 'a' : Link"
-                                class="flex items-center py-2 text-lg font-medium gap-4 w-full"
+                                class="flex items-center py-2 text-foreground text-lg font-medium gap-4 w-full"
                                 :href="item.url"
                                 :prefetch="item.target !== '_blank'">
                                 <component
@@ -79,6 +81,7 @@ router.on('navigate', (event) => {
 
                     <Separator class="mt-auto" />
                     <button
+                        tabindex="-1"
                         class="flex items-center py-2 text-lg font-medium gap-4 w-full"
                         @click="logout">
                         <LogOut class="size-4.5" />
