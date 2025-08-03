@@ -40,6 +40,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $defaultRedirect = route('home');
+
         if ($request->boolean('pwa-mode') && $request->has('pwa-device')) {
             $intendedUrl = session()->pull('url.intended');
             $intendedUrl = Uri::of($intendedUrl)
