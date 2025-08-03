@@ -24,8 +24,6 @@ class AuthenticatedSessionController extends Controller
 
         return Inertia::render('auth/Login', [
             'canResetPassword' => Route::has('password.request'),
-            'pwaMode' => $pwaMode,
-            'pwaDevice' => $pwaDevice,
             'redirect' => $redirectUrl,
             'status' => $request->session()->get('status'),
         ])->withMeta([
@@ -44,13 +42,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $defaultRedirect = route('home');
-
-        if ($request->boolean('pwa-mode') && $request->has('pwa-device')) {
-            return redirect()->to(route('home', [
-                'pwa-mode' => true,
-                'pwa-device' => $request->input('pwa-device'),
-            ]));
-        }
 
         if ($request->has('redirect')) {
             $redirectUrl = $request->input('redirect');
