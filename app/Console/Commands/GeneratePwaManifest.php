@@ -21,8 +21,9 @@ class GeneratePwaManifest extends Command
         File::copyDirectory(resource_path('images/pwa'), public_path('images/pwa'));
 
         $serviceWorkerContent = File::get(resource_path('js/service-worker.js'));
-
         $serviceWorkerContent = str_replace('__VERSION_PLACEHOLDER__', uniqid(), $serviceWorkerContent);
+        $serviceWorkerContent = str_replace('__APP_NAME_PLACEHOLDER__', config('app.name'), $serviceWorkerContent);
+
         File::put(public_path('service-worker.js'), $serviceWorkerContent);
 
         file_put_contents(public_path('manifest.json'), $modifiedContent);

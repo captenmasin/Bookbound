@@ -3,7 +3,7 @@
 
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js')
 
-const APP_PREFIX = 'bookbound'
+const APP_PREFIX = '__APP_NAME_PLACEHOLDER__'
 const VERSION = 'v__VERSION_PLACEHOLDER__'
 const OFFLINE_URL = 'offline.html'
 
