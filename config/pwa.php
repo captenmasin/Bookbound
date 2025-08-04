@@ -209,28 +209,28 @@ return [
 
             [
                 'src' => config('app.url').'/images/pwa/screenshots/tablet/screenshot-1.png',
-                'sizes' => '3840x2160',
+                'sizes' => '1920x1080',
                 'type' => 'image/png',
                 'form_factor' => 'wide',
                 'label' => 'Your reading life at a glance',
             ],
             [
                 'src' => config('app.url').'/images/pwa/screenshots/tablet/screenshot-2.png',
-                'sizes' => '3840x2160',
+                'sizes' => '1920x1080',
                 'type' => 'image/png',
                 'form_factor' => 'wide',
                 'label' => 'Browse and manage your collection',
             ],
             [
                 'src' => config('app.url').'/images/pwa/screenshots/tablet/screenshot-3.png',
-                'sizes' => '3840x2160',
+                'sizes' => '1920x1080',
                 'type' => 'image/png',
                 'form_factor' => 'wide',
                 'label' => 'View quick details on your books',
             ],
             [
                 'src' => config('app.url').'/images/pwa/screenshots/tablet/screenshot-4.png',
-                'sizes' => '3840x2160',
+                'sizes' => '1920x1080',
                 'type' => 'image/png',
                 'form_factor' => 'wide',
                 'label' => 'Write private notes and public reviews',
