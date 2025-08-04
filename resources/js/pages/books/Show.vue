@@ -87,72 +87,74 @@ defineOptions({
     <div class="md:mt-4">
         <div class="flex flex-col md:flex-row gap-4 md:gap-10">
             <div class="flex w-full order-1 md:w-32 lg:w-44 xl:w-56 flex-col">
-                <div class="flex gap-4">
-                    <div class="w-24 sm:w-32 md:w-full">
-                        <UpdateBookCover :book>
-                            <div class="aspect-book overflow-hidden rounded-md">
-                                <Image
-                                    width="250"
-                                    class="size-full object-cover"
-                                    :src="book.cover" />
-                            </div>
-                        </UpdateBookCover>
-                    </div>
-                    <div class="flex flex-1 justify-between w-full md:hidden">
-                        <div class="flex flex-col gap-1 flex-1">
-                            <h2 class="font-serif text-lg/5.5 text-pretty font-semibold">
-                                {{ book.title }}
-                            </h2>
-                            <p
-                                v-if="book.authors && book.authors.length > 0"
-                                class="text-xs text-muted-foreground">
-                                By {{ book.authors.map((a) => a.name).join(', ') }}
-                            </p>
+                <div class="flex w-full flex-col md:sticky top-4">
+                    <div class="flex gap-4">
+                        <div class="w-24 sm:w-32 md:w-full">
+                            <UpdateBookCover :book>
+                                <div class="aspect-book overflow-hidden rounded-md">
+                                    <Image
+                                        width="250"
+                                        class="size-full object-cover"
+                                        :src="book.cover" />
+                                </div>
+                            </UpdateBookCover>
+                        </div>
+                        <div class="flex flex-1 justify-between w-full md:hidden">
+                            <div class="flex flex-col gap-1 flex-1">
+                                <h2 class="font-serif text-lg/5.5 text-pretty font-semibold">
+                                    {{ book.title }}
+                                </h2>
+                                <p
+                                    v-if="book.authors && book.authors.length > 0"
+                                    class="text-xs text-muted-foreground">
+                                    By {{ book.authors.map((a) => a.name).join(', ') }}
+                                </p>
 
-                            <div
-                                v-if="book.ratings_count"
-                                class="flex flex-wrap items-center gap-1">
-                                <StarRatingDisplay
-                                    :star-width="12"
-                                    :rating="parseFloat(averageRating)" />
-                                <div class="mt-px text-xs text-muted-foreground">
-                                    {{ averageRating }}
+                                <div
+                                    v-if="book.ratings_count"
+                                    class="flex flex-wrap items-center gap-1">
+                                    <StarRatingDisplay
+                                        :star-width="12"
+                                        :rating="parseFloat(averageRating)" />
+                                    <div class="mt-px text-xs text-muted-foreground">
+                                        {{ averageRating }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex">
-                            <ShareButton
-                                class="rounded-full"
-                                :url="book.links.show"
-                                :title="book.title"
-                                :text="book.description" />
+                            <div class="flex">
+                                <ShareButton
+                                    class="rounded-full"
+                                    :url="book.links.show"
+                                    :title="book.title"
+                                    :text="book.description" />
+                            </div>
                         </div>
                     </div>
+                    <div
+                        v-if="book.in_library"
+                        class="mt-4 hidden md:flex flex-col items-center">
+                        <h3 class="text-xs font-semibold text-muted-foreground">
+                            Your rating
+                        </h3>
+                        <RatingForm
+                            :key="refreshKey"
+                            :only="['rating', 'book', 'averageRating']"
+                            class="mt-1"
+                            :book="book"
+                            @deleted="refreshRating"
+                            @added="refreshRating"
+                            @updated="refreshRating" />
+                    </div>
+                    <ShareButton
+                        class="mt-4 mx-auto hidden md:flex"
+                        :url="book.links.show"
+                        :title="book.title"
+                        :text="book.description"
+                        modal-title="Share this book"
+                    >
+                        Share book
+                    </ShareButton>
                 </div>
-                <div
-                    v-if="book.in_library"
-                    class="mt-4 hidden md:flex flex-col items-center">
-                    <h3 class="text-xs font-semibold text-muted-foreground">
-                        Your rating
-                    </h3>
-                    <RatingForm
-                        :key="refreshKey"
-                        :only="['rating', 'book', 'averageRating']"
-                        class="mt-1"
-                        :book="book"
-                        @deleted="refreshRating"
-                        @added="refreshRating"
-                        @updated="refreshRating" />
-                </div>
-                <ShareButton
-                    class="mt-4 mx-auto hidden md:flex"
-                    :url="book.links.show"
-                    :title="book.title"
-                    :text="book.description"
-                    modal-title="Share this book"
-                >
-                    Share book
-                </ShareButton>
             </div>
             <div class="flex w-full order-3 md:order-2 md:flex-1 flex-col">
                 <div class="hidden md:flex flex-col">
