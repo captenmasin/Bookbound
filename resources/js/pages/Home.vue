@@ -55,7 +55,7 @@ const mdAndSmaller = breakpoints.smallerOrEqual('md')
 const actions = [
     { name: 'View your library', smallName: 'Your library', icon: 'LibraryBig', url: useRoute('user.books.index') },
     { name: 'Find a new book', smallName: 'Find book', icon: 'Search', url: useRoute('books.search') },
-    { name: 'Scan a barcode', smallName: 'Scan barcode', icon: 'ScanBarcode', url: useRoute('books.search', { scan: true }) }
+    { name: 'Scan a barcode', smallName: 'Scan barcode', icon: 'ScanBarcode', url: useRoute('books.scan'), mobileOnly: true }
 ]
 
 const stats = [
@@ -136,7 +136,8 @@ defineOptions({ layout: AppLayout })
             <ul class="flex gap-1 md:gap-4">
                 <li
                     v-for="action in actions"
-                    :key="action.name">
+                    :key="action.name"
+                    :class="action.mobileOnly ? 'md:hidden' : ''">
                     <Button
                         :variant="mdAndSmaller ? 'ghost' : 'ghost'"
                         :size="mdAndSmaller ? 'icon' : 'sm'"
