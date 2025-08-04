@@ -3,10 +3,6 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import PageTitle from '@/components/PageTitle.vue'
 import BarcodeScanner from '@/components/books/BarcodeScanner.vue'
 
-const props = defineProps({
-
-})
-
 defineOptions({
     layout: AppLayout
 })

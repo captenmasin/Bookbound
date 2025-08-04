@@ -8,7 +8,6 @@ import { Tag } from '@/types/tag'
 import { Book } from '@/types/book'
 import { Author } from '@/types/author'
 import { Activity } from '@/types/activity'
-import { usePwa } from '@/composables/usePwa'
 import { Link, router } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
@@ -117,8 +116,6 @@ onMounted(() => {
         { cacheFor: '5m' }
     )
 })
-
-const { isPwa, isAndroid, isIos } = usePwa()
 
 defineOptions({ layout: AppLayout })
 </script>

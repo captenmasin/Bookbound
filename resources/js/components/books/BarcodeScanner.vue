@@ -171,9 +171,9 @@ onMounted(() => {
                 :narrow="true" />
         </div>
 
-        <button @click="fake">
-            Fake
-        </button>
+        <!--        <button @click="fake">-->
+        <!--            Fake-->
+        <!--        </button>-->
 
         <div class="w-full mt-8">
             <Button
