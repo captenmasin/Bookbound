@@ -86,7 +86,7 @@ defineOptions({
 <template>
     <div class="md:mt-4">
         <div class="flex flex-col md:flex-row gap-4 md:gap-10">
-            <div class="flex w-full order-1 md:w-1/5 flex-col">
+            <div class="flex w-full order-1 md:w-32 lg:w-44 xl:w-56 flex-col">
                 <div class="flex gap-4">
                     <div class="w-24 sm:w-32 md:w-full">
                         <UpdateBookCover :book>
@@ -154,7 +154,7 @@ defineOptions({
                     Share book
                 </ShareButton>
             </div>
-            <div class="flex w-full order-3 md:order-2 md:w-3/5 flex-col">
+            <div class="flex w-full order-3 md:order-2 md:flex-1 flex-col">
                 <div class="hidden md:flex flex-col">
                     <h2 class="font-serif text-3xl font-semibold text-pretty">
                         {{ book.title }}
@@ -211,7 +211,7 @@ defineOptions({
                     </div>
                 </div>
             </div>
-            <div class="flex w-full order-2 md:order-3 md:w-1/5 flex-col">
+            <div class="flex w-full order-2 md:order-3 md:w-48 xl:w-64 flex-col">
                 <div>
                     <BookActions
                         :book="book"

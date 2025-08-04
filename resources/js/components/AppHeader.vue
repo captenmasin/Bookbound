@@ -109,7 +109,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
             <div class="mx-auto flex h-14 md:h-16 items-center px-4 md:max-w-7xl pwa:md:max-w-none">
                 <div
                     :class="$page.props.backUrl ? 'ml-0 opacity-100' : '-ml-8 opacity-0'"
-                    class="md:hidden mr-2 transition-all duration-300">
+                    class="lg:hidden mr-2 transition-all duration-300">
                     <Link
                         tabindex="-1"
                         class="flex -ml-4 pl-2 text-primary"
