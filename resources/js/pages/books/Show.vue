@@ -4,6 +4,7 @@ import Image from '@/components/Image.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import TagCloud from '@/components/TagCloud.vue'
 import BookCard from '@/components/books/BookCard.vue'
+import ShareButton from '@/components/ShareButton.vue'
 import RatingForm from '@/components/books/RatingForm.vue'
 import BookActions from '@/components/books/BookActions.vue'
 import NotesSection from '@/components/books/NotesSection.vue'
@@ -97,25 +98,34 @@ defineOptions({
                             </div>
                         </UpdateBookCover>
                     </div>
-                    <div class="flex flex-col gap-1 flex-1 md:hidden">
-                        <h2 class="font-serif text-lg/5.5 text-pretty font-semibold">
-                            {{ book.title }}
-                        </h2>
-                        <p
-                            v-if="book.authors && book.authors.length > 0"
-                            class="text-xs text-muted-foreground">
-                            By {{ book.authors.map((a) => a.name).join(', ') }}
-                        </p>
+                    <div class="flex flex-1 justify-between w-full md:hidden">
+                        <div class="flex flex-col gap-1 flex-1">
+                            <h2 class="font-serif text-lg/5.5 text-pretty font-semibold">
+                                {{ book.title }}
+                            </h2>
+                            <p
+                                v-if="book.authors && book.authors.length > 0"
+                                class="text-xs text-muted-foreground">
+                                By {{ book.authors.map((a) => a.name).join(', ') }}
+                            </p>
 
-                        <div
-                            v-if="book.ratings_count"
-                            class="flex flex-wrap items-center gap-1">
-                            <StarRatingDisplay
-                                :star-width="12"
-                                :rating="parseFloat(averageRating)" />
-                            <div class="mt-px text-xs text-muted-foreground">
-                                {{ averageRating }}
+                            <div
+                                v-if="book.ratings_count"
+                                class="flex flex-wrap items-center gap-1">
+                                <StarRatingDisplay
+                                    :star-width="12"
+                                    :rating="parseFloat(averageRating)" />
+                                <div class="mt-px text-xs text-muted-foreground">
+                                    {{ averageRating }}
+                                </div>
                             </div>
+                        </div>
+                        <div class="flex">
+                            <ShareButton
+                                class="rounded-full"
+                                :url="book.links.show"
+                                :title="book.title"
+                                :text="book.description" />
                         </div>
                     </div>
                 </div>
@@ -134,6 +144,15 @@ defineOptions({
                         @added="refreshRating"
                         @updated="refreshRating" />
                 </div>
+                <ShareButton
+                    class="mt-4 hidden md:flex"
+                    :url="book.links.show"
+                    :title="book.title"
+                    :text="book.description"
+                    model-title="Share this book"
+                >
+                    Share book
+                </ShareButton>
             </div>
             <div class="flex w-full order-3 md:order-2 md:w-3/5 flex-col">
                 <div class="hidden md:flex flex-col">

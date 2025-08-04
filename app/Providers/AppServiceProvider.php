@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Dusk\Browser;
 use App\Services\ISBNdbService;
@@ -44,6 +45,14 @@ class AppServiceProvider extends ServiceProvider
         FilamentColor::register([
             'primary' => Color::Amber,
         ]);
+
+        Inertia::macro('prefetch', function (string|array $urls) {
+            $urls = is_array($urls) ? $urls : [$urls];
+
+            Inertia::share('prefetch', $urls);
+
+            return $this;
+        });
 
         Response::macro('withBreadcrumbs', function ($breadcrumbs) {
             $breadcrumbs = collect($breadcrumbs)->map(function ($url, $name) {

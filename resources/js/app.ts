@@ -1,6 +1,6 @@
 import '../css/app.css'
 
-import { createInertiaApp } from '@inertiajs/vue3'
+import { createInertiaApp, router } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import type { DefineComponent } from 'vue'
 import { createApp, h } from 'vue'
@@ -32,3 +32,20 @@ createInertiaApp({
 
 // This will set light / dark mode on page load...
 initializeTheme()
+
+router.on('prefetched', (event) => {
+    if (!event?.detail?.response) {
+        return
+    }
+
+    const parsed = JSON.parse(event.detail.response)
+    const urls = parsed?.props?.prefetch
+    if (!Array.isArray(urls) || urls.length === 0) return
+    const unique = Array.from(
+        new Set(urls.filter((u): u is string => typeof u === 'string' && u.length > 0))
+    )
+
+    for (const url of unique) {
+        fetch(url, { method: 'GET', credentials: 'same-origin' }).catch(() => {})
+    }
+})
