@@ -20,8 +20,10 @@ class GeneratePwaManifest extends Command
         File::ensureDirectoryExists(public_path('images/pwa'));
         File::copyDirectory(resource_path('images/pwa'), public_path('images/pwa'));
 
-        File::copy(resource_path('js/service-worker.js'), public_path('service-worker.js'));
-        //        File::copy(public_path('favicon.ico'), public_path('favicon.ico'));
+        $serviceWorkerContent = File::get(resource_path('js/service-worker.js'));
+
+        $serviceWorkerContent = str_replace('__VERSION_PLACEHOLDER__', uniqid(), $serviceWorkerContent);
+        File::put(public_path('service-worker.js'), $serviceWorkerContent);
 
         file_put_contents(public_path('manifest.json'), $modifiedContent);
         $this->info('Manifest.json file created');

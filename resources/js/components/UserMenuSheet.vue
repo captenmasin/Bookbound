@@ -49,7 +49,9 @@ router.on('navigate', (event) => {
                     <UserAvatar :user="user" />
                 </Button>
             </SheetTrigger>
-            <SheetContent class="max-h-screen overflow-auto">
+            <SheetContent
+                class="max-h-screen overflow-auto"
+                style="padding-top: env(safe-area-inset-top, 0px);">
                 <SheetHeader>
                     <SheetTitle>
                         <div class="flex items-center gap-2 px-1 text-left text-sm">

@@ -6,6 +6,7 @@ import InputError from '@/components/InputError.vue'
 import { toast } from 'vue-sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { usePwa } from '@/composables/usePwa'
 import { LoaderCircle } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
@@ -26,6 +27,8 @@ const form = useForm({
     remember: true,
     redirect: props.redirect || null
 })
+
+const { isIos } = usePwa()
 
 const submit = async () => {
     await fetch('/sanctum/csrf-cookie', {
@@ -126,13 +129,16 @@ async function loginWithPassKey () {
                 </Button>
             </div>
 
-            <div class="my-0 flex items-center">
+            <div
+                v-if="!isIos"
+                class="my-0 flex items-center">
                 <Separator class="flex flex-1" />
                 <span class="flex px-4 text-sm text-muted-foreground">or</span>
                 <Separator class="flex flex-1" />
             </div>
 
             <Button
+                v-if="!isIos"
                 type="button"
                 variant="secondary"
                 @click="loginWithPassKey">
