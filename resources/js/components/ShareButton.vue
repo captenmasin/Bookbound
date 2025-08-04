@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
-import Bluesky from '~/images/icons/bluesky.svg?raw'
 import ThreadsIcon from '~/images/icons/threads.svg?raw'
 import BlueskyIcon from '~/images/icons/bluesky.svg?raw'
 import FacebookIcon from '~/images/icons/facebook.svg?raw'
@@ -10,7 +9,7 @@ import XTwitterIcon from '~/images/icons/x-twitter.svg?raw'
 import { ref, useSlots } from 'vue'
 import { Button } from '@/components/ui/button'
 import { ShareNetwork } from 'vue3-social-sharing'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 const props = defineProps({
     url: {
