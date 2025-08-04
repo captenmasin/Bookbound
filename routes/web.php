@@ -2,6 +2,7 @@
 
 use Inertia\Inertia;
 use App\Actions\ErrorPage;
+use App\Actions\HandlePwaProtocol;
 use App\Http\Middleware\PwaDevice;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
@@ -26,6 +27,10 @@ Route::get('/', HomeController::class)
 Route::get('privacy-policy', [GeneralPageController::class, 'privacy'])
     ->withoutMiddleware(['auth', 'verified'])
     ->name('privacy-policy');
+
+Route::get('get/{type}/{data}', HandlePwaProtocol::class)
+    ->where('data', '.*')
+    ->name('protocol');
 
 // Book routes
 Route::prefix('books')

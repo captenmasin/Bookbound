@@ -1,5 +1,5 @@
 @if(config('pwa.enabled'))
-    @include('partials.meta.icons')
+    @include('partials.meta.icons', ['buildId' => $buildId ?? ''])
 
     <meta name="theme-color" content="{{ config('site.colours.primary') }}">
 

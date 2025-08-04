@@ -239,7 +239,10 @@ return [
         'scope' => config('app.url'),
         'prefer_related_applications' => false,
         'protocol_handlers' => [
-
+            [
+                'protocol' => 'web+book',
+                'url' => '/get/book/%s',
+            ],
         ],
         'edge_side_panel' => [
             'preferred_width' => 500,

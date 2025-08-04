@@ -46,7 +46,7 @@
 
     @include('partials.meta.analytics')
     @include('partials.meta.seo')
-    @include('partials.meta.pwa')
+    @include('partials.meta.pwa', ['buildId' => $buildId])
 
     <script>
         (function () {

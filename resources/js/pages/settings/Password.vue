@@ -7,6 +7,7 @@ import { PropType, ref } from 'vue'
 import { UserPasskey } from '@/types/user'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { usePwa } from '@/composables/usePwa'
 import { Button } from '@/components/ui/button'
 import { router, useForm } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute'
@@ -27,6 +28,8 @@ const form = useForm({
     password: '',
     password_confirmation: ''
 })
+
+const { isIos } = usePwa()
 
 const updatePassword = () => {
     form.put(useRoute('user.settings.password.update'), {
@@ -160,12 +163,13 @@ defineOptions({
         </form>
 
         <HeadingSmall
+            v-if="!isIos"
             title="Passkeys"
             description="Use passkeys to log in without a password"
         />
 
         <div
-            v-if="passkeys && passkeys?.length > 0"
+            v-if="!isIos && passkeys && passkeys?.length > 0"
             class="flex flex-col gap-6">
             <div
                 v-for="passkey in passkeys"
@@ -190,7 +194,9 @@ defineOptions({
             </div>
         </div>
 
-        <div class="flex justify-end">
+        <div
+            v-if="!isIos"
+            class="flex justify-end">
             <Button
                 variant="secondary"
                 @click.prevent="addPassKey">
