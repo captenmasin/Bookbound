@@ -15,13 +15,35 @@
 
     <script type="module">
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js?v={{ Vite::manifestHash('build') }}')
-                .then((registration) => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                })
-                .catch((error) => {
-                    console.log('ServiceWorker registration failed: ', error);
-                });
+            window.addEventListener('load', () => {
+                // eslint-disable-next-line sonarjs/cognitive-complexity
+                navigator.serviceWorker.register('/service-worker.js').then(registration => {
+                    // Listen for updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing
+                        if (newWorker) {
+                            newWorker.addEventListener('statechange', () => {
+                                // eslint-disable-next-line sonarjs/no-collapsible-if
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New SW is waiting, show popup
+                                    if (confirm('A new version is available. Refresh to update?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' })
+                                        window.location.reload()
+                                    }
+                                }
+                            })
+                        }
+                    })
+
+                    // Also handle already waiting SW (e.g. on page reload)
+                    if (registration.waiting) {
+                        if (confirm('A new version of {{ config('app.name') }} is available. Refresh to update?')) {
+                            registration.waiting.postMessage({ type: 'SKIP_WAITING' })
+                            window.location.reload()
+                        }
+                    }
+                }).catch(() => {})
+            })
         }
     </script>
 @endif
