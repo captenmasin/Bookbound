@@ -42,7 +42,7 @@ function showModal () {
 }
 
 function handleClick () {
-    if (navigator.share && navigator.canShare) {
+    if (navigator.share) {
         navigator.share({
             title: props.title,
             text: props.text,
@@ -120,7 +120,7 @@ const slots = useSlots()
                         :network="network.name"
                         :url="url"
                         :title="title"
-                        :description="text"
+                        :description="text ? text.slice(0, 100) : ''"
                     >
                         <button
                             :style="{ backgroundColor: network.color }"
