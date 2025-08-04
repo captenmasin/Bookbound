@@ -42,7 +42,7 @@ function showModal () {
 }
 
 function handleClick () {
-    if (navigator.share && !navigator.canShare) {
+    if (navigator.share && navigator.canShare) {
         navigator.share({
             title: props.title,
             text: props.text,
