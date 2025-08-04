@@ -2,6 +2,7 @@
 import InputError from '@/components/InputError.vue'
 import HeadingSmall from '@/components/HeadingSmall.vue'
 import SettingsLayout from '@/layouts/settings/Layout.vue'
+import { toast } from 'vue-sonner'
 import { PropType, ref } from 'vue'
 import { UserPasskey } from '@/types/user'
 import { Input } from '@/components/ui/input'
@@ -30,7 +31,10 @@ const form = useForm({
 const updatePassword = () => {
     form.put(useRoute('user.settings.password.update'), {
         preserveScroll: true,
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+            toast.success('Password updated successfully')
+            form.reset()
+        },
         onError: (errors: any) => {
             if (errors.password) {
                 form.reset('password', 'password_confirmation')
@@ -80,64 +84,75 @@ defineOptions({
 <template>
     <div class="flex flex-col space-y-8">
         <form
-            class="space-y-4 md:space-y-5"
+            class="space-y-6 md:space-y-8"
             @submit.prevent="updatePassword">
-            <div class="grid gap-4 grid-cols-2">
-                <div class="grid gap-1">
-                    <Label for="password">New password</Label>
+            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+                <Label
+                    for="password"
+                    class="grid gap-1">
+                    <p>New password</p>
+                    <p class="text-xs text-muted-foreground">
+                        Enter a new password to update your account password.
+                    </p>
+                </Label>
+                <div class="flex flex-col w-full">
                     <Input
                         id="password"
-                        ref="passwordInput"
                         v-model="form.password"
-                        type="password"
-                        class="mt-1 block w-full"
-                        autocomplete="new-password"
+                        required
+                        class="block w-full"
                     />
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.password" />
                 </div>
+            </div>
 
-                <div class="grid gap-1">
-                    <Label for="password_confirmation">Confirm password</Label>
+            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+                <Label
+                    for="password_confirmation"
+                    class="grid gap-1">
+                    <p>Confirm password</p>
+                    <p class="text-xs text-muted-foreground">
+                        Please confirm your new password by entering it again.
+                    </p>
+                </Label>
+                <div class="flex flex-col w-full">
                     <Input
                         id="password_confirmation"
                         v-model="form.password_confirmation"
-                        type="password"
-                        class="mt-1 block w-full"
-                        autocomplete="new-password"
+                        required
+                        class="block w-full"
                     />
-                </div>
-
-                <div class="grid-cols-2 -mt-4">
-                    <InputError :message="form.errors.password" />
-                    <InputError :message="form.errors.password_confirmation" />
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.password_confirmation" />
                 </div>
             </div>
 
-            <div class="grid gap-1">
-                <Label for="current_password">Current password</Label>
-                <Input
-                    id="current_password"
-                    ref="currentPasswordInput"
-                    v-model="form.current_password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
-                />
-                <InputError :message="form.errors.current_password" />
+            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+                <Label
+                    for="current_password"
+                    class="grid gap-1">
+                    <p>Current password</p>
+                    <p class="text-xs text-muted-foreground">
+                        Please enter your current password to confirm the change.
+                    </p>
+                </Label>
+                <div class="flex flex-col w-full">
+                    <Input
+                        id="current_password"
+                        v-model="form.current_password"
+                        required
+                        class="block w-full"
+                    />
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.current_password" />
+                </div>
             </div>
 
             <div class="flex items-center justify-end gap-4">
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <p
-                        v-show="form.recentlySuccessful"
-                        class="text-sm text-neutral-600">
-                        Saved.
-                    </p>
-                </Transition>
                 <Button :disabled="form.processing">
                     Save password
                 </Button>

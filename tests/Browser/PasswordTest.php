@@ -15,7 +15,7 @@ test('user can change their password', function () {
             ->type('#password_confirmation', 'new-secure-password')
             ->type('#current_password', 'old-password')
             ->press('Save password')
-            ->waitForText('Saved.');
+            ->waitForText('Password updated successfully');
     });
 
     $this->assertTrue(auth()->attempt([
@@ -87,7 +87,7 @@ test('form resets after successful password change', function () {
             ->type('#password_confirmation', 'newpass123')
             ->type('#current_password', 'oldpass')
             ->press('Save password')
-            ->waitForText('Saved.')
+            ->waitForText('Password updated successfully')
             ->assertInputValue('#password', '')
             ->assertInputValue('#password_confirmation', '')
             ->assertInputValue('#current_password', '');

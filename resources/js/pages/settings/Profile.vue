@@ -124,7 +124,7 @@ defineOptions({
 
             <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
                 <Label
-                    for="name"
+                    for="username"
                     class="grid gap-1">
                     <p>Username</p>
                     <p class="text-xs text-muted-foreground">
