@@ -59,7 +59,7 @@ router.on('navigate', (event) => {
                         </div>
                     </SheetTitle>
                 </SheetHeader>
-                <div class="px-6 pb-4 -mt-4 gap-2 flex flex-col h-full">
+                <div class="px-6 pb-8 -mt-4 gap-2 flex flex-col h-full">
                     <template
                         v-for="item in items"
                         :key="item.title">
