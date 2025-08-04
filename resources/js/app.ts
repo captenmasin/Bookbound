@@ -59,26 +59,26 @@ router.on('prefetched', (event) => {
 })
 
 // Register service worker and show update modal
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js').then(registration => {
-            // Listen for updates
-            registration.addEventListener('updatefound', () => {
-                const newWorker = registration.installing
-                if (newWorker) {
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // Show custom modal
-                            swUpdateModal?.show(newWorker)
-                        }
-                    })
-                }
-            })
-
-            // Also handle already waiting SW (e.g. on page reload)
-            if (registration.waiting) {
-                swUpdateModal?.show(registration.waiting)
-            }
-        }).catch(() => {})
-    })
-}
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', () => {
+//         navigator.serviceWorker.register('/service-worker.js').then(registration => {
+//             // Listen for updates
+//             registration.addEventListener('updatefound', () => {
+//                 const newWorker = registration.installing
+//                 if (newWorker) {
+//                     newWorker.addEventListener('statechange', () => {
+//                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+//                             // Show custom modal
+//                             swUpdateModal?.show(newWorker)
+//                         }
+//                     })
+//                 }
+//             })
+//
+//             // Also handle already waiting SW (e.g. on page reload)
+//             if (registration.waiting) {
+//                 swUpdateModal?.show(registration.waiting)
+//             }
+//         }).catch(() => {})
+//     })
+// }
