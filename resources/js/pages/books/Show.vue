@@ -145,11 +145,11 @@ defineOptions({
                         @updated="refreshRating" />
                 </div>
                 <ShareButton
-                    class="mt-4 hidden md:flex"
+                    class="mt-4 mx-auto hidden md:flex"
                     :url="book.links.show"
                     :title="book.title"
                     :text="book.description"
-                    model-title="Share this book"
+                    modal-title="Share this book"
                 >
                     Share book
                 </ShareButton>
