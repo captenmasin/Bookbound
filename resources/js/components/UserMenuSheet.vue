@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import UserInfo from '@/components/UserInfo.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { nextTick, ref } from 'vue'
 import type { User } from '@/types/user'
 import { LogOut } from 'lucide-vue-next'
+import { nextTick, ref, watch } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -27,6 +27,19 @@ const userMobileMenuOpen = ref(false)
 
 defineProps<Props>()
 
+// Add a fragment to the URL when the menu is open so that it can be closed when pressing the back button
+watch(userMobileMenuOpen, (open) => {
+    if (open) {
+        const url = new URL(window.location.href)
+        url.hash = 'open'
+        window.history.pushState({}, '', url.toString())
+    } else {
+        const url = new URL(window.location.href)
+        url.hash = ''
+        window.history.pushState({}, '', url.toString())
+    }
+})
+
 router.on('navigate', (event) => {
     nextTick(() => {
         userMobileMenuOpen.value = false
@@ -36,9 +49,7 @@ router.on('navigate', (event) => {
 
 <template>
     <div>
-        <Sheet
-            v-model:open="userMobileMenuOpen"
-        >
+        <Sheet v-model:open="userMobileMenuOpen">
             <SheetTrigger
                 :as-child="true">
                 <Button
