@@ -9,6 +9,7 @@ use App\Actions\TrackEvent;
 use Illuminate\Http\Request;
 use App\Enums\AnalyticsEvent;
 use Illuminate\Validation\Rules;
+use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -52,11 +53,11 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        $user->assignRole('user');
-
         TrackEvent::dispatchAfterResponse(AnalyticsEvent::UserAccountCreated, [
             'user_id' => $user->id,
         ]);
+
+        $user->assignRole(Role::where('name', \App\Enums\UserRole::User->value)->first());
 
         Auth::login($user);
 

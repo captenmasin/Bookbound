@@ -57,15 +57,15 @@ Artisan::command('reset', function () {
     DB::table('authors')->truncate();
     DB::table('book_tag')->truncate();
 
-    $admins = User::role('admin')->pluck('id');
-
-    User::whereNotIn('id', $admins)->get()->each(function ($user) {
-        $user->books()->detach();
-        $user->ratings()->delete();
-        $user->notes()->delete();
-        $user->reviews()->delete();
-        $user->delete();
-    });
+    //    $admins = User::role('admin')->pluck('id');
+    //
+    //    User::whereNotIn('id', $admins)->get()->each(function ($user) {
+    //        $user->books()->detach();
+    //        $user->ratings()->delete();
+    //        $user->notes()->delete();
+    //        $user->reviews()->delete();
+    //        $user->delete();
+    //    });
 });
 
 Artisan::command('slug', function () {
