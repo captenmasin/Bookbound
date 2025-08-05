@@ -125,6 +125,22 @@ usePoll(5000, {
     only: ['books']
 })
 
+watch(
+    [filteredBooks, hasFiltered],
+    () => {
+        // Only save to localStorage if no filters are applied
+        if (!hasFiltered.value) {
+            const booksToSave = filteredBooks.value.map(book => ({
+                title: book.title,
+                authors: book.authors?.map(a => a.name) || [],
+                status: book.user_status
+            }))
+            localStorage.setItem('offlineBooks', JSON.stringify(booksToSave))
+        }
+    },
+    { immediate: true }
+)
+
 defineOptions({ layout: AppLayout })
 </script>
 
