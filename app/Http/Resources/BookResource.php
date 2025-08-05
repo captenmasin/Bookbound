@@ -29,7 +29,7 @@ class BookResource extends JsonResource
             'page_count' => $this->page_count,
 
             'has_custom_cover' => $user ? $this->hasCustomCover($user) : false,
-            'cover' => $this->whenLoaded('covers', fn () => $this->getCover($user)),
+            'cover' => $this->getCover($user),
             'authors' => $this->whenLoaded('authors', fn () => $this->getAuthors()),
             'publisher' => $this->whenLoaded('publisher', fn () => $this->getPublisher()),
 

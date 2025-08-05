@@ -23,7 +23,6 @@ class UserBookController extends Controller
             'reviews',
             'ratings',
             'tags',
-            'covers',
             'users' => fn ($q) => $q->where('user_id', auth()->id()),
         ]);
 
@@ -105,14 +104,6 @@ class UserBookController extends Controller
 
         $selectedStatuses = $request->get('status', []);
 
-        $tags = $request->user()->books->load('tags')->flatMap(function ($book) {
-            return $book->tags;
-        })->unique('slug')->all();
-
-        $authors = $request->user()->books->load('authors')->flatMap(function ($book) {
-            return $book->authors;
-        })->sortBy('name')->all();
-
         return Inertia::render('books/Index', [
             'totalBooks' => $request->user()->books->count(),
             'books' => BookResource::collection($books),
@@ -123,9 +114,13 @@ class UserBookController extends Controller
             'selectedOrder' => $request->get('order', 'desc'),
             'searchQuery' => $request->get('search', ''),
 
-            'authors' => Inertia::defer(fn () => AuthorResource::collection($authors)),
+            'authors' => Inertia::defer(fn () => AuthorResource::collection($request->user()->books->load('authors')->flatMap(function ($book) {
+                return $book->authors;
+            })->sortBy('name')->all())),
 
-            'tags' => Inertia::defer(fn () => TagResource::collection($tags)),
+            'tags' => Inertia::defer(fn () => TagResource::collection($request->user()->books->load('tags')->flatMap(function ($book) {
+                return $book->tags;
+            })->unique('slug')->all())),
 
             'breadcrumbs' => [
                 ['title' => 'Home', 'href' => route('home')],
