@@ -48,7 +48,7 @@ watch(
             class="pointer-events-auto" />
         <footer class="mt-auto py-4 hidden lg:flex text-xs text-muted-foreground justify-between border-t border-secondary">
             <p>
-                &copy; {{ new Date().getFullYear() }} {{ page.props.app.name }}. All rights reserved.
+                &copy; {{ new Date().getFullYear() }} SpacemanCodes LTD. All rights reserved.
             </p>
             <div>
                 <Link
