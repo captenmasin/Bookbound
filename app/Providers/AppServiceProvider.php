@@ -38,7 +38,6 @@ class AppServiceProvider extends ServiceProvider
         JsonResource::withoutWrapping();
 
         Model::preventLazyLoading();
-        Model::automaticallyEagerLoadRelationships();
 
         Vite::prefetch(6);
 

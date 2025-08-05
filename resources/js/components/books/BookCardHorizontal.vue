@@ -101,7 +101,8 @@ const { userRating } = useBook(props.book)
                 </p>
                 <p
                     v-if="book.description"
-                    class="line-clamp-2 mt-0.5 md:mt-1 md:line-clamp-2 text-xs text-muted-foreground">
+                    :class="userRating ? 'line-clamp-1' : 'line-clamp-2'"
+                    class="mt-0.5 md:mt-1 md:line-clamp-2 text-xs text-muted-foreground">
                     {{ book.description_clean }}
                 </p>
                 <StarRatingDisplay
