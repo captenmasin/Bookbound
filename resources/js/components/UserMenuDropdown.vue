@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import UserInfo from '@/components/UserInfo.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import UserMenuContent from '@/components/UserMenuContent.vue'
 import { Link } from '@inertiajs/vue3'
 import type { User } from '@/types/user'
 import { LogOut } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useAuthedUser } from '@/composables/useAuthedUser'
-import { Sheet, SheetTrigger } from '@/components/ui/sheet'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 interface Props {
@@ -60,6 +58,7 @@ defineProps<Props>()
                             :is="item.target === '_blank' ? 'a' : Link"
                             class="block w-full"
                             :href="item.url"
+                            :target="item.target"
                             :prefetch="item.target !== '_blank'">
                             <component
                                 :is="item.icon"
