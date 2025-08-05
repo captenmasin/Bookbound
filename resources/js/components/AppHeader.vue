@@ -181,12 +181,15 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                     class="flex gap-2 md:gap-4 ml-auto">
                     <Button
                         variant="secondary"
+                        class="sm"
                         as-child>
                         <Link :href="useRoute('login')">
                             Login
                         </Link>
                     </Button>
-                    <Button as-child>
+                    <Button
+                        class="sm"
+                        as-child>
                         <Link :href="useRoute('register')">
                             Register
                         </Link>
