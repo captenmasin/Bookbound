@@ -23,7 +23,7 @@ class Book extends Model implements HasMedia
 
     protected static $unguarded = true;
 
-    protected $with = [];
+    protected $with = ['covers'];
 
     protected function casts(): array
     {
