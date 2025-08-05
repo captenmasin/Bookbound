@@ -118,9 +118,6 @@
         books = JSON.parse(localStorage.getItem('offlineBooks')) || [];
     } catch(e) {}
     if (books.length) {
-        var wrapper = document.querySelector('.wrapper');
-        wrapper.style.marginTop = '100px';
-
         var html = '<h2 style="color:#913608;font-family:serif;margin-bottom:0.5em">Your Library</h2>';
         html += '<ul>';
         books.forEach(function(book) {
