@@ -43,21 +43,6 @@ if (workbox.navigationPreload.isSupported()) {
     workbox.navigationPreload.enable()
 }
 
-// --- HTML navigations: NetworkFirst with a short timeout, then offline page
-workbox.routing.registerRoute(
-    ({ request }) => request.mode === 'navigate',
-    new workbox.strategies.NetworkFirst({
-        cacheName: `${APP_PREFIX}-${VERSION}-pages`,
-        networkTimeoutSeconds: 4,
-        plugins: [
-            new workbox.expiration.ExpirationPlugin({
-                maxEntries: 50,
-                purgeOnQuotaError: true
-            })
-        ]
-    })
-)
-
 // If all strategies fail (e.g., totally offline), serve offline.html for navigations
 workbox.routing.setCatchHandler(async ({ event }) => {
     if (event.request.mode === 'navigate') {
