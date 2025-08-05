@@ -15,7 +15,7 @@ const page = usePage()
         </PageTitle>
         <div class="prose prose-sm max-w-none mt-2 mb-24">
             <p class="text-sm text-muted-foreground">
-                Updated: August 1, 2025
+                Updated: August 5, 2025
             </p>
 
             <p>Your privacy is important to us. This policy explains what information we collect and how we use it in connection with the Personal Book Library App (“the App”). By using the App, you agree to the practices described below.</p>
@@ -98,7 +98,7 @@ const page = usePage()
             <p>We may update this Privacy Policy from time to time. If significant changes are made, we will provide a prominent notice or send you an email.</p>
 
             <h2>9. Contact Us</h2>
-            <p>If you have questions or requests regarding this Privacy Policy, please email us at <a :href="`mailto:support@${page.props.app.domain}`">support@{{ page.props.app.domain }}</a>.</p>
+            <p>If you have questions or requests regarding this Privacy Policy, please email us at <a :href="`mailto:support@spacemancodes.com`">support@spacemancodes.com</a>.</p>
         </div>
     </div>
 </template>

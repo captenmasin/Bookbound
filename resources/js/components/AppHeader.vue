@@ -4,6 +4,7 @@ import AppLogo from '@/components/AppLogo.vue'
 import UserMenuSheet from '@/components/UserMenuSheet.vue'
 import UserMenuDropdown from '@/components/UserMenuDropdown.vue'
 import { useMediaQuery } from '@vueuse/core'
+import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
 import type { BreadcrumbItem, NavItem } from '@/types'
 import { UserPermission } from '@/enums/UserPermission'
@@ -24,7 +25,7 @@ withDefaults(defineProps<Props>(), {
     navItems: () => []
 })
 
-const { authed, authedUser } = useAuthedUser()
+const { authed, authedUser, hasPermission } = useAuthedUser()
 
 const activeItemStyles = computed(
     () => (url: string) => (useIsCurrentUrl(url) ? 'text-primary hover:text-primary dark:bg-neutral-800 dark:text-neutral-100' : '')
@@ -46,7 +47,6 @@ const handleScroll = () => {
 }
 
 const page = usePage()
-const { hasPermission } = useAuthedUser()
 
 const userMenuItems = ref([
     {
@@ -132,7 +132,9 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 
                 <!-- Desktop Menu -->
                 <div class="hidden h-full lg:flex lg:flex-1">
-                    <NavigationMenu class="ml-10 flex h-full items-stretch">
+                    <NavigationMenu
+                        v-if="authed"
+                        class="ml-10 flex h-full items-stretch">
                         <NavigationMenuList class="flex h-full items-stretch space-x-2">
                             <NavigationMenuItem
                                 v-for="(item, index) in navItems"
@@ -161,7 +163,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 
                 <div
                     v-if="authed && authedUser"
-                    class="md:ml-auto absolute top-1/2 -translate-y-1/2 md:static md:translate-0 right-4 flex items-center space-x-2">
+                    class="flex ml-auto items-center space-x-2">
                     <UserMenuDropdown
                         v-if="isDesktop"
                         :user="authedUser"
@@ -172,6 +174,22 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                         :user="authedUser"
                         :items="userMenuItems"
                     />
+                </div>
+                <div
+                    v-else
+                    class="flex gap-4 ml-auto">
+                    <Button
+                        variant="secondary"
+                        as-child>
+                        <Link :href="useRoute('login')">
+                            Login
+                        </Link>
+                    </Button>
+                    <Button as-child>
+                        <Link :href="useRoute('register')">
+                            Register
+                        </Link>
+                    </Button>
                 </div>
             </div>
         </div>
