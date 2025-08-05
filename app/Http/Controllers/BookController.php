@@ -38,6 +38,7 @@ class BookController extends Controller
                 ['search_term' => $originalQuery, 'user_id' => Auth::id()],
                 [
                     'search_term' => $originalQuery,
+                    'updated_at' => now(),
                 ]
             );
         }
@@ -46,7 +47,7 @@ class BookController extends Controller
             'initialQuery' => $originalQuery,
             'page' => $page,
             'perPage' => $perPage,
-            'previousSearches' => Inertia::defer(fn () => PreviousSearchResource::collection($request->user()->previousSearches()->limit(10)->orderBy('id', 'desc')->get())),
+            'previousSearches' => Inertia::defer(fn () => PreviousSearchResource::collection($request->user()->previousSearches()->limit(10)->orderBy('updated_at', 'desc')->get())),
             'results' => Inertia::defer(
                 fn () => SearchBooksFromApi::run(
                     query: $query,

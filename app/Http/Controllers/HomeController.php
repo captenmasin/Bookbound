@@ -18,8 +18,10 @@ class HomeController extends Controller
 {
     public function __invoke(Request $request)
     {
+        $request->user()->load('activities');
+
         $books = $request->user()->books()
-            ->with(['covers', 'authors', 'tags', 'ratings'])
+            ->with(['covers', 'authors', 'tags'])
             ->withPivot('status')
             ->get();
 
@@ -70,7 +72,7 @@ class HomeController extends Controller
                 $currentlyReading
             ),
             'activities' => ActivityResource::collection(
-                $request->user()->activities->load('subject')->sortByDesc('id')->take(5)
+                $request->user()->activities->sortByDesc('id')->take(5)
             ),
             'tags' => TagResource::collection(
                 $tags

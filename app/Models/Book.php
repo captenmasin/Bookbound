@@ -7,8 +7,10 @@ use Laravel\Scout\Searchable;
 use Spatie\Sluggable\HasSlug;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Sluggable\SlugOptions;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Glorand\Model\Settings\Traits\HasSettingsField;
@@ -23,7 +25,7 @@ class Book extends Model implements HasMedia
 
     protected static $unguarded = true;
 
-    protected $with = ['covers'];
+    protected $with = [];
 
     protected function casts(): array
     {
@@ -106,39 +108,41 @@ class Book extends Model implements HasMedia
 
     public function relatedBooksByAuthorsAndTags(int $limit = 6)
     {
-        $this->loadMissing(['authors', 'tags']);
+        return Cache::remember('related_books_'.$this->id, now()->addHours(6), function () use ($limit) {
+            $this->loadMissing(['authors', 'tags']);
 
-        $authorIds = $this->authors->pluck('id');
-        $tagIds = $this->tags->pluck('id');
+            $authorIds = $this->authors->pluck('id');
+            $tagIds = $this->tags->pluck('id');
 
-        // Load all other books with authors and tags, excluding same title
-        $candidates = Book::with(['authors', 'tags'])
-            ->where('id', '!=', $this->id)
-            ->where('title', '!=', $this->title)
-            ->get();
+            // Load all other books with authors and tags, excluding same title
+            $candidates = Book::with(['authors', 'tags'])
+                ->where('id', '!=', $this->id)
+                ->where('title', '!=', $this->title)
+                ->get();
 
-        $scored = $candidates->map(function ($book) use ($authorIds, $tagIds) {
-            $score = 0;
+            $scored = $candidates->map(function ($book) use ($authorIds, $tagIds) {
+                $score = 0;
 
-            // Score for shared authors
-            $sharedAuthors = $book->authors->pluck('id')->intersect($authorIds);
-            $score += $sharedAuthors->count() * 5;
+                // Score for shared authors
+                $sharedAuthors = $book->authors->pluck('id')->intersect($authorIds);
+                $score += $sharedAuthors->count() * 5;
 
-            // Score for shared tags
-            $sharedTags = $book->tags->pluck('id')->intersect($tagIds);
-            $score += $sharedTags->count() * 2;
+                // Score for shared tags
+                $sharedTags = $book->tags->pluck('id')->intersect($tagIds);
+                $score += $sharedTags->count() * 2;
 
-            return [
-                'book' => $book,
-                'score' => $score,
-            ];
-        })->filter(fn ($entry) => $entry['score'] > 0)
-            ->sortByDesc('score')
-            ->take($limit)
-            ->pluck('book')
-            ->values(); // Re-index
+                return [
+                    'book' => $book,
+                    'score' => $score,
+                ];
+            })->filter(fn ($entry) => $entry['score'] > 0)
+                ->sortByDesc('score')
+                ->take($limit)
+                ->pluck('book')
+                ->values(); // Re-index
 
-        return $scored;
+            return $scored;
+        });
     }
 
     public function tags(): BelongsToMany
@@ -185,7 +189,11 @@ class Book extends Model implements HasMedia
 
     public function covers(): HasMany
     {
-        return $this->hasMany(Cover::class);
+        return $this->hasMany(Cover::class)
+            ->when(
+                Auth::check(),
+                fn ($query) => $query->where('user_id', Auth::id()
+                ));
     }
 
     public function getPrimaryCoverAttribute(): string

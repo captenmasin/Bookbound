@@ -20,9 +20,8 @@ class UserBookController extends Controller
     {
         $bookQuery = Auth::user()->books()->with([
             'authors',
-            'reviews',
             'ratings',
-            'tags',
+            'covers',
             'users' => fn ($q) => $q->where('user_id', auth()->id()),
         ]);
 
