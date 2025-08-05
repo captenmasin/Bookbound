@@ -108,6 +108,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
         <div class="border-b border-sidebar-border/80">
             <div class="mx-auto flex h-14 md:h-16 items-center px-4 md:max-w-7xl pwa:md:max-w-none">
                 <div
+                    v-if="authed"
                     :class="$page.props.backUrl ? 'ml-0 opacity-100' : '-ml-8 opacity-0'"
                     class="lg:hidden mr-2 transition-all duration-300">
                     <Link
@@ -177,7 +178,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                 </div>
                 <div
                     v-else
-                    class="flex gap-4 ml-auto">
+                    class="flex gap-2 md:gap-4 ml-auto">
                     <Button
                         variant="secondary"
                         as-child>
