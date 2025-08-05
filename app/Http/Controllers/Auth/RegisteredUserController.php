@@ -52,6 +52,8 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        $user->assignRole('user');
+
         TrackEvent::dispatchAfterResponse(AnalyticsEvent::UserAccountCreated, [
             'user_id' => $user->id,
         ]);

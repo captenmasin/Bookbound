@@ -2,13 +2,14 @@
 import AppShell from '@/components/AppShell.vue'
 import AppHeader from '@/components/AppHeader.vue'
 import AppContent from '@/components/AppContent.vue'
-import { useMagicKeys } from '@vueuse/core'
+import { logicAnd } from '@vueuse/math'
 import { Label } from '@/components/ui/label'
 import { useRoute } from '@/composables/useRoute'
 import { Link, router, usePage } from '@inertiajs/vue3'
 import type { BreadcrumbItemType, NavItem } from '@/types'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useActiveElement, useMagicKeys, whenever } from '@vueuse/core'
 import { Home, LibraryBig, PlusSquareIcon, ScanBarcode } from 'lucide-vue-next'
 
 const page = usePage()
@@ -44,9 +45,14 @@ const mainNavItems = ref<NavItem[]>([
 
 const { h, b, s } = useMagicKeys()
 
-watch(h, () => router.get(useRoute('home')))
-watch(b, () => router.get(useRoute('user.books.index')))
-watch(s, () => router.get(useRoute('books.search')))
+const activeElement = useActiveElement()
+const notUsingInput = computed(() =>
+    activeElement.value?.tagName !== 'INPUT' &&
+    activeElement.value?.tagName !== 'TEXTAREA')
+
+whenever(logicAnd(h, notUsingInput), () => router.get(useRoute('home')))
+whenever(logicAnd(b, notUsingInput), () => router.get(useRoute('user.books.index')))
+whenever(logicAnd(s, notUsingInput), () => router.get(useRoute('books.search')))
 
 const activeItemStyles = computed(
     () => (item: NavItem) => (item.isActive ? 'text-primary' : '')
