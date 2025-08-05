@@ -22,6 +22,7 @@ class BookTransformer
             ->map(fn ($s) => explode(', ', $s))->flatten()
             ->map(fn ($s) => explode('& ', $s))->flatten()
             ->map(fn ($s) => trim($s))->flatten()
+            ->map(fn ($s) => strtolower($s))->flatten()
             ->map(fn ($s) => Str::headline($s))->flatten()
             ->unique()->values()->all();
 
