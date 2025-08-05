@@ -5,7 +5,6 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import run from 'vite-plugin-run'
 import { defineConfig } from 'vite'
-import { visualizer } from 'rollup-plugin-visualizer'
 
 export default defineConfig({
     plugins: [
@@ -15,7 +14,6 @@ export default defineConfig({
             refresh: true
         }),
         tailwindcss(),
-        visualizer({ filename: 'stats.html', gzipSize: true, brotliSize: true }),
         run([
             {
                 name: 'generate routes',

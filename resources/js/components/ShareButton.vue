@@ -32,10 +32,6 @@ const props = defineProps({
 
 const shareModalOpen = ref(false)
 
-function closeModal () {
-    shareModalOpen.value = false
-}
-
 function showModal () {
     shareModalOpen.value = true
 }
