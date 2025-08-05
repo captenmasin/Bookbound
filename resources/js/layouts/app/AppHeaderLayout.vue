@@ -2,12 +2,13 @@
 import AppShell from '@/components/AppShell.vue'
 import AppHeader from '@/components/AppHeader.vue'
 import AppContent from '@/components/AppContent.vue'
+import { useMagicKeys } from '@vueuse/core'
 import { Label } from '@/components/ui/label'
 import { useRoute } from '@/composables/useRoute'
 import { Link, router, usePage } from '@inertiajs/vue3'
-import { computed, nextTick, onMounted, ref } from 'vue'
 import type { BreadcrumbItemType, NavItem } from '@/types'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { Home, LibraryBig, PlusSquareIcon, ScanBarcode } from 'lucide-vue-next'
 
 const page = usePage()
@@ -40,6 +41,12 @@ const mainNavItems = ref<NavItem[]>([
         mobileOnly: true
     }
 ])
+
+const { h, b, s } = useMagicKeys()
+
+watch(h, () => router.get(useRoute('home')))
+watch(b, () => router.get(useRoute('user.books.index')))
+watch(s, () => router.get(useRoute('books.search')))
 
 const activeItemStyles = computed(
     () => (item: NavItem) => (item.isActive ? 'text-primary' : '')
