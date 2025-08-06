@@ -40,7 +40,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $currentUser = Auth::check()
-            ? (new UserResource($request->user()->load('books', 'roles', 'permissions')))->asUser()
+            ? (new UserResource($request->user()->load('books')))->asUser()
             : null;
 
         $backUrl = null;

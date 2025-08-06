@@ -2,6 +2,7 @@ import { router, usePage } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import { UserPermission } from '@/enums/UserPermission'
 import { useRoute } from '@/composables/useRoute'
+import { useMemoize } from '@vueuse/core'
 
 export function useAuthedUser () {
     const page = usePage()
@@ -10,10 +11,10 @@ export function useAuthedUser () {
     const authedUser = computed(() => auth.value.user || null)
     const authed = computed(() => auth.value.check || false)
 
-    const permissions = computed(() => authedUser.value?.permissions || [])
+    const permissions = useMemoize(() => authedUser.value?.permissions || [])
 
     function hasPermission (permission: string | UserPermission): boolean {
-        return permissions.value.includes(permission)
+        return permissions().includes(permission)
     }
 
     function logout () {

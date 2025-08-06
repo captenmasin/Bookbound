@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -30,7 +31,9 @@ class UserResource extends JsonResource
 
         $data['email'] = $this->email;
         $data['settings'] = $this->settings()->all();
-        $data['permissions'] = $this->getAllPermissions()->pluck('name')->toArray();
+        $data['permissions'] = Cache::remember('user_'.$this->id.'_permissions', now()->addHour(), function () {
+            return $this->getAllPermissions()->pluck('name')->toArray();
+        });
         $data['book_identifiers'] = $this->getBookIdentifiers();
 
         return $data;
