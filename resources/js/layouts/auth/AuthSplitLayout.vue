@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import BookPile from '~/images/book-pile.png'
+import BookPile from '~/images/book-pile.webp'
 import AppLogo from '@/components/AppLogo.vue'
 import AppLogoIcon from '@/components/AppLogoIcon.vue'
-import BookPileSmall from '~/images/book-pile-small.png'
+import BookPileSmall from '~/images/book-pile-small.webp'
 import ProgressiveImage from '@/components/ProgressiveImage.vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute'
