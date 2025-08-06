@@ -21,7 +21,7 @@ class HomeController extends Controller
         $request->user()->load('activities');
 
         $books = $request->user()->books()
-            ->with(['covers', 'authors', 'tags'])
+            ->with(['authors', 'tags'])
             ->withPivot('status')
             ->get();
 
@@ -52,8 +52,8 @@ class HomeController extends Controller
 
         $currentlyReading = collect([
             ...$booksByStatus[UserBookStatus::Reading->value] ?? [],
-            ...$booksByStatus[UserBookStatus::OnHold->value] ?? [],
-            ...$booksByStatus[UserBookStatus::Dropped->value] ?? [],
+            //            ...$booksByStatus[UserBookStatus::OnHold->value] ?? [],
+            //            ...$booksByStatus[UserBookStatus::Dropped->value] ?? [],
         ])->take(4);
 
         $completedBooks = $booksByStatus[UserBookStatus::Completed->value] ?? collect();

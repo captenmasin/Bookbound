@@ -120,7 +120,6 @@ class ImportBookFromData
         return $book->load(
             'authors',
             'tags',
-            'publisher',
-            'covers');
+            'publisher');
     }
 }

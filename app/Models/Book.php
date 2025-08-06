@@ -79,7 +79,11 @@ class Book extends Model implements HasMedia
 
     public function primaryCover()
     {
-        return $this->covers->where('is_primary', true)->first();
+        return $this->covers()
+            ->where('is_primary', true)
+            ->with('media')
+            ->limit(1)
+            ->first();
     }
 
     public function updateColour(): void
@@ -197,7 +201,7 @@ class Book extends Model implements HasMedia
         $primaryCoverImagePath = $primaryCover?->getFirstMediaPath('image');
 
         if (
-            ! $this->primaryCover()?->hasMedia('image')
+            ! $primaryCover?->hasMedia('image')
             || ! File::exists($primaryCoverImagePath)
         ) {
             $url = $this->original_cover ??

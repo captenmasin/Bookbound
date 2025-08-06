@@ -18,7 +18,7 @@ class FetchOrCreateBook
     public function handle(string $identifier)
     {
         $book = Book::where('identifier', $identifier)
-            ->with(['covers', 'authors', 'publisher', 'tags'])
+            ->with(['authors', 'publisher', 'tags'])
             ->firstOr(fn () => null);
 
         return $book ?: ImportBookFromData::run($identifier);

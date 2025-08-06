@@ -121,9 +121,9 @@ function submitForm () {
     )
 }
 
-// usePoll(5000, {
-//     only: ['books']
-// })
+usePoll(5000, {
+    only: ['books']
+})
 
 watch(
     [filteredBooks, hasFiltered],
