@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useImageTransform } from '@/composables/useImageTransform'
 
 defineProps<{
     src: string
@@ -8,6 +9,8 @@ defineProps<{
     imageClass?: string
 }>()
 
+const { cleanPath, baseOptions, buildSrcSet, getImageUrl } = useImageTransform()
+
 const loaded = ref(false)
 </script>
 
@@ -15,7 +18,7 @@ const loaded = ref(false)
     <div>
         <!-- Blurred placeholder -->
         <img
-            :src="placeholder"
+            :src="getImageUrl(placeholder)"
             alt=""
             aria-hidden="true"
             class="filter blur-md scale-105 transition-opacity duration-500"
@@ -24,7 +27,7 @@ const loaded = ref(false)
 
         <!-- Full image -->
         <img
-            :src="src"
+            :src="getImageUrl(src)"
             :alt="alt"
             loading="lazy"
             class="transition-opacity duration-700"
