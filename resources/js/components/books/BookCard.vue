@@ -49,7 +49,7 @@ const url = computed(() => {
                 <div class="relative w-full overflow-hidden aspect-book group">
                     <span
                         v-if="book.binding"
-                        class="absolute opacity-0 group-hover:opacity-100 delay-100 transition-all top-2 right-2 text-xs bg-white/75 text-zinc-900 px-1.5 py-px rounded-full">
+                        class="absolute opacity-0 capitalize group-hover:opacity-100 delay-100 transition-all top-2 right-2 text-xs bg-white/75 text-zinc-900 px-1.5 py-px rounded-full">
                         {{ book.binding }}
                     </span>
                     <Image

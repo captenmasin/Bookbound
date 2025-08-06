@@ -7,7 +7,6 @@ use Laravel\Scout\Searchable;
 use Spatie\Sluggable\HasSlug;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Sluggable\SlugOptions;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Facades\Cache;
@@ -189,11 +188,7 @@ class Book extends Model implements HasMedia
 
     public function covers(): HasMany
     {
-        return $this->hasMany(Cover::class)
-            ->when(
-                Auth::check(),
-                fn ($query) => $query->where('user_id', Auth::id()
-                ));
+        return $this->hasMany(Cover::class);
     }
 
     public function getPrimaryCoverAttribute(): string
