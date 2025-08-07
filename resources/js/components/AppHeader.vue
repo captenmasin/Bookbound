@@ -80,13 +80,15 @@ const userMenuItems = ref([
         title: 'Analytics',
         url: `https://dashboard.pirsch.io/?domain=${page.props.app.domain}&start=600&interval=live&scale=day`,
         icon: ChartLine,
-        if: hasPermission(UserPermission.VIEW_ANALYTICS)
+        if: hasPermission(UserPermission.VIEW_ANALYTICS),
+        target: '_blank'
     },
     {
         title: 'Horizon',
         url: '/horizon',
         icon: BriefcaseBusiness,
-        if: hasPermission(UserPermission.VIEW_HORIZON_PANEL)
+        if: hasPermission(UserPermission.VIEW_HORIZON_PANEL),
+        target: '_blank'
     }
 ])
 
