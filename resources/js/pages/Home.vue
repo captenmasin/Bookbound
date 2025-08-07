@@ -205,14 +205,14 @@ defineOptions({ layout: AppLayout })
                                 class="w-40 snap-center md:w-auto">
                                 <BookCard :book="book" />
                             </li>
-                            <li class="w-40 snap-center md:w-auto">
-                                <Link
-                                    :href="useRoute('books.search')"
-                                    class="flex aspect-book size-full items-center justify-center rounded-md border-3 border-dashed border-primary/20 bg-secondary p-4 text-center text-sm text-primary/50 transition-all hover:bg-primary/20"
-                                >
-                                    Find more books
-                                </Link>
-                            </li>
+                            <!--                            <li class="w-40 snap-center md:w-auto">-->
+                            <!--                                <Link-->
+                            <!--                                    :href="useRoute('books.search')"-->
+                            <!--                                    class="flex aspect-book size-full items-center justify-center rounded-md border-2 border-dashed border-primary/10 bg-secondary/50 p-4 text-center text-base font-semibold text-primary/50 transition-all hover:bg-secondary/75"-->
+                            <!--                                >-->
+                            <!--                                    Find more books-->
+                            <!--                                </Link>-->
+                            <!--                            </li>-->
                         </ul>
                     </div>
 
