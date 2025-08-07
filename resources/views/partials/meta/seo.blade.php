@@ -5,8 +5,6 @@
 
 {!! OpenGraph::generate() !!}
 {!! Twitter::generate() !!}
-<meta name="twitter:domain" content="{{ config('site.domain') }}" />
-<meta name="twitter:url" content="{{ \Artesaos\SEOTools\Facades\SEOMeta::getCanonical() }}" />
 {!! JsonLd::generate() !!}
 
 @include('partials.meta.json-ld')

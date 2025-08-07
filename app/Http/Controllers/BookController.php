@@ -122,6 +122,7 @@ class BookController extends Controller
             ],
         ])->withMeta([
             'title' => $book->title,
+            'image' => $book->primary_cover,
             'description' => $book->description ?? $book->title.' by '.$book->authors->pluck('name')->implode(', '),
         ]);
     }

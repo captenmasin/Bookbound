@@ -85,7 +85,6 @@ class HomeController extends Controller
             ],
         ])->withMeta([
             'title' => 'Home',
-            'description' => 'Your personal dashboard.',
         ]);
     }
 }

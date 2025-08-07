@@ -13,7 +13,7 @@ return [
             'keywords' => [''],
             'fb:app_id' => env('FB_APP_ID'),
             'canonical' => null, // Set null for using Url::current(), set false to total remove
-            'image' => env('APP_URL').'/images/social/default.png',
+            'image' => env('APP_URL').'/og.png',
         ],
         /*
          * Webmaster tags are always added.
@@ -39,10 +39,10 @@ return [
             'url' => null, // Set null for using Url::current(), set false to total remove
             'type' => 'website',
             'site_name' => env('APP_NAME'),
-            //            'image' => env('APP_URL').'/images/social/default.png',
-            //            'images' => [
-            //                env('APP_URL').'/images/social/default.png',
-            //            ],
+            'image' => env('APP_URL').'/og.png',
+            'images' => [
+                env('APP_URL').'/og.png',
+            ],
         ],
     ],
     'twitter' => [
@@ -51,8 +51,9 @@ return [
          */
         'defaults' => [
             'card' => 'summary_large_image',
-            'site' => '@'.env('TWITTER_USERNAME'),
+            //            'site' => '@'.env('TWITTER_USERNAME'),
             'description' => env('APP_DESCRIPTION'),
+            'domain' => parse_url(env('APP_URL'))['host'] ?? env('APP_URL'),
         ],
     ],
     'json-ld' => [
@@ -65,15 +66,15 @@ return [
             'url' => null, // Set null for using Url::current(), set false to total remove
             'type' => 'WebPage',
             'images' => [
-                env('APP_URL').'/images/social/default.png',
-                env('APP_URL').'/images/logos/full.png',
+                env('APP_URL').'/og.png',
+                env('APP_URL').'/og.png',
             ],
-            'sameAs' => [
-                'https://instagram.com/'.env('FACEBOOK_USERNAME'),
-                'https://instagram.com/'.env('TWITTER_USERNAME'),
-                'https://instagram.com/'.env('THREADS_USERNAME'),
-                'https://instagram.com/'.env('INSTAGRAM_USERNAME'),
-            ],
+            //            'sameAs' => [
+            //                'https://instagram.com/'.env('FACEBOOK_USERNAME'),
+            //                'https://instagram.com/'.env('TWITTER_USERNAME'),
+            //                'https://instagram.com/'.env('THREADS_USERNAME'),
+            //                'https://instagram.com/'.env('INSTAGRAM_USERNAME'),
+            //            ],
         ],
 
         'publisher' => [

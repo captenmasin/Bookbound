@@ -67,12 +67,11 @@ class AppServiceProvider extends ServiceProvider
         Response::macro('withMeta', function ($meta) {
             $meta = (object) $meta;
             $title = $meta->title ?? 'untitled';
-            $description = $meta->description ?? '';
-            $description = str_replace(["\r", "\n"], '', $description);
+            $description = $meta->description ?? config('seotools.meta.defaults.description');
+            $description = $description ? str_replace(["\r", "\n"], '', $description) : null;
             $json = $meta->json ?? '';
             $preload = $meta->preload ?? [];
-            //            $image = $meta->image ?? Vite::asset('resources/images/social/default.png');
-            $image = $meta->image ?? null;
+            $image = $meta->image ?? url('og.png');
             $canonical = $meta->url ?? url()->full();
 
             SEOTools::setTitle($title);
