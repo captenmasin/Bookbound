@@ -11,7 +11,7 @@ defineOptions({
 <template>
     <div class="w-full max-w-4xl mx-auto">
         <div class="flex items-center justify-between">
-            <PageTitle> Scan Book </PageTitle>
+            <PageTitle> Scan Barcode </PageTitle>
         </div>
         <div
             class="mt-4">

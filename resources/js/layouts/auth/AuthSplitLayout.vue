@@ -61,7 +61,12 @@ const points = [
                 :href="useRoute('user.books.index')"
                 class="relative z-20 flex items-center text-2xl text-white font-serif font-semibold tracking-tight">
                 <AppLogoIcon class="mr-2 rounded-lg fill-current size-8" />
-                {{ name }}
+                <div class="flex flex-col relative">
+                    <span>{{ name }}</span>
+                    <span class="absolute top-full font-sans -mt-1.5 text-sm font-normal">
+                        beta
+                    </span>
+                </div>
             </Link>
         </div>
         <div class="lg:p-8">
