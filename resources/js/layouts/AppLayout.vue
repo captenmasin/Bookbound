@@ -51,8 +51,10 @@ watch(
 
 const showBetaDialog = ref(false)
 
-function closeBetaDialog () {
-    document.cookie = 'beta_dialog_closed=true; path=/; max-age=31536000'
+function handleBetaDialog (value: boolean) {
+    if (value === false) {
+        document.cookie = 'beta_dialog_closed=true; path=/; max-age=31536000'
+    }
 }
 
 const { authed } = useAuthedUser()
@@ -73,7 +75,9 @@ onMounted(() => {
     <AppHeaderLayout>
         <MetaHead />
 
-        <Dialog v-model:open="showBetaDialog">
+        <Dialog
+            v-model:open="showBetaDialog"
+            @update:open="handleBetaDialog">
             <DialogContent>
                 <DialogHeader class="space-y-3">
                     <DialogTitle> Beta </DialogTitle>
@@ -91,7 +95,7 @@ onMounted(() => {
 
                 <DialogFooter class="gap-2 mt-4">
                     <DialogClose as-child>
-                        <Button @click="closeBetaDialog">
+                        <Button>
                             Okay
                         </Button>
                     </DialogClose>
