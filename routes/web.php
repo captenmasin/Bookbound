@@ -115,7 +115,7 @@ Route::inertia('marketing-home', 'MarketingHome')
     ->withoutMiddleware(['auth', 'verified'])
     ->name('marketing.home');
 
-// Auth and test-only routes
+require __DIR__.'/pro.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/testing.php';
 

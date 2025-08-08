@@ -167,6 +167,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                 <div
                     v-if="authed && authedUser"
                     class="flex ml-auto items-center space-x-2">
+                    Subscribed: {{ authedUser.subscribed }}
                     <UserMenuDropdown
                         v-if="isDesktop"
                         :user="authedUser"

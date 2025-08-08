@@ -6,6 +6,7 @@ use Filament\Panel;
 use App\Traits\HasAvatar;
 use App\Enums\ActivityType;
 use App\Enums\UserPermission;
+use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Permission\Traits\HasRoles;
@@ -25,7 +26,8 @@ use Spatie\LaravelPasskeys\Models\Concerns\InteractsWithPasskeys;
 
 class User extends Authenticatable implements FilamentUser, HasMedia, HasPasskeys, MustVerifyEmail
 {
-    use HasApiTokens, HasAvatar, HasFactory, HasRoles, HasSettingsField, InteractsWithMedia, InteractsWithPasskeys, Notifiable;
+    use Billable, HasApiTokens, HasAvatar, HasFactory, HasRoles, HasSettingsField,
+        InteractsWithMedia, InteractsWithPasskeys, Notifiable;
 
     /**
      * The attributes that are mass assignable.

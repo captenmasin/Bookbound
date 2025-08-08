@@ -9,6 +9,7 @@ export type User = {
     avatar?: string;
     email_verified: boolean,
     settings?: Record<string, any>;
+    subscribed: boolean;
     book_identifiers?: Record<string, UserBookStatus>;
 }
 
