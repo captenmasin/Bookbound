@@ -8,12 +8,12 @@ import { toast } from 'vue-sonner'
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function useUserBookStatus () {
-    type StatusMap = Record<string, UserBookStatus>;
+    type StatusMap = Record<string, UserBookStatus | null>;
 
     const page = usePage()
     const authed = page.props.auth.check
     const addedBooks = authed
-        ? ref<Record<string, UserBookStatus | string>>({ ...page.props.auth.user.book_identifiers })
+        ? ref<Record<string, UserBookStatus | string>>({ ...page.props.auth.user?.book_identifiers })
         : ref<Record<string, UserBookStatus | string>>({})
 
     const selectedStatuses = ref<StatusMap>({})
@@ -26,7 +26,7 @@ export function useUserBookStatus () {
         label: value
     }))
 
-    function updateStatus (book: Book | BookApiResult, status: string, successCallback?: () => void) {
+    function updateStatus (book: Book | BookApiResult, status: string, successCallback?: () => void, errorCallback?: () => void) {
         if (!possibleStatuses.some((s) => s.value === status)) {
             throw new Error(`Invalid status: ${status}`)
         }
@@ -43,14 +43,23 @@ export function useUserBookStatus () {
                     }
                 } else {
                     toast.error(response.message || 'Failed to update book status')
+                    if (errorCallback) {
+                        errorCallback()
+                    }
                 }
             })
             .catch((error) => {
                 toast.error(error.message)
+                if (errorCallback) {
+                    errorCallback()
+                }
             })
     }
 
-    async function addBookToUser (identifier: string, status: UserBookStatus, successCallback?: () => void) {
+    async function addBookToUser (identifier: string, status: UserBookStatus,
+        successCallback?: () => void,
+        errorCallback?: () => void
+    ) {
         addingBooks.value.push(identifier)
 
         try {
@@ -58,7 +67,6 @@ export function useUserBookStatus () {
 
             if (response?.book?.identifier) {
                 const book = response.book
-                console.log(status)
                 useRequest(useRoute('api.user.books.store'), 'POST', {
                     identifier: book.identifier,
                     status: status || 'PlanToRead'
@@ -76,16 +84,25 @@ export function useUserBookStatus () {
                         } else {
                             toast.error(response.message || 'Failed to add book')
                             addingBooks.value = addingBooks.value.filter((id) => id !== identifier)
+                            if (errorCallback) {
+                                errorCallback()
+                            }
                         }
                     })
                     .catch((error) => {
                         toast.error(error.message)
                         addingBooks.value = addingBooks.value.filter((id) => id !== identifier)
+                        if (errorCallback) {
+                            errorCallback()
+                        }
                     })
             } else {
                 addingBooks.value = addingBooks.value.filter((id) => id !== identifier)
                 toast.error('Failed to create or fetch book')
                 console.error('Missing identifier in book data:', response)
+                if (errorCallback) {
+                    errorCallback()
+                }
             }
         } catch (error) {
             addingBooks.value = addingBooks.value.filter((id) => id !== identifier)

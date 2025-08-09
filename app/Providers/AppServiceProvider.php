@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Vite;
 use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\SEOTools;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use App\Contracts\BookApiServiceInterface;
 use Filament\Support\Facades\FilamentColor;
@@ -37,8 +36,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         JsonResource::withoutWrapping();
-
-        Model::preventLazyLoading();
 
         Vite::prefetch(6);
 

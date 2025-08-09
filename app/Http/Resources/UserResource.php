@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use App\Support\SubscriptionLimits;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -35,8 +36,28 @@ class UserResource extends JsonResource
             return $this->getAllPermissions()->pluck('name')->toArray();
         });
         $data['book_identifiers'] = $this->getBookIdentifiers();
-        $data['subscribed'] = $this->subscribed();
-        //        $data['subscribed'] = true;
+
+        $user = $this->resource;
+        $subscribed = $user->subscribed();
+        //        $subscribed = true;
+        $planKey = SubscriptionLimits::currentPlanKey($user);
+        //        $planKey = 'pro';
+        $limits = SubscriptionLimits::limitsFor($user);
+        $booksCount = $this->relationLoaded('books') ? $this->books->count() : $this->books()->count();
+
+        $data['subscription'] = [
+            'subscribed' => $subscribed,
+            'plan' => $planKey,
+            'limits' => $limits,
+            'books' => [
+                'count' => $booksCount,
+                'max' => SubscriptionLimits::getLimit($user, 'max_books'),
+                'remaining' => SubscriptionLimits::remainingBooks($user),
+            ],
+            'can_add_book' => SubscriptionLimits::canAddBook($user),
+            'allow_private_notes' => SubscriptionLimits::allowPrivateNotes($user),
+            'allow_custom_covers' => SubscriptionLimits::allowCustomCovers($user),
+        ];
 
         return $data;
     }

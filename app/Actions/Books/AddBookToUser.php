@@ -9,6 +9,7 @@ use App\Enums\ActivityType;
 use App\Enums\AnalyticsEvent;
 use App\Enums\UserBookStatus;
 use Illuminate\Http\JsonResponse;
+use App\Support\SubscriptionLimits;
 use Illuminate\Http\RedirectResponse;
 use Lorisleiva\Actions\Concerns\AsAction;
 use App\Http\Requests\Books\StoreBookUserRequest;
@@ -21,6 +22,17 @@ class AddBookToUser
     {
         if ($user->books()->where('book_id', $book->id)->exists()) {
             throw new \Exception('Book already exists in your library.');
+        }
+
+        // Enforce subscription limit for maximum number of books
+        if (! SubscriptionLimits::canAddBook($user)) {
+            $remaining = SubscriptionLimits::remainingBooks($user);
+            $max = SubscriptionLimits::getLimit($user, 'max_books');
+            $message = 'You have reached the maximum number of books allowed by your subscription.';
+            if ($max !== null) {
+                $message = "You can have up to {$max} books in your library. Remove a book or upgrade your plan to add more.";
+            }
+            throw new \Exception($message);
         }
 
         TrackEvent::dispatchAfterResponse(AnalyticsEvent::BookAdded, [

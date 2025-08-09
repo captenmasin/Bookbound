@@ -68,13 +68,13 @@ const userMenuItems = ref([
         title: 'Billing',
         url: useRoute('billing'),
         icon: Wallet,
-        if: authedUser.value?.subscribed
+        if: authedUser.value?.subscription.subscribed
     },
     {
         title: 'Upgrade to Pro',
         url: useRoute('checkout'),
         icon: Sparkles,
-        if: !authedUser.value?.subscribed
+        if: !authedUser.value?.subscription.subscribed
     },
     {
         title: 'Settings',
@@ -181,7 +181,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                     class="flex ml-auto items-center space-x-2">
                     <div>
                         <div
-                            v-if="authedUser.subscribed"
+                            v-if="authedUser.subscription.subscribed"
                             class="text-[10px] font-semibold font-serif bg-primary text-primary-foreground rounded-full px-2 py-px">
                             PRO
                         </div>

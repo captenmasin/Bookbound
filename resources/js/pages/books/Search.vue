@@ -12,6 +12,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input/index.js'
 import { Button } from '@/components/ui/button/index.js'
 import { Deferred, Link, router } from '@inertiajs/vue3'
+import { useAuthedUser } from '@/composables/useAuthedUser'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 const props = defineProps({
     results: {
@@ -46,6 +48,8 @@ const props = defineProps({
 const query = ref(props.initialQuery)
 // const author = ref(props.initialAuthor)
 const loadingMore = ref(false)
+
+const { authedUser } = useAuthedUser()
 
 // const showAuthorField = ref(author.value !== '' && author.value !== null)
 // const showAuthorField = ref(true)
@@ -103,6 +107,24 @@ defineOptions({
 
 <template>
     <div>
+        <div
+            v-if="!authedUser?.subscription.can_add_book"
+            class="mb-4">
+            <Alert
+                class="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
+                <div>
+                    <AlertTitle>Heads up!</AlertTitle>
+                    <AlertDescription>
+                        You've reached the limit of books you can add with your current plan. Upgrade to Pro or remove some books to continue adding new ones.
+                    </AlertDescription>
+                </div>
+                <Button as-child>
+                    <Link :href="useRoute('checkout')">
+                        Upgrade to Pro
+                    </Link>
+                </Button>
+            </Alert>
+        </div>
         <div class="flex items-center justify-between">
             <PageTitle> Add Book </PageTitle>
         </div>

@@ -42,13 +42,27 @@ function selectNewStatus (book: BookApiResult | Book, status: UserBookStatus | '
 
     if (book?.identifier) {
         if (addedBookIdentifiers.value.has(book.identifier)) {
-            updateStatus(book, status, () => {
-                emit('updated', book, status)
-            })
+            updateStatus(
+                book,
+                status,
+                () => {
+                    emit('updated', book, status)
+                },
+                () => {
+                    selectedStatuses.value[book.identifier] = null
+                }
+            )
         } else {
-            addBookToUser(book.identifier, status, () => {
-                emit('added', book, status)
-            })
+            addBookToUser(
+                book.identifier,
+                status,
+                () => {
+                    emit('added', book, status)
+                },
+                () => {
+                    selectedStatuses.value[book.identifier] = null
+                }
+            )
         }
     }
 }
@@ -59,7 +73,7 @@ function selectNewStatus (book: BookApiResult | Book, status: UserBookStatus | '
         <div
             v-if="addingBooks.includes(book.identifier)"
             class="absolute top-1/2 left-2 aspect-square w-6 shrink-0 -translate-y-1/2">
-            <div class="flex animate-spin items-center justify-center rounded-full size-full bg-muted text-muted-foreground">
+            <div class="flex size-full animate-spin items-center justify-center rounded-full bg-muted text-muted-foreground">
                 <Icon
                     name="LoaderCircle"
                     class="size-4" />
@@ -74,9 +88,7 @@ function selectNewStatus (book: BookApiResult | Book, status: UserBookStatus | '
                     class="w-full"
                     :class="addingBooks.includes(book.identifier) ? 'pl-9' : ''">
                     <SelectValue placeholder="Add to library" />
-                    <span class="sr-only">
-                        Select book status
-                    </span>
+                    <span class="sr-only"> Select book status </span>
                 </SelectTrigger>
                 <SelectContent>
                     <SelectGroup>

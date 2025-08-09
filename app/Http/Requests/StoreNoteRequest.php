@@ -12,7 +12,7 @@ class StoreNoteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check() && $this->user()->books()->whereKey($this->book->id)->exists();
+        return Auth::check();
     }
 
     /**

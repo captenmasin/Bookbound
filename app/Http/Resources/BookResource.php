@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Str;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Support\SubscriptionLimits;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -70,7 +71,7 @@ class BookResource extends JsonResource
 
     protected function getCover(?User $user = null): ?string
     {
-        if (! $user) {
+        if (! $user || ! $this->hasCustomCover($user)) {
             return $this->primary_cover;
         }
 
@@ -83,6 +84,10 @@ class BookResource extends JsonResource
 
     protected function hasCustomCover(?User $user = null): bool
     {
+        if (! SubscriptionLimits::allowCustomCovers($user)) {
+            return false;
+        }
+
         return $user->book_covers->contains('book_id', $this->id);
     }
 

@@ -32,7 +32,7 @@ const props = defineProps({
 })
 
 const { updateSingleSetting, getSingleSetting } = useUserSettings()
-const { authed } = useAuthedUser()
+const { authed, authedUser } = useAuthedUser()
 
 const data = [
     {
@@ -90,7 +90,9 @@ defineOptions({
                 <div class="flex w-full flex-col md:sticky top-4">
                     <div class="flex gap-4">
                         <div class="w-24 sm:w-32 md:w-full">
-                            <UpdateBookCover :book>
+                            <UpdateBookCover
+                                v-if="authedUser?.subscription.allow_custom_covers"
+                                :book>
                                 <div class="aspect-book overflow-hidden rounded-md">
                                     <Image
                                         width="250"
@@ -98,6 +100,14 @@ defineOptions({
                                         :src="book.cover" />
                                 </div>
                             </UpdateBookCover>
+                            <div
+                                v-else
+                                class="aspect-book overflow-hidden rounded-md">
+                                <Image
+                                    width="250"
+                                    class="size-full object-cover"
+                                    :src="book.cover" />
+                            </div>
                         </div>
                         <div class="flex flex-1 justify-between w-full md:hidden">
                             <div class="flex flex-col gap-1 flex-1">
