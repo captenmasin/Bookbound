@@ -87,11 +87,10 @@ defineOptions({
     <div class="md:mt-4">
         <div class="flex flex-col md:flex-row gap-4 md:gap-10">
             <div class="flex w-full order-1 md:w-32 lg:w-44 xl:w-56 flex-col">
-                <div class="flex w-full flex-col md:sticky top-4">
+                <div class="flex w-full flex-col">
                     <div class="flex gap-4">
                         <div class="w-24 sm:w-32 md:w-full">
                             <UpdateBookCover
-                                v-if="authedUser?.subscription.allow_custom_covers"
                                 :book>
                                 <div class="aspect-book overflow-hidden rounded-md">
                                     <Image
@@ -100,14 +99,6 @@ defineOptions({
                                         :src="book.cover" />
                                 </div>
                             </UpdateBookCover>
-                            <div
-                                v-else
-                                class="aspect-book overflow-hidden rounded-md">
-                                <Image
-                                    width="250"
-                                    class="size-full object-cover"
-                                    :src="book.cover" />
-                            </div>
                         </div>
                         <div class="flex flex-1 justify-between w-full md:hidden">
                             <div class="flex flex-col gap-1 flex-1">
@@ -140,30 +131,6 @@ defineOptions({
                             </div>
                         </div>
                     </div>
-                    <div
-                        v-if="book.in_library"
-                        class="mt-4 hidden md:flex flex-col items-center">
-                        <h3 class="text-xs font-semibold text-muted-foreground">
-                            Your rating
-                        </h3>
-                        <RatingForm
-                            :key="refreshKey"
-                            :only="['rating', 'book', 'averageRating']"
-                            class="mt-1"
-                            :book="book"
-                            @deleted="refreshRating"
-                            @added="refreshRating"
-                            @updated="refreshRating" />
-                    </div>
-                    <ShareButton
-                        class="mt-4 mx-auto hidden md:flex"
-                        :url="book.links.show"
-                        :title="book.title"
-                        :text="book.description"
-                        modal-title="Share this book"
-                    >
-                        Share book
-                    </ShareButton>
                 </div>
             </div>
             <div class="flex w-full order-3 md:order-2 md:flex-1 flex-col">
@@ -185,6 +152,17 @@ defineOptions({
                         </div>
                     </div>
                 </div>
+
+                <ShareButton
+                    class="mt-2 hidden md:flex"
+                    :url="book.links.show"
+                    :title="book.title"
+                    :text="book.description"
+                    button-class="text-xs"
+                    modal-title="Share this book"
+                >
+                    Share book
+                </ShareButton>
 
                 <div
                     class="prose md:mt-4 dark:prose-invert prose-sm md:prose-base max-w-none font-serif"
@@ -234,8 +212,8 @@ defineOptions({
 
                 <div
                     v-if="book.in_library"
-                    class="mt-2 flex md:hidden flex-col">
-                    <h3 class="text-xs font-semibold text-muted-foreground">
+                    class="mt-2 md:mt-4 flex flex-col">
+                    <h3 class="text-xs md:text-sm font-semibold text-muted-foreground">
                         Your rating
                     </h3>
                     <RatingForm

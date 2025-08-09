@@ -27,6 +27,10 @@ const props = defineProps({
     modalTitle: {
         type: String,
         default: 'Share'
+    },
+    buttonClass: {
+        type: String,
+        default: ''
     }
 })
 
@@ -93,6 +97,7 @@ const slots = useSlots()
         <Button
             variant="white"
             class="cursor-pointer"
+            :class="buttonClass"
             :size="slots.default ? 'sm' : 'icon'"
             @click="handleClick">
             <Icon name="share" />

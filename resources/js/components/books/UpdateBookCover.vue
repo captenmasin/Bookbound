@@ -6,6 +6,7 @@ import { computed, PropType, ref } from 'vue'
 import { useRoute } from '@/composables/useRoute'
 import { router, useForm } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button/index.js'
+import { useAuthedUser } from '@/composables/useAuthedUser'
 
 const props = defineProps({
     book: Object as PropType<Book>
@@ -17,10 +18,13 @@ const form = useForm({
     cover: null
 })
 
+const { authedUser } = useAuthedUser()
+
 const canRemoveCover = ref(props.book && props.book.has_custom_cover)
 
 const canUpdateCover = computed(() => {
-    return props.book && props.book.in_library
+    return props.book && props.book.in_library &&
+        authedUser.value && authedUser.value?.subscription.allow_custom_covers
 })
 
 const displayUndo = ref(false)
@@ -67,6 +71,8 @@ const updateCoverPreview = () => {
     }
 
     reader.readAsDataURL(cover)
+
+    updateBookInformation()
 }
 
 const deleteCover = () => {
@@ -86,13 +92,13 @@ const clearCoverFileInput = () => {
         coverInput.value.value = null
     }
 
-    displayUndo.value = false
+    // displayUndo.value = false
 }
 
 const reset = () => {
     coverPreview.value = null
     clearCoverFileInput()
-    displayUndo.value = false
+    // displayUndo.value = false
 
     canRemoveCover.value = props.book && props.book.has_custom_cover
     key.value++
@@ -102,75 +108,6 @@ const reset = () => {
 <template>
     <div>
         <div class="relative">
-            <div
-                v-if="canUpdateCover"
-                :key="key"
-                :class="coverPreview ? 'opacity-100' : 'opacity-0'"
-                class="absolute top-0 bottom-0 left-0 flex w-full gap-2 transition-all hover:opacity-100">
-                <div class="absolute bottom-2 flex w-full items-center gap-2 p-2">
-                    <Button
-                        v-if="!coverPreview"
-                        size="sm"
-                        class="flex-1 cursor-pointer rounded-full text-xs"
-                        @click="clickCoverInput"
-                    >
-                        <Icon
-                            name="ImagePlus"
-                            class="w-3" />
-                        Update
-                    </Button>
-
-                    <Button
-                        v-if="coverPreview"
-                        variant="ghost"
-                        size="sm"
-                        class="flex-1 cursor-pointer rounded-full bg-green-200/75 text-xs text-green-700 backdrop-blur-lg hover:bg-green-200 hover:text-green-800"
-                        @click="updateBookInformation"
-                    >
-                        <Icon
-                            name="Save"
-                            class="w-3" />
-                        Save
-                    </Button>
-
-                    <Button
-                        v-if="coverPreview && displayUndo"
-                        variant="ghost"
-                        size="sm"
-                        class="flex-1 cursor-pointer rounded-full bg-white/75 text-xs backdrop-blur-lg"
-                        @click="reset"
-                    >
-                        <Icon
-                            name="Undo2"
-                            class="w-3" />
-                        Undo
-                    </Button>
-
-                    <Button
-                        v-if="canRemoveCover"
-                        type="button"
-                        size="icon"
-                        variant="ghost"
-                        class="cursor-pointer rounded-full text-xs backdrop-blur-lg bg-destructive/75 text-destructive-foreground"
-                        @click.prevent="deleteCover"
-                    >
-                        <Icon
-                            name="X"
-                            class="w-3" />
-                    </Button>
-                </div>
-
-                <input
-                    v-if="canUpdateCover"
-                    id="coverInput"
-                    ref="coverInput"
-                    type="file"
-                    class="hidden"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    @change="updateCoverPreview"
-                >
-            </div>
-
             <div
                 v-show="!coverPreview || !canUpdateCover">
                 <slot />
@@ -190,6 +127,75 @@ const reset = () => {
                     </div>
                 </div>
             </form>
+
+            <div
+                v-if="canUpdateCover"
+                :key="key"
+                :class="coverPreview ? 'opacity-100' : 'opacity-100'"
+                class="flex w-full gap-2 transition-all hover:opacity-100">
+                <div class="flex w-full items-center gap-2 mt-1.5">
+                    <Button
+                        size="sm"
+                        variant="white"
+                        class="cursor-pointer flex-1 text-xs py-0"
+                        @click="clickCoverInput"
+                    >
+                        <Icon
+                            name="ImagePlus" />
+                        <span class="hidden md:flex">
+                            Update Cover
+                        </span>
+                    </Button>
+
+                    <!--                    <Button-->
+                    <!--                        v-if="coverPreview"-->
+                    <!--                        variant="ghost"-->
+                    <!--                        size="sm"-->
+                    <!--                        class="flex-1 cursor-pointer bg-green-200/75 text-xs text-green-700 backdrop-blur-lg hover:bg-green-200 hover:text-green-800"-->
+                    <!--                        @click="updateBookInformation"-->
+                    <!--                    >-->
+                    <!--                        <Icon-->
+                    <!--                            name="Save"-->
+                    <!--                            class="w-3" />-->
+                    <!--                        Save-->
+                    <!--                    </Button>-->
+
+                    <!--                    <Button-->
+                    <!--                        v-if="coverPreview && displayUndo"-->
+                    <!--                        variant="ghost"-->
+                    <!--                        size="sm"-->
+                    <!--                        class="flex-1 cursor-pointer bg-white/75 text-xs backdrop-blur-lg"-->
+                    <!--                        @click="reset"-->
+                    <!--                    >-->
+                    <!--                        <Icon-->
+                    <!--                            name="Undo2"-->
+                    <!--                            class="w-3" />-->
+                    <!--                        Undo-->
+                    <!--                    </Button>-->
+
+                    <Button
+                        v-if="canRemoveCover"
+                        type="button"
+                        size="icon"
+                        variant="secondary"
+                        class="cursor-pointer size-8"
+                        @click.prevent="deleteCover"
+                    >
+                        <Icon
+                            name="X" />
+                    </Button>
+                </div>
+
+                <input
+                    v-if="canUpdateCover"
+                    id="coverInput"
+                    ref="coverInput"
+                    type="file"
+                    class="hidden"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    @change="updateCoverPreview"
+                >
+            </div>
         </div>
         <InputError
             v-if="canUpdateCover && form.errors.cover"
