@@ -98,7 +98,6 @@ defineOptions({
                                         :src="book.cover" />
                                 </div>
                             </UpdateBookCover>
-                            {{ authedUser?.subscription }}
                         </div>
                         <div class="flex flex-1 justify-between w-full md:hidden">
                             <div class="flex flex-col gap-1 flex-1">
