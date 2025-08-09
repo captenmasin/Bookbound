@@ -65,7 +65,8 @@ onMounted(() => {
             </component>
             <component
                 :is="isDesktop ? DialogFooter : DrawerFooter"
-                class="flex gap-2 mt-4 sm:justify-end">
+                :class="!isDesktop ? 'mb-4 gap-4' : 'gap-2 mt-6'"
+                class="flex sm:justify-end">
                 <component
                     :is="isDesktop ? DialogClose : DrawerClose"
                     as-child>
