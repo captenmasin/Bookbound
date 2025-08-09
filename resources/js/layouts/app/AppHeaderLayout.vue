@@ -2,6 +2,7 @@
 import AppShell from '@/components/AppShell.vue'
 import AppHeader from '@/components/AppHeader.vue'
 import AppContent from '@/components/AppContent.vue'
+import JoinProDialog from '@/components/JoinProDialog.vue'
 import { logicAnd } from '@vueuse/math'
 import { Label } from '@/components/ui/label'
 import { useRoute } from '@/composables/useRoute'
@@ -121,5 +122,7 @@ router.on('navigate', (event) => {
                 </li>
             </ul>
         </div>
+
+        <JoinProDialog />
     </AppShell>
 </template>

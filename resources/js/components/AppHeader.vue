@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
+import useEmitter from '@/composables/useEmitter'
 import UserMenuSheet from '@/components/UserMenuSheet.vue'
 import JoinProDialog from '@/components/JoinProDialog.vue'
+import JoinProTrigger from '@/components/JoinProTrigger.vue'
 import UserMenuDropdown from '@/components/UserMenuDropdown.vue'
 import { useMediaQuery } from '@vueuse/core'
 import { Button } from '@/components/ui/button'
@@ -73,9 +75,9 @@ const userMenuItems = ref([
         if: authedUser.value?.subscription.subscribed
     },
     {
-        tag: 'a',
+        tag: 'button',
         title: 'Upgrade to Pro',
-        url: useRoute('checkout'),
+        action: () => useEmitter.emit('openJoinProDialog'),
         icon: Sparkles,
         if: !authedUser.value?.subscription.subscribed
     },
@@ -189,14 +191,14 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                             PRO
                         </div>
 
-                        <JoinProDialog v-else>
+                        <JoinProTrigger v-else>
                             <button class="font-medium hidden cursor-pointer mr-2 text-xs xs:flex items-center gap-1 text-primary">
                                 <Icon
                                     name="Sparkles"
                                     class="size-4" />
                                 Upgrade to Pro
                             </button>
-                        </JoinProDialog>
+                        </JoinProTrigger>
                     </div>
 
                     <UserMenuDropdown

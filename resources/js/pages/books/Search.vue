@@ -4,6 +4,7 @@ import Loader from '@/components/Loader.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import PageTitle from '@/components/PageTitle.vue'
 import JoinProDialog from '@/components/JoinProDialog.vue'
+import JoinProTrigger from '@/components/JoinProTrigger.vue'
 import HorizontalSkeleton from '@/components/books/HorizontalSkeleton.vue'
 import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
 import { BookApiResult } from '@/types/book'
@@ -119,11 +120,11 @@ defineOptions({
                         You've reached the limit of books you can add with your current plan. Upgrade to Pro or remove some books to continue adding new ones.
                     </AlertDescription>
                 </div>
-                <JoinProDialog>
+                <JoinProTrigger>
                     <Button size="sm">
                         Upgrade now
                     </Button>
-                </JoinProDialog>
+                </JoinProTrigger>
             </Alert>
         </div>
         <div class="flex items-center justify-between">

@@ -17,6 +17,7 @@ interface Props {
         icon: any;
         if?: boolean,
         target?: string;
+        action?: () => void;
     }[];
 }
 
@@ -60,7 +61,8 @@ defineProps<Props>()
                             class="block w-full"
                             :href="item.url"
                             :target="item.target"
-                            :prefetch="item.target !== '_blank'">
+                            :prefetch="item.target !== '_blank'"
+                            @click="item.action ? item.action() : null">
                             <component
                                 :is="item.icon"
                                 class="mr-2 h-4 w-4" />

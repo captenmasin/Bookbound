@@ -19,6 +19,8 @@ interface Props {
         icon: any;
         if?: boolean,
         target?: string;
+        tag?: string;
+        action?: () => void;
     }[];
 }
 
@@ -84,7 +86,8 @@ router.on('navigate', (event) => {
                                 :is="item.tag ? item.tag : (item.target === '_blank' ? 'a' : Link)"
                                 class="flex items-center py-2 text-foreground text-lg font-medium gap-4 w-full"
                                 :href="item.url"
-                                :prefetch="item.target !== '_blank'">
+                                :prefetch="item.target !== '_blank'"
+                                @click="userMobileMenuOpen = false; item.action ? item.action() : null">
                                 <component
                                     :is="item.icon"
                                     class="size-4.5" />

@@ -2,6 +2,7 @@
 import Icon from '@/components/Icon.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import TagCloud from '@/components/TagCloud.vue'
+import useEmitter from '@/composables/useEmitter'
 import BookCard from '@/components/books/BookCard.vue'
 import SingleActivity from '@/components/SingleActivity.vue'
 import { Tag } from '@/types/tag'
