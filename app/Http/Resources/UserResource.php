@@ -39,9 +39,7 @@ class UserResource extends JsonResource
 
         $user = $this->resource;
         $subscribed = $user->subscribed();
-        //        $subscribed = true;
         $planKey = SubscriptionLimits::currentPlanKey($user);
-        //        $planKey = 'pro';
         $limits = SubscriptionLimits::limitsFor($user);
         $booksCount = $this->relationLoaded('books') ? $this->books->count() : $this->books()->count();
 

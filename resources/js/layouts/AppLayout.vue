@@ -3,12 +3,12 @@ import 'vue-sonner/style.css'
 import MetaHead from '@/components/MetaHead.vue'
 import AppHeaderLayout from '@/layouts/app/AppHeaderLayout.vue'
 import { toast } from 'vue-sonner'
-import { onMounted, ref, watch } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
 import { Toaster } from '@/components/ui/sonner'
 import type { BreadcrumbItemType } from '@/types'
 import { useRoute } from '@/composables/useRoute'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import {
     Dialog,
@@ -43,7 +43,9 @@ watch(
             toast.warning(flash.warning)
         }
         if (flash?.info) {
-            toast.info(flash.info)
+            nextTick(() => {
+                toast.info(flash.info)
+            })
         }
     },
     { immediate: true }

@@ -17,4 +17,6 @@ Route::get('billing', function (Request $request) {
 })->middleware(['auth'])->name('billing');
 
 Route::get('checkout/success', fn () => dd('Success'))->name('checkout-success');
-Route::get('checkout/cancel', fn () => dd('Cancel'))->name('checkout-cancel');
+Route::get('checkout/cancel',
+    fn () => redirect()->route('home')->with('info', __('Your subscription was not completed.'))
+)->name('checkout-cancel');
