@@ -202,7 +202,7 @@ defineOptions({
                 </div>
 
                 <div
-                    v-if="!hasSearch && !authedUser?.subscription.can_add_book"
+                    v-if="!hasSearch && !authedUser?.subscription.can_add_book || true"
                     class="mb-4">
                     <Alert
                         class="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
@@ -212,8 +212,11 @@ defineOptions({
                                 You've reached the limit of books you can add with your current plan. Upgrade to Pro or remove some books to continue adding new ones.
                             </AlertDescription>
                         </div>
-                        <JoinProTrigger>
-                            <Button size="sm">
+                        <JoinProTrigger class="w-full flex-1">
+                            <Button
+                                size="sm"
+                                class="w-full flex-1"
+                            >
                                 Upgrade now
                             </Button>
                         </JoinProTrigger>
