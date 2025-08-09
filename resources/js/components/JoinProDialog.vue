@@ -1,0 +1,80 @@
+<script setup lang="ts">
+import AppLogo from '@/components/AppLogo.vue'
+import { usePage } from '@inertiajs/vue3'
+import { useMediaQuery } from '@vueuse/core'
+import { Button } from '@/components/ui/button'
+import { useRoute } from '@/composables/useRoute'
+import { useForwardPropsEmits, type DialogRootEmits, type DialogRootProps } from 'reka-ui'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
+
+const props = defineProps<DialogRootProps>()
+
+// merge them together as one object‐style emit map
+const emits = defineEmits<DialogRootEmits>()
+
+const forwarded = useForwardPropsEmits(props, emits)
+
+const isDesktop = useMediaQuery('(min-width: 768px)')
+</script>
+
+<template>
+    <component
+        :is="isDesktop ? Dialog : Drawer"
+        v-bind="forwarded">
+        <component
+            :is="isDesktop ? DialogTrigger : DrawerTrigger"
+            as-child>
+            <slot />
+        </component>
+        <component
+            :is="isDesktop ? DialogContent : DrawerContent"
+            class="sm:max-w-lg">
+            <component
+                :is="isDesktop ? DialogHeader : DrawerHeader">
+                <AppLogo class="w-full flex mb-2" />
+                <component
+                    :is="isDesktop ? DialogTitle : DrawerTitle"
+                    class="font-serif text-3xl">
+                    Pro
+                </component>
+                <component
+                    :is="isDesktop ? DialogDescription : DrawerDescription"
+                    class="text-base">
+                    <p class="text-secondary-foreground">
+                        Join {{ usePage().props.app.name }} Pro to unlock premium features and support the development of this app.
+                    </p>
+                    <ul class="list-disc pl-5 mt-2 text-secondary-foreground">
+                        <li>Unlimited books</li>
+                        <li>Private notes</li>
+                        <li>Custom book covers</li>
+                        <li class="opacity-50">
+                            Custom tags (coming soon)
+                        </li>
+                        <li class="opacity-50">
+                            Shareable book collections (coming soon)
+                        </li>
+                        <li>And more!</li>
+                    </ul>
+                </component>
+            </component>
+            <component
+                :is="isDesktop ? DialogFooter : DrawerFooter"
+                class="flex gap-2 mt-4 sm:justify-end">
+                <component
+                    :is="isDesktop ? DialogClose : DrawerClose"
+                    as-child>
+                    <Button
+                        variant="outline">
+                        Cancel
+                    </Button>
+                </component>
+                <Button as-child>
+                    <a :href="useRoute('checkout')">
+                        Join
+                    </a>
+                </Button>
+            </component>
+        </component>
+    </component>
+</template>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import Icon from '@/components/Icon.vue'
 import InputError from '@/components/InputError.vue'
+import JoinProDialog from '@/components/JoinProDialog.vue'
 import { Book } from '@/types/book'
 import { PropType, ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
@@ -83,13 +85,11 @@ const noteInput = ref<HTMLInputElement | null>(null)
                     Upgrade to unlock this feature.
                 </p>
             </div>
-            <Button
-                as-child
-                size="sm">
-                <a :href="useRoute('checkout')">
+            <JoinProDialog>
+                <Button size="sm">
                     Upgrade now
-                </a>
-            </Button>
+                </Button>
+            </JoinProDialog>
         </div>
     </div>
 </template>

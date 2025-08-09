@@ -2,6 +2,7 @@
 import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import UserMenuSheet from '@/components/UserMenuSheet.vue'
+import JoinProDialog from '@/components/JoinProDialog.vue'
 import UserMenuDropdown from '@/components/UserMenuDropdown.vue'
 import { useMediaQuery } from '@vueuse/core'
 import { Button } from '@/components/ui/button'
@@ -188,15 +189,14 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                             PRO
                         </div>
 
-                        <a
-                            v-else
-                            href="/checkout"
-                            class="font-medium hidden mr-2 text-xs xs:flex items-center gap-1 text-primary">
-                            <Icon
-                                name="Sparkles"
-                                class="size-4" />
-                            Upgrade to Pro
-                        </a>
+                        <JoinProDialog v-else>
+                            <button class="font-medium hidden cursor-pointer mr-2 text-xs xs:flex items-center gap-1 text-primary">
+                                <Icon
+                                    name="Sparkles"
+                                    class="size-4" />
+                                Upgrade to Pro
+                            </button>
+                        </JoinProDialog>
                     </div>
 
                     <UserMenuDropdown

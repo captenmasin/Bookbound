@@ -115,8 +115,8 @@ Route::inertia('marketing-home', 'MarketingHome')
     ->withoutMiddleware(['auth', 'verified'])
     ->name('marketing.home');
 
-require __DIR__.'/pro.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/testing.php';
+require __DIR__.'/subscriptions.php';
 
 Route::fallback(ErrorPage::class);
