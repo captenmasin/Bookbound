@@ -65,12 +65,14 @@ const userMenuItems = ref([
         icon: Activity
     },
     {
+        tag: 'a',
         title: 'Billing',
         url: useRoute('billing'),
         icon: Wallet,
         if: authedUser.value?.subscription.subscribed
     },
     {
+        tag: 'a',
         title: 'Upgrade to Pro',
         url: useRoute('checkout'),
         icon: Sparkles,

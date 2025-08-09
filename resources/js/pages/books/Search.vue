@@ -119,9 +119,9 @@ defineOptions({
                     </AlertDescription>
                 </div>
                 <Button as-child>
-                    <Link :href="useRoute('checkout')">
+                    <a :href="useRoute('checkout')">
                         Upgrade to Pro
-                    </Link>
+                    </a>
                 </Button>
             </Alert>
         </div>

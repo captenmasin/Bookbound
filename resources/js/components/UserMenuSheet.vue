@@ -81,7 +81,7 @@ router.on('navigate', (event) => {
                             v-if="item.if || !('if' in item)"
                             :as-child="true">
                             <component
-                                :is="item.target === '_blank' ? 'a' : Link"
+                                :is="item.tag ? item.tag : (item.target === '_blank' ? 'a' : Link)"
                                 class="flex items-center py-2 text-foreground text-lg font-medium gap-4 w-full"
                                 :href="item.url"
                                 :prefetch="item.target !== '_blank'">

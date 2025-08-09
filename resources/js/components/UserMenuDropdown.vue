@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 interface Props {
     user: User;
     items: {
+        tag?: string;
         title: string;
         url: string;
         icon: any;
@@ -55,7 +56,7 @@ defineProps<Props>()
                         v-if="item.if || !('if' in item)"
                         :as-child="true">
                         <component
-                            :is="item.target === '_blank' ? 'a' : Link"
+                            :is="item.tag ? item.tag : (item.target === '_blank' ? 'a' : Link)"
                             class="block w-full"
                             :href="item.url"
                             :target="item.target"
