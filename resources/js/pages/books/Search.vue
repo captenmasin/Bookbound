@@ -109,24 +109,6 @@ defineOptions({
 
 <template>
     <div>
-        <div
-            v-if="!authedUser?.subscription.can_add_book"
-            class="mb-4">
-            <Alert
-                class="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
-                <div>
-                    <AlertTitle>Heads up!</AlertTitle>
-                    <AlertDescription>
-                        You've reached the limit of books you can add with your current plan. Upgrade to Pro or remove some books to continue adding new ones.
-                    </AlertDescription>
-                </div>
-                <JoinProTrigger>
-                    <Button size="sm">
-                        Upgrade now
-                    </Button>
-                </JoinProTrigger>
-            </Alert>
-        </div>
         <div class="flex items-center justify-between">
             <PageTitle> Add Book </PageTitle>
         </div>
@@ -217,6 +199,25 @@ defineOptions({
                     <p class="md:hidden">
                         Showing {{ formatNumber(results.books.length) }} of {{ formatNumber(results.total) }} results
                     </p>
+                </div>
+
+                <div
+                    v-if="!hasSearch && !authedUser?.subscription.can_add_book"
+                    class="mb-4">
+                    <Alert
+                        class="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
+                        <div>
+                            <AlertTitle>Heads up!</AlertTitle>
+                            <AlertDescription>
+                                You've reached the limit of books you can add with your current plan. Upgrade to Pro or remove some books to continue adding new ones.
+                            </AlertDescription>
+                        </div>
+                        <JoinProTrigger>
+                            <Button size="sm">
+                                Upgrade now
+                            </Button>
+                        </JoinProTrigger>
+                    </Alert>
                 </div>
 
                 <div

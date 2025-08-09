@@ -37,7 +37,7 @@ onMounted(() => {
             class="sm:max-w-lg">
             <component
                 :is="isDesktop ? DialogHeader : DrawerHeader">
-                <AppLogo class="w-full flex mb-2" />
+                <!--                <AppLogo class="w-full flex mb-2" />-->
                 <component
                     :is="isDesktop ? DialogTitle : DrawerTitle"
                     class="font-serif text-xl md:text-3xl">
@@ -45,11 +45,11 @@ onMounted(() => {
                 </component>
                 <component
                     :is="isDesktop ? DialogDescription : DrawerDescription"
-                    class="text-sm md:text-base overflow-auto">
-                    <p class="text-secondary-foreground">
-                        Join {{ usePage().props.app.name }} Pro to unlock premium features and support the development of this app.
+                    class="text-sm md:text-base overflow-auto text-secondary-foreground">
+                    <p>
+                        Join {{ usePage().props.app.name }} Pro to unlock premium features.
                     </p>
-                    <ul class="list-disc pl-5 mt-2 text-secondary-foreground">
+                    <ul class="list-disc pl-5 mt-2">
                         <li>Unlimited books</li>
                         <li>Private notes</li>
                         <li>Custom book covers</li>

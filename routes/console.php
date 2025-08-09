@@ -51,11 +51,20 @@ Artisan::command('reset', function () {
     Tag::all()->each(fn ($tag) => $tag->delete());
     Activity::all()->each(fn ($activity) => $activity->delete());
     Publisher::all()->each(fn ($publisher) => $publisher->delete());
+    \App\Models\PreviousSearch::all()->each(fn ($search) => $search->delete());
     Media::where('model_type', Cover::class)->get()->each(fn ($book) => $book->delete());
     DB::table('book_user')->truncate();
     DB::table('author_book')->truncate();
     DB::table('authors')->truncate();
     DB::table('book_tag')->truncate();
+
+    User::all()
+        ->each(function ($user) {
+            $user->forceFill([
+                'stripe_id' => null,
+            ]);
+            $user->save();
+        });
 
     //    $admins = User::role('admin')->pluck('id');
     //
