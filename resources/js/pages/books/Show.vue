@@ -32,7 +32,7 @@ const props = defineProps({
 })
 
 const { updateSingleSetting, getSingleSetting } = useUserSettings()
-const { authed, authedUser } = useAuthedUser()
+const { authed } = useAuthedUser()
 
 const data = [
     {
@@ -89,9 +89,8 @@ defineOptions({
             <div class="flex w-full order-1 md:w-32 lg:w-44 xl:w-56 flex-col">
                 <div class="flex w-full flex-col">
                     <div class="flex gap-4">
-                        <div class="w-24 sm:w-32 md:w-full">
-                            <UpdateBookCover
-                                :book>
+                        <div class="w-28 sm:w-32 md:w-full">
+                            <UpdateBookCover :book>
                                 <div class="aspect-book overflow-hidden rounded-md">
                                     <Image
                                         width="250"
