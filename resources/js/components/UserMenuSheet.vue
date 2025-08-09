@@ -8,6 +8,7 @@ import { Link, router } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAuthedUser } from '@/composables/useAuthedUser'
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 
 interface Props {
@@ -77,7 +78,7 @@ router.on('navigate', (event) => {
                         v-for="item in items"
                         :key="item.title">
                         <div
-                            v-if="!item.if || item.if"
+                            v-if="item.if || !('if' in item)"
                             :as-child="true">
                             <component
                                 :is="item.target === '_blank' ? 'a' : Link"

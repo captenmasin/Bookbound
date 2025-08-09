@@ -12,6 +12,9 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+
+use function Illuminate\Events\queueable;
+
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Models\Contracts\FilamentUser;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -101,6 +104,15 @@ class User extends Authenticatable implements FilamentUser, HasMedia, HasPasskey
             'profile' => 'array',
             'profile.colour' => ['string', 'hex_color'],
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::updated(queueable(function (User $customer) {
+            if ($customer->hasStripeId()) {
+                $customer->syncStripeCustomerDetails();
+            }
+        }));
     }
 
     public function getBookIdentifiers(): array

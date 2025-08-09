@@ -6,6 +6,7 @@ use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Dusk\Browser;
+use Laravel\Cashier\Cashier;
 use App\Services\ISBNdbService;
 use Filament\Support\Colors\Color;
 use App\Services\GoogleBooksService;
@@ -44,6 +45,8 @@ class AppServiceProvider extends ServiceProvider
         FilamentColor::register([
             'primary' => Color::Amber,
         ]);
+
+        Cashier::calculateTaxes();
 
         Inertia::macro('prefetch', function (string|array $urls) {
             $urls = is_array($urls) ? $urls : [$urls];

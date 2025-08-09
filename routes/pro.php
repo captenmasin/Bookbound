@@ -2,16 +2,15 @@
 
 use Illuminate\Http\Request;
 
-Route::get('subscription-checkout', function (Request $request) {
+Route::get('checkout', function (Request $request) {
     return $request->user()
-        ->newSubscription('default', 'price_1RtwihEQqXeritAADeoHtRJ1')
-        ->trialDays(5)
+        ->newSubscription('default', config('subscriptions.plans.pro.key'))
         ->allowPromotionCodes()
         ->checkout([
             'success_url' => route('checkout-success'),
             'cancel_url' => route('checkout-cancel'),
         ]);
-});
+})->name('checkout');
 
 Route::get('billing', function (Request $request) {
     return $request->user()->redirectToBillingPortal(route('home'));

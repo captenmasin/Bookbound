@@ -52,7 +52,7 @@ defineProps<Props>()
                     v-for="item in items"
                     :key="item.title">
                     <DropdownMenuItem
-                        v-if="!item.if || item.if"
+                        v-if="item.if || !('if' in item)"
                         :as-child="true">
                         <component
                             :is="item.target === '_blank' ? 'a' : Link"

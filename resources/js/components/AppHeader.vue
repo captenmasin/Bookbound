@@ -12,8 +12,8 @@ import { UserPermission } from '@/enums/UserPermission'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
-import { Activity, BriefcaseBusiness, ChartLine, NotebookPen, Settings, Shield, Star } from 'lucide-vue-next'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
+import { Activity, BriefcaseBusiness, CircleArrowUp, ChartLine, NotebookPen, Settings, Shield, Star, Wallet, Sparkles } from 'lucide-vue-next'
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
@@ -63,6 +63,18 @@ const userMenuItems = ref([
         title: 'Activities',
         url: useRoute('user.activities.index'),
         icon: Activity
+    },
+    {
+        title: 'Billing',
+        url: useRoute('billing'),
+        icon: Wallet,
+        if: authedUser.value?.subscribed
+    },
+    {
+        title: 'Upgrade to Pro',
+        url: useRoute('checkout'),
+        icon: Sparkles,
+        if: !authedUser.value?.subscribed
     },
     {
         title: 'Settings',
@@ -167,7 +179,24 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                 <div
                     v-if="authed && authedUser"
                     class="flex ml-auto items-center space-x-2">
-                    Subscribed: {{ authedUser.subscribed }}
+                    <div>
+                        <div
+                            v-if="authedUser.subscribed"
+                            class="text-[10px] font-semibold font-serif bg-primary text-primary-foreground rounded-full px-2 py-px">
+                            PRO
+                        </div>
+
+                        <a
+                            v-else
+                            href="/checkout"
+                            class="font-medium hidden mr-2 text-xs xs:flex items-center gap-1 text-primary">
+                            <Icon
+                                name="Sparkles"
+                                class="size-4" />
+                            Upgrade to Pro
+                        </a>
+                    </div>
+
                     <UserMenuDropdown
                         v-if="isDesktop"
                         :user="authedUser"

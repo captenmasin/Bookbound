@@ -22,7 +22,6 @@ class UserResource extends JsonResource
             'avatar' => $this->avatar,
             'email_verified' => $this->email_verified_at !== null,
             'colour' => $this->settings()->get('profile.colour', '#000000'),
-            'subscribed' => $this->subscribed(),
         ];
     }
 
@@ -36,6 +35,8 @@ class UserResource extends JsonResource
             return $this->getAllPermissions()->pluck('name')->toArray();
         });
         $data['book_identifiers'] = $this->getBookIdentifiers();
+        $data['subscribed'] = $this->subscribed();
+        //        $data['subscribed'] = true;
 
         return $data;
     }
