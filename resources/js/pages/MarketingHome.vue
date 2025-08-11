@@ -5,7 +5,7 @@ import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import Silk from '@/components/backgrounds/Silk/Silk.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
@@ -230,13 +230,21 @@ onMounted(() => {
         hasScrolled.value = window.scrollY > scrollLimit
     })
 })
+
+watch(mobileMenuOpen, (newValue) => {
+    if (newValue) {
+        document.body.style.overflow = 'hidden'
+    } else {
+        document.body.style.overflow = ''
+    }
+})
 </script>
 
 <template>
     <div class="bg-background">
         <div
             :class="mobileMenuOpen ? 'pointer-events-auto bg-black/60 backdrop-blur-sm dark:bg-white/20 ' : 'bg-transparent backdrop-blur-none pointer-events-none'"
-            class="fixed w-full h-full z-20 left-0 top-14"
+            class="fixed w-full h-full z-30 left-0 top-14"
             @click="mobileMenuOpen = false" />
         <header
             class="fixed top-0 z-40 w-full rounded-full left-1/2 md:pt-2 -translate-x-1/2 transition-all">
@@ -282,8 +290,8 @@ onMounted(() => {
             </div>
             <div
                 id="mobile-menu"
-                :class="mobileMenuOpen ? 'block' : 'hidden'"
-                class="absolute top-full left-0 w-full border-t border-b border-sidebar-border/80 bg-background md:hidden">
+                :class="mobileMenuOpen ? 'h-[calc-size(auto,size)] opacity-100' : 'h-0 opacity-0'"
+                class="absolute top-full transition-[height,opacity] overflow-hidden left-0 w-full border-t border-b border-sidebar-border/80 bg-background md:hidden">
                 <div class="container mx-auto flex flex-col gap-2 px-4 pt-4 pb-6">
                     <a
                         v-for="link in links"
