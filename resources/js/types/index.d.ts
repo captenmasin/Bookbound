@@ -38,6 +38,9 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
     flash: {
         success?: string
         error?: string
+        warning?: string
+        info?: string
+        upgrade_success?: boolean
     }
     sidebarOpen: boolean
 };
