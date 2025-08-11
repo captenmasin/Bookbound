@@ -434,12 +434,12 @@ watch(mobileMenuOpen, (newValue) => {
                 <div class="relative">
                     <div
                         id="product-screenshots"
-                        class="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-20 pb-4"
+                        class="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-4 md:px-20 pb-4"
                         aria-label="Product showcase">
                         <div
                             v-for="screenshot in screenshots"
                             :key="screenshot.src"
-                            class="single-screenshot shrink-0 basis-full snap-center md:basis-1/2">
+                            class="single-screenshot shrink-0 basis-10/12 snap-center md:basis-1/2">
                             <div class="relative aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-xl border border-sidebar-border/80 shadow-sm">
                                 <div
                                     class="absolute inset-0 h-5 rounded-t-xl"
