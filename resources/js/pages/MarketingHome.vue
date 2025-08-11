@@ -1,8 +1,11 @@
 <script setup>
+import 'aos/dist/aos.css'
+import AOS from 'aos'
 import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
+import Silk from '@/components/backgrounds/Silk/Silk.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
 import { Button } from '@/components/ui/button/index.js'
@@ -13,6 +16,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 const page = usePage()
 const mobileMenuOpen = ref(false)
+const hasScrolled = ref(false)
 
 const { authed } = useAuthedUser()
 
@@ -207,23 +211,38 @@ function moveSliderLeft () {
         })
     }
 }
+
+onMounted(() => {
+    AOS.init({
+        once: true
+    })
+
+    hasScrolled.value = window.scrollY > 100
+
+    window.addEventListener('scroll', () => {
+        hasScrolled.value = window.scrollY > 100
+    })
+})
 </script>
 
 <template>
     <div class="bg-background">
-        <header class="sticky top-0 z-40 w-full border-b border-sidebar-border/80 bg-background/80 backdrop-blur">
-            <div class="container mx-auto flex h-16 items-center justify-between px-4">
+        <header
+            class="fixed top-0 z-40 w-full rounded-full left-1/2 pt-2 -translate-x-1/2 transition-all">
+            <div
+                :class="hasScrolled ? 'bg-background/60 backdrop-blur-sm shadow-sm' : 'bg-transparent shadow-none '"
+                class="container rounded-xl transition-all mx-auto px-2.5 flex h-14 items-center justify-between">
                 <a
                     class="flex items-center gap-2 font-semibold"
                     :href="useRoute('home')">
                     <AppLogo class="flex items-center" />
                 </a>
-                <nav class="hidden items-center gap-6 text-sm text-stone-700 md:flex">
+                <nav class="hidden items-center gap-8 text-sm md:flex">
                     <a
                         v-for="link in links"
                         :key="link.href"
                         :href="link.href"
-                        class="hover:text-stone-900">
+                        class="text-foreground hover:text-accent-foreground/75 transition-all text-sm font-medium">
                         {{ link.label }}
                     </a>
                 </nav>
@@ -251,12 +270,12 @@ function moveSliderLeft () {
                 id="mobile-menu"
                 :class="mobileMenuOpen ? 'block' : 'hidden'"
                 class="absolute top-full left-0 w-full border-t border-b border-sidebar-border/80 bg-background md:hidden">
-                <div class="container mx-auto flex flex-col gap-2 px-4 pt-4 pb-6 text-stone-800">
+                <div class="container mx-auto flex flex-col gap-2 px-4 pt-4 pb-6">
                     <a
                         v-for="link in links"
                         :key="link.href"
                         :href="link.href"
-                        class="block py-1 hover:text-stone-900"
+                        class="block py-1 text-foreground hover:text-accent-foreground/75"
                         @click="mobileMenuOpen = false"
                     >
                         {{ link.label }}
@@ -272,10 +291,21 @@ function moveSliderLeft () {
         </header>
         <main>
             <section class="relative overflow-hidden">
+                <div class="silk-container absolute z-1 opacity-10 inset-0">
+                    <Silk
+                        :speed="15"
+                        :scale="1"
+                        color="#fcfbf8"
+                        :noise-intensity="1.5"
+                        :rotation="0"
+                        class="w-full h-full"
+                    />
+                </div>
+                <div class="w-full h-36 bg-gradient-to-b from-transparent to-background absolute bottom-0 left-0 z-20" />
                 <div
                     aria-hidden="true"
                     class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]" />
-                <div class="relative container mx-auto grid items-center gap-10 px-4 pt-8 pb-16 sm:py-28 md:grid-cols-2">
+                <div class="relative z-10 container mx-auto grid items-center gap-10 px-4 pt-8 pb-16 sm:pb-28 sm:pt-40 md:grid-cols-2">
                     <div>
                         <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl/16 text-pretty font-medium">
                             Your Reading Life at a Glance
@@ -297,31 +327,35 @@ function moveSliderLeft () {
                         </div>
                     </div>
                     <div class="relative">
-                        <div class="mx-auto max-w-xl">
-                            <div class="relative -rotate-1 rounded-xl border border-sidebar-border/80 bg-white p-2 shadow-sm">
+                        <div class="mx-auto max-w-2xl">
+                            <div
+                                data-aos="zoom-in"
+                                class="relative -rotate-1 rounded-xl border border-sidebar-border/80 bg-white p-2 shadow-sm">
                                 <img
                                     src="/images/pwa/screenshots/tablet/screenshot-1.png"
                                     :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
                                     class="h-auto w-full rounded-lg"
                                 >
                                 <div
-                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-32 rotate-3 rounded-xl border border-sidebar-border/80 bg-white p-1 shadow md:block"
-                                >
+                                    data-aos="zoom-in"
+                                    data-aos-delay="200"
+                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-32 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
                                     <img
                                         src="/images/pwa/screenshots/tablet/screenshot-2.png"
                                         alt="Library view"
                                         class="rounded-lg">
                                 </div>
                                 <div
-                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-32 -rotate-6 rounded-xl border border-sidebar-border/80 bg-white p-1 shadow md:block"
-                                >
+                                    data-aos="zoom-in"
+                                    data-aos-delay="300"
+                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-32 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
                                     <img
                                         src="/images/pwa/screenshots/tablet/screenshot-3.png"
                                         alt="Book detail page"
                                         class="rounded-lg">
                                 </div>
                             </div>
-                            <div class="mt-4 text-center text-sm text-stone-500">
+                            <div class="mt-4 text-center text-sm text-secondary-foreground/50">
                                 Product UI previews
                             </div>
                         </div>
@@ -336,7 +370,7 @@ function moveSliderLeft () {
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                             Key Benefits
                         </h2>
-                        <p class="mt-2 text-stone-600">
+                        <p class="mt-2 text-secondary-foreground">
                             Everything you need to love your reading routine.
                         </p>
                     </div>
@@ -370,7 +404,7 @@ function moveSliderLeft () {
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                             See {{ page.props.app.name }} in action
                         </h2>
-                        <p class="mt-2 text-stone-600">
+                        <p class="mt-2 text-secondary-foreground">
                             Highlights from the dashboard, library, and book details.
                         </p>
                     </div>
@@ -384,16 +418,16 @@ function moveSliderLeft () {
                             v-for="screenshot in screenshots"
                             :key="screenshot.src"
                             class="single-screenshot shrink-0 basis-full snap-center md:basis-1/2">
-                            <div class="relative aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-xl border border-sidebar-border/80 bg-stone-50 shadow-sm">
+                            <div class="relative aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-xl border border-sidebar-border/80 shadow-sm">
                                 <div
-                                    class="absolute inset-0 h-5 rounded-t-xl bg-stone-200/70"
+                                    class="absolute inset-0 h-5 rounded-t-xl"
                                     aria-hidden="true" />
                                 <img
                                     :src="screenshot.src"
                                     :alt="screenshot.alt"
                                     class="absolute inset-0 h-full w-full object-cover">
                             </div>
-                            <p class="mt-3 text-center text-sm text-stone-600">
+                            <p class="mt-3 text-center text-sm text-secondary-foreground">
                                 {{ screenshot.alt }}
                             </p>
                         </div>
@@ -426,7 +460,7 @@ function moveSliderLeft () {
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                             How it works
                         </h2>
-                        <p class="mt-2 text-stone-600">
+                        <p class="mt-2 text-secondary-foreground">
                             Three simple steps to level up your reading.
                         </p>
                     </div>
@@ -461,7 +495,7 @@ function moveSliderLeft () {
                             <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                                 Loved by early readers
                             </h2>
-                            <p class="mt-2 text-stone-600">
+                            <p class="mt-2 text-secondary-foreground">
                                 A few words from our beta users.
                             </p>
                         </div>
@@ -480,7 +514,7 @@ function moveSliderLeft () {
                                             <div class="font-medium">
                                                 {{ testimonial.name }}
                                             </div>
-                                            <div class="text-sm text-stone-600">
+                                            <div class="text-sm text-secondary-foreground">
                                                 {{ testimonial.role }}
                                             </div>
                                         </div>
@@ -494,7 +528,7 @@ function moveSliderLeft () {
                                             :star-width="16"
                                             :rating="testimonial.rating" />
                                     </div>
-                                    <p class="text-stone-700">
+                                    <p class="text-secondary-foreground">
                                         {{ testimonial.feedback }}
                                     </p>
                                 </CardContent>
@@ -511,7 +545,7 @@ function moveSliderLeft () {
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                             Plans &amp; Pricing
                         </h2>
-                        <p class="mt-2 text-stone-600">
+                        <p class="mt-2 text-secondary-foreground">
                             Start free, upgrade anytime. Cancel whenever you like.
                         </p>
                     </div>
@@ -526,14 +560,14 @@ function moveSliderLeft () {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <ul class="space-y-2 text-sm text-stone-700">
+                                <ul class="space-y-2 text-sm">
                                     <li
                                         v-for="feature in freeFeatures"
                                         :key="feature.title"
                                         class="flex items-start gap-2">
                                         <Icon
                                             name="Check"
-                                            class="size-4 text-primary" />
+                                            class="size-4 mt-0.5 text-primary" />
                                         {{ feature.title }}
                                     </li>
                                 </ul>
@@ -556,21 +590,21 @@ function moveSliderLeft () {
                                 </CardTitle>
                                 <CardDescription> Unlimited books, advanced analytics, and priority support. </CardDescription>
                                 <div class="mt-2 text-3xl font-semibold">
-                                    $4.99<span class="text-base font-normal text-stone-600">/mo</span>
+                                    $4.99<span class="text-base font-normal text-secondary-foreground">/mo</span>
                                 </div>
-                                <div class="text-sm text-stone-600">
+                                <div class="text-sm text-secondary-foreground">
                                     Save with annual billing.
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <ul class="space-y-2 text-sm text-stone-700">
+                                <ul class="space-y-2 text-sm text-secondary-foreground">
                                     <li
                                         v-for="feature in proFeatures"
                                         :key="feature.title"
                                         class="flex items-start gap-2">
                                         <Icon
                                             name="Check"
-                                            class="size-4 text-primary" />
+                                            class="size-4 mt-0.5 text-primary" />
                                         {{ feature.title }}
                                     </li>
                                 </ul>
@@ -596,7 +630,7 @@ function moveSliderLeft () {
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                             Frequently asked questions
                         </h2>
-                        <p class="mt-2 text-stone-600">
+                        <p class="mt-2 text-secondary-foreground">
                             Answers to common questions.
                         </p>
                     </div>
@@ -624,7 +658,7 @@ function moveSliderLeft () {
                     <div class="font-serif text-xl">
                         {{ page.props.app.name }}
                     </div>
-                    <p class="mt-2 max-w-sm text-sm text-stone-600">
+                    <p class="mt-2 max-w-sm text-sm text-secondary-foreground">
                         Track your reading, organize your library, and share what you love.
                     </p>
                 </div>
@@ -633,7 +667,7 @@ function moveSliderLeft () {
                         <div class="mb-2 font-medium">
                             Quick Links
                         </div>
-                        <ul class="space-y-2 text-stone-700">
+                        <ul class="space-y-2 text-secondary-foreground">
                             <li
                                 v-for="link in links"
                                 :key="link.href">
@@ -647,14 +681,14 @@ function moveSliderLeft () {
                         <div class="mb-2 font-medium">
                             Legal
                         </div>
-                        <ul class="space-y-2 text-stone-700">
+                        <ul class="space-y-2 text-secondary-foreground">
                             <li><a :href="useRoute('privacy-policy')">Privacy Policy</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="container mx-auto">
-                <div class="text-sm text-stone-600">
+            <div class="container px-4 mx-auto">
+                <div class="text-xs text-secondary-foreground">
                     <div>© {{ new Date().getFullYear() }} {{ page.props.app.name }} by SpacemanCodes LTD. All rights reserved.</div>
                 </div>
             </div>
