@@ -291,7 +291,7 @@ watch(mobileMenuOpen, (newValue) => {
             <div
                 id="mobile-menu"
                 :class="mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
-                class="absolute top-full transition-opacity overflow-hidden left-0 w-full border-t border-b border-sidebar-border/80 bg-background md:hidden">
+                class="absolute top-full overflow-hidden left-0 w-full border-t border-b border-sidebar-border/80 bg-background md:hidden">
                 <div class="container mx-auto flex flex-col gap-2 px-4 pt-4 pb-6">
                     <a
                         v-for="link in links"
