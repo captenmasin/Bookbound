@@ -24,23 +24,23 @@ const { authed } = useAuthedUser()
 
 const screenshots = [
     {
-        src: '/images/home.png',
+        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
         alt: 'Home dashboard with stats and activity'
     },
     {
-        src: '/images/library.png',
+        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
         alt: 'Library view with list of books'
     },
     {
-        src: '/images/search.png',
+        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
         alt: 'Add Book search results and filters'
     },
     {
-        src: '/images/book.png',
+        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
         alt: 'Book detail page with notes and reviews'
     },
     {
-        src: '/images/scan.png',
+        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
         alt: 'Barcode scanning interface'
     }
 ]
@@ -239,7 +239,7 @@ onMounted(() => {
             <div
                 :class="[
                     mobileMenuOpen ? 'bg-background md:bg-background' :
-                    (hasScrolled ? 'bg-background/75 md:bg-background/75 backdrop-blur-sm shadow-sm' : 'bg-transparent shadow-none ')
+                    (hasScrolled ? 'bg-white/75 md:bg-white/75 backdrop-blur-sm shadow-sm' : 'bg-transparent shadow-none ')
                 ]"
                 class="container md:rounded-xl transition-all mx-auto px-2.5 flex h-14 items-center justify-between">
                 <a
@@ -315,7 +315,7 @@ onMounted(() => {
                 <div
                     aria-hidden="true"
                     class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]" />
-                <div class="relative z-10 container mx-auto grid items-center gap-10 px-4 pt-20 pb-16 sm:pb-28 sm:pt-40 md:grid-cols-2">
+                <div class="relative z-10 container mx-auto grid items-center gap-10 px-4 pt-20 pb-16 sm:pb-28 sm:pt-48 md:grid-cols-2">
                     <div>
                         <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl/16 text-pretty font-medium">
                             Your Reading Life at a Glance
@@ -349,7 +349,7 @@ onMounted(() => {
                                 <div
                                     data-aos="zoom-in"
                                     data-aos-delay="200"
-                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-32 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
+                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-40 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
                                     <img
                                         src="/images/pwa/screenshots/tablet/screenshot-2.png"
                                         alt="Library view"
@@ -358,7 +358,7 @@ onMounted(() => {
                                 <div
                                     data-aos="zoom-in"
                                     data-aos-delay="300"
-                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-32 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
+                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-40 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
                                     <img
                                         src="/images/pwa/screenshots/tablet/screenshot-3.png"
                                         alt="Book detail page"
@@ -705,3 +705,9 @@ onMounted(() => {
         </footer>
     </div>
 </template>
+
+<style scoped>
+html, body, *{
+    scroll-behavior: smooth !important;
+}
+</style>
