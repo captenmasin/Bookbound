@@ -71,6 +71,7 @@ class HandleInertiaRequests extends Middleware
                 'info' => fn () => $request->hasSession() ? $request->session()->get('info') : null,
                 'success' => fn () => $request->hasSession() ? $request->session()->get('success') : null,
                 'error' => fn () => $request->hasSession() ? $request->session()->get('error') : null,
+                'upgrade_success' => fn () => $request->hasSession() ? $request->session()->get('upgrade_success') : null,
             ]),
 
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',

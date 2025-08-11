@@ -5,17 +5,19 @@ import TagCloud from '@/components/TagCloud.vue'
 import useEmitter from '@/composables/useEmitter'
 import BookCard from '@/components/books/BookCard.vue'
 import SingleActivity from '@/components/SingleActivity.vue'
+import JoinProTrigger from '@/components/JoinProTrigger.vue'
 import { Tag } from '@/types/tag'
 import { Book } from '@/types/book'
 import { Author } from '@/types/author'
 import { Activity } from '@/types/activity'
-import { Link, router } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
-import { computed, onMounted, PropType } from 'vue'
 import { UserBookStatus } from '@/enums/UserBookStatus'
+import { Link, router, usePage } from '@inertiajs/vue3'
+import { computed, onMounted, PropType, ref } from 'vue'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 type Stats = {
     booksInLibrary: number;
@@ -48,15 +50,33 @@ const props = defineProps({
     }
 })
 
+const page = usePage()
 const { authedUser } = useAuthedUser()
+const hasUpgraded = ref(false)
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
 const mdAndSmaller = breakpoints.smallerOrEqual('md')
 
 const actions = [
-    { name: 'View your library', smallName: 'Your library', icon: 'LibraryBig', url: useRoute('user.books.index') },
-    { name: 'Find a new book', smallName: 'Find book', icon: 'Search', url: useRoute('books.search') },
-    { name: 'Scan a barcode', smallName: 'Scan barcode', icon: 'ScanBarcode', url: useRoute('books.scan'), mobileOnly: true }
+    {
+        name: 'View your library',
+        smallName: 'Your library',
+        icon: 'LibraryBig',
+        url: useRoute('user.books.index')
+    },
+    {
+        name: 'Find a new book',
+        smallName: 'Find book',
+        icon: 'Search',
+        url: useRoute('books.search')
+    },
+    {
+        name: 'Scan a barcode',
+        smallName: 'Scan barcode',
+        icon: 'ScanBarcode',
+        url: useRoute('books.scan'),
+        mobileOnly: true
+    }
 ]
 
 const stats = [
@@ -105,17 +125,13 @@ const firstName = computed(() => {
 })
 
 onMounted(() => {
-    router.prefetch(
-        useRoute('user.books.index'),
-        { method: 'get' },
-        { cacheFor: '5m' }
-    )
+    router.prefetch(useRoute('user.books.index'), { method: 'get' }, { cacheFor: '5m' })
 
-    router.prefetch(
-        useRoute('books.search'),
-        { method: 'get' },
-        { cacheFor: '5m' }
-    )
+    router.prefetch(useRoute('books.search'), { method: 'get' }, { cacheFor: '5m' })
+
+    if (page.props.flash?.upgrade_success) {
+        hasUpgraded.value = true
+    }
 })
 
 defineOptions({ layout: AppLayout })
@@ -123,7 +139,26 @@ defineOptions({ layout: AppLayout })
 
 <template>
     <div>
-        <header class="mt-0 md:mt-6 mb-4 flex w-full gap-2.5 md:items-center justify-between flex-col xs:flex-row">
+        <Alert
+            v-if="hasUpgraded"
+            class="relative mb-6 md:mb-0">
+            <Icon
+                name="Rocket"
+                class="mt-1" />
+            <AlertTitle class="font-serif text-xl text-primary">
+                Welcome to {{ page.props.app.name }} Pro!
+            </AlertTitle>
+            <AlertDescription> You've successfully upgraded to Pro. Enjoy all the premium features and benefits. </AlertDescription>
+            <button
+                class="absolute top-3 right-4 size-4 cursor-pointer text-muted-foreground hover:text-primary"
+                @click="hasUpgraded = false">
+                <Icon
+                    name="X"
+                    class="size-4" />
+            </button>
+        </Alert>
+
+        <header class="mt-0 mb-4 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-6 md:items-center">
             <div
                 v-if="authedUser"
                 class="flex flex-col">
@@ -144,7 +179,8 @@ defineOptions({ layout: AppLayout })
                         :size="mdAndSmaller ? 'icon' : 'sm'"
                         :as="Link"
                         :href="action.url"
-                        class="md:text-primary">
+                        class="md:text-primary"
+                    >
                         <Icon
                             :name="action.icon"
                             class="size-4" />
@@ -172,7 +208,7 @@ defineOptions({ layout: AppLayout })
                     class="relative flex items-center justify-between rounded-md border-0 border-accent bg-secondary px-3 py-2 transition-all hover:bg-primary/20 md:p-4"
                 >
                     <div>
-                        <p class="text-sm text-current/60 pr-5">
+                        <p class="pr-5 text-sm text-current/60">
                             {{ stat.name }}
                         </p>
                         <p class="text-xl font-semibold md:text-2xl">
@@ -187,7 +223,7 @@ defineOptions({ layout: AppLayout })
             </div>
         </section>
 
-        <div class="mt-4 flex flex-col items-start gap-6 md:gap-8 md:mt-12 md:flex-row">
+        <div class="mt-4 flex flex-col items-start gap-6 md:mt-12 md:flex-row md:gap-8">
             <div class="flex w-full flex-col md:mt-0 md:w-auto md:flex-1">
                 <section>
                     <h2
@@ -219,7 +255,7 @@ defineOptions({ layout: AppLayout })
 
                     <article
                         v-else
-                        class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 md:py-12 text-center text-sm text-muted-foreground"
+                        class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground md:py-12"
                     >
                         <Icon
                             name="BookOpen"
@@ -254,7 +290,7 @@ defineOptions({ layout: AppLayout })
                             </Link>
                         </Button>
                     </div>
-                    <ul class="divide-y divide-muted rounded-xl dark:divide-zinc-950 bg-white dark:bg-zinc-900 shadow">
+                    <ul class="divide-y divide-muted rounded-xl bg-white shadow dark:divide-zinc-950 dark:bg-zinc-900">
                         <SingleActivity
                             v-for="activity in activities"
                             :key="activity.id"
@@ -290,7 +326,8 @@ defineOptions({ layout: AppLayout })
                             class="flex items-center gap-2 py-2">
                             <Link
                                 class="text-sm text-accent-foreground hover:text-primary"
-                                :href="useRoute('user.books.index', { author: author.slug })">
+                                :href="useRoute('user.books.index', { author: author.slug })"
+                            >
                                 {{ author.name }}
                             </Link>
                         </li>

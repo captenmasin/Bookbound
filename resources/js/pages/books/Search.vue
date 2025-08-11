@@ -202,7 +202,7 @@ defineOptions({
                 </div>
 
                 <div
-                    v-if="!hasSearch && !authedUser?.subscription.can_add_book || true"
+                    v-if="!hasSearch && !authedUser?.subscription.can_add_book"
                     class="mb-4">
                     <Alert
                         class="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">

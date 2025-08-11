@@ -16,7 +16,10 @@ Route::get('billing', function (Request $request) {
     return $request->user()->redirectToBillingPortal(route('home'));
 })->middleware(['auth'])->name('billing');
 
-Route::get('checkout/success', fn () => dd('Success'))->name('checkout-success');
+Route::get('checkout/success',
+    fn () => redirect()->route('home')->with('upgrade_success', true)
+)->name('checkout-success');
+
 Route::get('checkout/cancel',
-    fn () => redirect()->route('home')->with('info', __('Your subscription was not completed.'))
+    fn () => redirect()->route('home')->with('info', 'Your subscription was not completed.')
 )->name('checkout-cancel');
