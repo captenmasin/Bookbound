@@ -278,7 +278,7 @@ watch(mobileMenuOpen, (newValue) => {
                 </div>
                 <Button
                     class="md:hidden"
-                    variant="secondary"
+                    variant="outline"
                     size="icon"
                     aria-expanded="false"
                     aria-controls="mobile-menu"
