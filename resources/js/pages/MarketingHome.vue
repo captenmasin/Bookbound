@@ -16,7 +16,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card/index.js'
 
 const page = usePage()
-const mobileMenuOpen = ref(false)
+const mobileMenuOpen = ref(true)
 const hasScrolled = ref(false)
 const isDesktop = useMediaQuery('(min-width: 768px)')
 
@@ -234,6 +234,10 @@ onMounted(() => {
 
 <template>
     <div class="bg-background">
+        <div
+            :class="mobileMenuOpen ? 'pointer-events-auto bg-black/60 backdrop-blur-sm dark:bg-white/20 ' : 'bg-transparent backdrop-blur-none pointer-events-none'"
+            class="fixed w-full h-full z-20 left-0 top-14"
+            @click="mobileMenuOpen = false" />
         <header
             class="fixed top-0 z-40 w-full rounded-full left-1/2 md:pt-2 -translate-x-1/2 transition-all">
             <div
