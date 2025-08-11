@@ -6,6 +6,7 @@ import AppLogo from '@/components/AppLogo.vue'
 import Silk from '@/components/backgrounds/Silk/Silk.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
 import { onMounted, ref } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
 import { Button } from '@/components/ui/button/index.js'
@@ -17,6 +18,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 const page = usePage()
 const mobileMenuOpen = ref(false)
 const hasScrolled = ref(false)
+const isDesktop = useMediaQuery('(min-width: 768px)')
 
 const { authed } = useAuthedUser()
 
@@ -217,10 +219,15 @@ onMounted(() => {
         once: true
     })
 
-    hasScrolled.value = window.scrollY > 100
+    let scrollLimit = 20
+    if (isDesktop.value) {
+        scrollLimit = 100
+    }
+
+    hasScrolled.value = window.scrollY > scrollLimit
 
     window.addEventListener('scroll', () => {
-        hasScrolled.value = window.scrollY > 100
+        hasScrolled.value = window.scrollY > scrollLimit
     })
 })
 </script>
@@ -228,10 +235,13 @@ onMounted(() => {
 <template>
     <div class="bg-background">
         <header
-            class="fixed top-0 z-40 w-full rounded-full left-1/2 pt-2 -translate-x-1/2 transition-all">
+            class="fixed top-0 z-40 w-full rounded-full left-1/2 md:pt-2 -translate-x-1/2 transition-all">
             <div
-                :class="hasScrolled ? 'bg-background/60 backdrop-blur-sm shadow-sm' : 'bg-transparent shadow-none '"
-                class="container rounded-xl transition-all mx-auto px-2.5 flex h-14 items-center justify-between">
+                :class="[
+                    mobileMenuOpen ? 'bg-background md:bg-background' :
+                    (hasScrolled ? 'bg-background/75 md:bg-background/75 backdrop-blur-sm shadow-sm' : 'bg-transparent shadow-none ')
+                ]"
+                class="container md:rounded-xl transition-all mx-auto px-2.5 flex h-14 items-center justify-between">
                 <a
                     class="flex items-center gap-2 font-semibold"
                     :href="useRoute('home')">
@@ -305,7 +315,7 @@ onMounted(() => {
                 <div
                     aria-hidden="true"
                     class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]" />
-                <div class="relative z-10 container mx-auto grid items-center gap-10 px-4 pt-8 pb-16 sm:pb-28 sm:pt-40 md:grid-cols-2">
+                <div class="relative z-10 container mx-auto grid items-center gap-10 px-4 pt-20 pb-16 sm:pb-28 sm:pt-40 md:grid-cols-2">
                     <div>
                         <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl/16 text-pretty font-medium">
                             Your Reading Life at a Glance
