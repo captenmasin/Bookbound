@@ -257,7 +257,9 @@ watch(mobileMenuOpen, (newValue) => {
                 <a
                     class="flex items-center gap-2 font-semibold"
                     :href="useRoute('home')">
-                    <AppLogo class="flex items-center" />
+                    <AppLogo
+                        logo-border-color="border-primary/20"
+                        class="flex items-center" />
                 </a>
                 <nav class="hidden items-center gap-8 text-sm md:flex">
                     <a

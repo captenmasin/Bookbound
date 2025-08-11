@@ -12,6 +12,10 @@ defineProps({
     textSize: {
         type: String,
         default: 'text-lg'
+    },
+    logoBorderColor: {
+        type: String,
+        default: 'border-primary/20'
     }
 })
 </script>
@@ -21,7 +25,9 @@ defineProps({
         <div
             class="aspect-square items-center justify-center"
             :class="logoSize">
-            <AppLogoIcon class="rounded-lg fill-current text-primary border border-secondary size-full dark:text-white" />
+            <AppLogoIcon
+                :class="logoBorderColor"
+                class="rounded-lg fill-current text-primary border size-full dark:text-white" />
         </div>
         <div class="ml-2 grid relative flex-1 flex-col gap-0 text-left text-sm text-primary">
             <span
