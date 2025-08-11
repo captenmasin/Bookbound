@@ -24,23 +24,23 @@ const { authed } = useAuthedUser()
 
 const screenshots = [
     {
-        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
+        src: 'https://placehold.co/600x400/EEE/31343C',
         alt: 'Home dashboard with stats and activity'
     },
     {
-        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
+        src: 'https://placehold.co/600x400/EEE/31343C',
         alt: 'Library view with list of books'
     },
     {
-        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
+        src: 'https://placehold.co/600x400/EEE/31343C',
         alt: 'Add Book search results and filters'
     },
     {
-        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
+        src: 'https://placehold.co/600x400/EEE/31343C',
         alt: 'Book detail page with notes and reviews'
     },
     {
-        src: '/images/pwa/screenshots/tablet/screenshot-3.png',
+        src: 'https://placehold.co/600x400/EEE/31343C',
         alt: 'Barcode scanning interface'
     }
 ]
@@ -114,19 +114,19 @@ const testimonials = [
         name: 'Emma',
         role: 'Avid Reader',
         rating: 5,
-        feedback: `“${page.props.app.name} made organizing my bookshelf effortless. I actually finish more books now.”`
+        feedback: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod.'
     },
     {
         name: 'Marcus',
         role: 'Non-fiction Fan',
         rating: 5,
-        feedback: '“The stats help me see my reading streaks and top genres. Super motivating!”'
+        feedback: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod.'
     },
     {
         name: 'Lena',
         role: 'Librarian',
         rating: 4,
-        feedback: '“Scanning barcodes is lightning fast. Importing my library took minutes.”'
+        feedback: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod.'
     }
 ]
 
@@ -342,7 +342,7 @@ onMounted(() => {
                                 data-aos="zoom-in"
                                 class="relative -rotate-1 rounded-xl border border-sidebar-border/80 bg-white p-2 shadow-sm">
                                 <img
-                                    src="/images/pwa/screenshots/tablet/screenshot-1.png"
+                                    src="https://placehold.co/600x400/EEE/31343C"
                                     :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
                                     class="h-auto w-full rounded-lg"
                                 >
@@ -351,18 +351,18 @@ onMounted(() => {
                                     data-aos-delay="200"
                                     class="pointer-events-none absolute -top-6 -right-6 hidden w-40 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
                                     <img
-                                        src="/images/pwa/screenshots/tablet/screenshot-2.png"
+                                        src="https://placehold.co/600x400/EEE/31343C"
                                         alt="Library view"
-                                        class="rounded-lg">
+                                        class="rounded">
                                 </div>
                                 <div
                                     data-aos="zoom-in"
                                     data-aos-delay="300"
                                     class="pointer-events-none absolute -bottom-6 -left-6 hidden w-40 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
                                     <img
-                                        src="/images/pwa/screenshots/tablet/screenshot-3.png"
+                                        src="https://placehold.co/600x400/EEE/31343C"
                                         alt="Book detail page"
-                                        class="rounded-lg">
+                                        class="rounded">
                                 </div>
                             </div>
                             <div class="mt-4 text-center text-sm text-secondary-foreground/50">
