@@ -1,20 +1,32 @@
-<script setup>
+<script setup lang="ts">
 import 'aos/dist/aos.css'
 import AOS from 'aos'
 import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import Silk from '@/components/backgrounds/Silk/Silk.vue'
-import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
 import SplitText from '@/components/textanimations/SplitText/SplitText.vue'
-import { useMediaQuery } from '@vueuse/core'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { useCloned, useMediaQuery } from '@vueuse/core'
 import { Button } from '@/components/ui/button/index.js'
-import { getInitials } from '@/composables/useInitials.js'
 import { useAuthedUser } from '@/composables/useAuthedUser.js'
+import { nextTick, onMounted, PropType, ref, watch } from 'vue'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card/index.js'
+
+const props = defineProps({
+    price: {
+        type: String,
+        default: ''
+    },
+    interval: {
+        type: String,
+        default: ''
+    },
+    freeLimits: {
+        type: Object as PropType<{ max_books: number }>
+    }
+})
 
 const page = usePage()
 const mobileMenuOpen = ref(false)
@@ -93,100 +105,102 @@ const keyBenefits = [
         description: 'See your top subjects and authors – find out what you really love.',
         icon: 'ChartLine',
         pro: false
-    },
-    {
-        title: 'TODO',
-        description: 'TODO',
-        icon: 'ChartLine',
-        pro: true
     }
+    // {
+    //     title: 'TODO',
+    //     description: 'TODO',
+    //     icon: 'ChartLine',
+    //     pro: true
+    // }
 ]
 
 const howItWorksSteps = [
     {
         title: 'Add Books',
         description: 'Search or scan barcodes to build your library fast.',
-        icon: 'ScanBarcode'
+        icon: 'ScanBarcode',
+        image: 'https://placehold.co/600x400/EEE/31343C'
     },
     {
         title: 'Sort & Filter',
         description: 'Slice your collection any way you want: by author, subject, colour, or status.',
-        icon: 'ArrowDownNarrowWide'
+        icon: 'ArrowUpNarrowWide',
+        image: 'https://placehold.co/600x400/EEE/31343C'
     },
     {
         title: 'Explore Your Books',
         description: ' Open any book to see its description, your notes, your review, and reviews from other readers.',
-        icon: 'BookOpen'
+        icon: 'BookOpen',
+        image: 'https://placehold.co/600x400/EEE/31343C'
     }
-
 ]
 
 const testimonials = [
     {
-        name: 'Emma',
-        role: 'Avid Reader',
+        name: 'Future Me',
         rating: 5,
-        feedback: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod.'
+        feedback: 'Finally, I know which books I’ve lent out… and to who!'
     },
     {
-        name: 'Marcus',
-        role: 'Non-fiction Fan',
+        name: 'Probably You',
         rating: 5,
-        feedback: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod.'
+        feedback: 'I’m blaming this app for my overflowing TBR list.'
     },
     {
-        name: 'Lena',
-        role: 'Librarian',
-        rating: 4,
-        feedback: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod.'
+        name: 'Someone Clever',
+        rating: 5,
+        feedback: 'It’s like a personal librarian, but it doesn’t shush me.'
     }
 ]
 
-const freeFeatures = [
+const features = ref([
     {
-        title: 'Personal Library',
-        description: 'Track your reading journey with a personal library that grows with you.',
-        icon: 'LibraryBig'
+        title: 'Up to ' + props.freeLimits.max_books + ' Books',
+        enabled: true,
+        bold: false
     },
     {
-        title: 'Barcode Scanning',
-        description: 'Add books instantly by scanning barcodes or searching by title/author.',
-        icon: 'ScanBarcode'
+        title: 'Scan Barcodes',
+        enabled: true,
+        bold: false
     },
     {
-        title: 'Reading Stats',
-        description: 'Get insights into your reading habits and progress over time.',
-        icon: 'ChartLine'
+        title: 'Search and Filter your Library',
+        enabled: true,
+        bold: false
     },
     {
-        title: 'Social Sharing',
-        description: 'Share your favorite reads and discover new books through friends.',
-        icon: 'Share2'
-    }
-]
-
-const proFeatures = [
-    {
-        title: 'Unlimited Books',
-        description: 'No limits on the number of books you can track.',
-        icon: 'LibraryBig'
+        title: 'Preview Book Details',
+        enabled: true,
+        bold: false
     },
     {
-        title: 'Advanced Analytics',
-        description: 'Detailed insights into your reading patterns and preferences.',
-        icon: 'ChartLine'
+        title: 'Track Book Status',
+        enabled: true,
+        bold: false
+    },
+    {
+        title: 'Review and Rate Books',
+        enabled: true,
+        bold: false
     },
     {
         title: 'Private Notes',
-        description: 'Keep personal notes and reviews for each book.',
-        icon: 'Note'
+        enabled: false,
+        bold: false
     },
     {
-        title: 'Priority Support',
-        description: 'Get faster responses and dedicated help from our support team.',
-        icon: 'Support'
+        title: 'Custom Book Covers',
+        enabled: false,
+        bold: false
     }
-]
+])
+
+const { cloned } = useCloned(features)
+const proFeatures = cloned
+
+proFeatures.value[0].title = 'Unlimited Books'
+proFeatures.value[0].bold = true
 
 const faqs = [
     {
@@ -257,17 +271,25 @@ watch(mobileMenuOpen, (newValue) => {
 <template>
     <div class="bg-background">
         <div
-            :class="mobileMenuOpen ? 'pointer-events-auto bg-black/60 backdrop-blur-sm dark:bg-white/20 ' : 'bg-transparent backdrop-blur-none pointer-events-none'"
-            class="fixed w-full h-full z-30 left-0 top-14"
-            @click="mobileMenuOpen = false" />
-        <header
-            class="fixed top-0 z-40 w-full rounded-full left-1/2 md:pt-2 -translate-x-1/2 transition-all">
+            :class="
+                mobileMenuOpen
+                    ? 'pointer-events-auto bg-black/60 backdrop-blur-sm dark:bg-white/20'
+                    : 'pointer-events-none bg-transparent backdrop-blur-none'
+            "
+            class="fixed top-14 left-0 z-30 h-full w-full"
+            @click="mobileMenuOpen = false"
+        />
+        <header class="fixed top-0 left-1/2 z-40 w-full -translate-x-1/2 rounded-full transition-all md:pt-2">
             <div
                 :class="[
-                    mobileMenuOpen ? 'bg-background md:bg-background' :
-                    (hasScrolled ? 'bg-white/75 md:bg-white/75 backdrop-blur-sm shadow-sm' : 'bg-transparent shadow-none ')
+                    mobileMenuOpen
+                        ? 'bg-background md:bg-background'
+                        : hasScrolled
+                            ? 'bg-white/75 shadow-sm backdrop-blur-sm md:bg-white/75'
+                            : 'bg-transparent shadow-none',
                 ]"
-                class="container md:rounded-xl transition-all mx-auto px-2.5 flex h-14 items-center justify-between">
+                class="container mx-auto flex h-14 items-center justify-between px-2.5 transition-all md:rounded-xl"
+            >
                 <a
                     class="flex items-center gap-2 font-semibold"
                     :href="useRoute('dashboard')">
@@ -280,7 +302,8 @@ watch(mobileMenuOpen, (newValue) => {
                         v-for="link in links"
                         :key="link.href"
                         :href="link.href"
-                        class="text-foreground hover:text-accent-foreground/75 transition-all text-sm font-medium">
+                        class="text-sm font-medium text-foreground transition-all hover:text-accent-foreground/75"
+                    >
                         {{ link.label }}
                     </a>
                 </nav>
@@ -308,8 +331,9 @@ watch(mobileMenuOpen, (newValue) => {
             </div>
             <div
                 id="mobile-menu"
-                :class="mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
-                class="absolute top-full overflow-hidden left-0 w-full border-t border-b border-sidebar-border/80 bg-background md:hidden">
+                :class="mobileMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'"
+                class="absolute top-full left-0 w-full overflow-hidden border-t border-b border-sidebar-border/80 bg-background md:hidden"
+            >
                 <div class="container mx-auto flex flex-col gap-2 px-4 pt-4 pb-6">
                     <a
                         v-for="link in links"
@@ -333,22 +357,22 @@ watch(mobileMenuOpen, (newValue) => {
         </header>
         <main>
             <section class="relative overflow-hidden">
-                <div class="silk-container absolute z-1 opacity-10 inset-0">
+                <div class="silk-container absolute inset-0 z-1 opacity-10">
                     <Silk
                         :speed="15"
                         :scale="1"
                         color="#ffffff"
                         :noise-intensity="5"
                         :rotation="0"
-                        class="w-full h-full"
-                    />
+                        class="h-full w-full" />
                 </div>
-                <div class="w-full h-36 bg-gradient-to-b from-transparent to-background absolute bottom-0 left-0 z-20" />
+                <div class="absolute bottom-0 left-0 z-20 h-36 w-full bg-gradient-to-b from-transparent to-background" />
                 <div
                     aria-hidden="true"
-                    class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]" />
-                <div class="relative z-10 container mx-auto grid items-center gap-10 px-4 pt-20 pb-16 sm:pb-28 sm:pt-48 md:grid-cols-2">
-                    <div>
+                    class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]"
+                />
+                <div class="relative z-10 container mx-auto grid items-center gap-10 px-4 pt-20 pb-16 sm:pt-48 sm:pb-28 md:grid-cols-2">
+                    <div class="md:pr-24">
                         <SplitText
                             text="Your Reading Life at a Glance"
                             class-name="font-serif text-4xl sm:text-5xl md:text-6xl/16 text-pretty font-medium"
@@ -399,7 +423,8 @@ watch(mobileMenuOpen, (newValue) => {
                                 <div
                                     data-aos="zoom-in"
                                     data-aos-delay="200"
-                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-40 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
+                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-40 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block"
+                                >
                                     <img
                                         loading="lazy"
                                         src="https://placehold.co/600x400/EEE/31343C"
@@ -409,7 +434,8 @@ watch(mobileMenuOpen, (newValue) => {
                                 <div
                                     data-aos="zoom-in"
                                     data-aos-delay="300"
-                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-40 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
+                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-40 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block"
+                                >
                                     <img
                                         loading="lazy"
                                         src="https://placehold.co/600x400/EEE/31343C"
@@ -425,40 +451,40 @@ watch(mobileMenuOpen, (newValue) => {
                 </div>
             </section>
             <section
-                id="benefits"
+                id="how-it-works"
                 class="container mx-auto px-4 py-16 sm:py-20">
                 <div>
                     <div class="mb-8 sm:mb-10">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-                            Why You’ll Love It
+                            How it works
                         </h2>
                         <p class="mt-2 text-secondary-foreground">
-                            Everything you need to love your reading routine.
+                            Three simple steps to level up your reading.
                         </p>
                     </div>
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div class="grid gap-4 md:grid-cols-3">
                         <Card
-                            v-for="benefit in keyBenefits"
-                            :key="benefit.title"
-                            class="bg-white relative">
-                            <div
-                                v-if="benefit.pro"
-                                class="absolute top-3 right-3 rounded-full bg-primary px-2 py-1 text-xs font-medium text-white">
-                                Pro Feature
-                            </div>
+                            v-for="step in howItWorksSteps"
+                            :key="step.title"
+                            class="bg-white">
                             <CardHeader>
                                 <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
                                     <Icon
-                                        :name="benefit.icon"
+                                        :name="step.icon"
                                         class="h-5 w-5" />
                                 </div>
                                 <CardTitle class="mt-2">
-                                    {{ benefit.title }}
+                                    {{ step.title }}
                                 </CardTitle>
                                 <CardDescription class="text-pretty">
-                                    {{ benefit.description }}
+                                    {{ step.description }}
                                 </CardDescription>
                             </CardHeader>
+                            <img
+                                loading="lazy"
+                                :src="step.image"
+                                :alt="`${step.title} screenshot`"
+                                class="mt-auto w-full rounded-lg">
                         </Card>
                     </div>
                 </div>
@@ -479,12 +505,14 @@ watch(mobileMenuOpen, (newValue) => {
                 <div class="relative">
                     <div
                         id="product-screenshots"
-                        class="flex snap-x snap-mandatory gap-10 overflow-x-auto scroll-smooth px-4 md:px-28 pb-4"
-                        aria-label="Product showcase">
+                        class="flex snap-x snap-mandatory gap-10 overflow-x-auto scroll-smooth px-4 pb-4 md:px-28"
+                        aria-label="Product showcase"
+                    >
                         <div
                             v-for="screenshot in screenshots"
                             :key="screenshot.src"
-                            class="single-screenshot shrink-0 basis-10/12 snap-center md:basis-1/2">
+                            class="single-screenshot shrink-0 basis-10/12 snap-center md:basis-1/2"
+                        >
                             <div class="relative aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-xl border border-sidebar-border/80 shadow-sm">
                                 <div
                                     class="absolute inset-0 h-5 rounded-t-xl"
@@ -520,176 +548,180 @@ watch(mobileMenuOpen, (newValue) => {
                     </div>
                 </div>
             </section>
+
             <section
-                id="how-it-works"
+                id="benefits"
                 class="container mx-auto px-4 py-16 sm:py-20">
                 <div>
                     <div class="mb-8 sm:mb-10">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-                            How it works
+                            Why You’ll Love It
                         </h2>
                         <p class="mt-2 text-secondary-foreground">
-                            Three simple steps to level up your reading.
+                            Everything you need to love your reading routine.
                         </p>
                     </div>
-                    <div class="grid gap-4 md:grid-cols-3">
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <Card
-                            v-for="step in howItWorksSteps"
-                            :key="step.title"
-                            class="bg-white">
+                            v-for="benefit in keyBenefits"
+                            :key="benefit.title"
+                            class="relative bg-white">
+                            <div
+                                v-if="benefit.pro"
+                                class="absolute top-3 right-3 rounded-full bg-primary px-2 py-1 text-xs font-medium text-white">
+                                Pro Feature
+                            </div>
                             <CardHeader>
                                 <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
                                     <Icon
-                                        :name="step.icon"
+                                        :name="benefit.icon"
                                         class="h-5 w-5" />
                                 </div>
                                 <CardTitle class="mt-2">
-                                    {{ step.title }}
+                                    {{ benefit.title }}
                                 </CardTitle>
                                 <CardDescription class="text-pretty">
-                                    {{ step.description }}
+                                    {{ benefit.description }}
                                 </CardDescription>
                             </CardHeader>
                         </Card>
                     </div>
                 </div>
             </section>
+            <!--                        <section-->
+            <!--                            id="testimonials"-->
+            <!--                            class="bg-white">-->
+            <!--                <div class="container mx-auto px-4 py-16 sm:py-20">-->
+            <!--                    <div>-->
+            <!--                        <div class="mb-8 sm:mb-10">-->
+            <!--                            <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">-->
+            <!--                                Loved by early readers-->
+            <!--                                <Icon-->
+            <!--                                    name="Heart"-->
+            <!--                                    class="inline-block animate-beat size-10 -mt-6 rotate-24 fill-current text-red-500" />-->
+            <!--                            </h2>-->
+            <!--                            <p class="mt-2 text-secondary-foreground">-->
+            <!--                                A few words from our beta users.-->
+            <!--                            </p>-->
+            <!--                        </div>-->
+            <!--                        <div class="grid gap-4 md:grid-cols-3">-->
+            <!--                            <Card-->
+            <!--                                v-for="testimonial in testimonials"-->
+            <!--                                :key="testimonial.name">-->
+            <!--                                <CardHeader>-->
+            <!--                                    <div class="flex items-center gap-3">-->
+            <!--                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary">-->
+            <!--                                            <span class="text-sm font-semibold">-->
+            <!--                                                {{ getInitials(testimonial.name) }}-->
+            <!--                                            </span>-->
+            <!--                                        </div>-->
+            <!--                                        <div>-->
+            <!--                                            <div class="font-medium">-->
+            <!--                                                {{ testimonial.name }}-->
+            <!--                                            </div>-->
+            <!--                                        </div>-->
+            <!--                                    </div>-->
+            <!--                                </CardHeader>-->
+            <!--                                <CardContent>-->
+            <!--                                    <div-->
+            <!--                                        class="mb-2 -mt-4 flex items-center gap-1 text-yellow-600"-->
+            <!--                                        aria-label="5 out of 5 stars">-->
+            <!--                                        <StarRatingDisplay-->
+            <!--                                            :star-width="16"-->
+            <!--                                            :rating="testimonial.rating" />-->
+            <!--                                    </div>-->
+            <!--                                    <p class="text-secondary-foreground">-->
+            <!--                                        {{ testimonial.feedback }}-->
+            <!--                                    </p>-->
+            <!--                                </CardContent>-->
+            <!--                            </Card>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+            <!--            </section>-->
             <section
-                id="testimonials"
+                id="pricing"
                 class="bg-white">
                 <div class="container mx-auto px-4 py-16 sm:py-20">
                     <div>
                         <div class="mb-8 sm:mb-10">
                             <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-                                Loved by early readers
-                                <Icon
-                                    name="Heart"
-                                    class="inline-block animate-beat size-10 -mt-6 rotate-24 fill-current text-red-500" />
+                                Plans &amp; Pricing
                             </h2>
                             <p class="mt-2 text-secondary-foreground">
-                                A few words from our beta users.
+                                Start free, upgrade anytime. Cancel whenever you like.
                             </p>
                         </div>
-                        <div class="grid gap-4 md:grid-cols-3">
-                            <Card
-                                v-for="testimonial in testimonials"
-                                :key="testimonial.name">
+                        <div class="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
+                            <Card>
                                 <CardHeader>
-                                    <div class="flex items-center gap-3">
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary">
-                                            <span class="text-sm font-semibold">
-                                                {{ getInitials(testimonial.name) }}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium">
-                                                {{ testimonial.name }}
-                                            </div>
-                                            <div class="text-sm text-secondary-foreground">
-                                                {{ testimonial.role }}
-                                            </div>
-                                        </div>
+                                    <CardTitle class="font-serif text-xl font-semibold">
+                                        Starter
+                                    </CardTitle>
+                                    <div class="-mt-1 text-3xl font-bold">
+                                        Free<span class="text-base font-normal text-secondary-foreground"> / forever</span>
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div
-                                        class="mb-2 -mt-4 flex items-center gap-1 text-yellow-600"
-                                        aria-label="5 out of 5 stars">
-                                        <StarRatingDisplay
-                                            :star-width="16"
-                                            :rating="testimonial.rating" />
-                                    </div>
-                                    <p class="text-secondary-foreground">
-                                        {{ testimonial.feedback }}
-                                    </p>
+                                    <ul class="-mt-2 space-y-3 text-secondary-foreground">
+                                        <li
+                                            v-for="feature in features"
+                                            :key="feature.title"
+                                            :class="feature.enabled ? '' : 'text-secondary-foreground line-through opacity-50'"
+                                            class="flex items-start gap-2"
+                                        >
+                                            <Icon
+                                                :name="feature.enabled ? 'Check' : 'X'"
+                                                :class="feature.enabled ? 'text-primary' : ''"
+                                                class="mt-0.5 size-5" />
+                                            {{ feature.title }}
+                                        </li>
+                                    </ul>
                                 </CardContent>
+                                <CardFooter class="mt-auto">
+                                    <Button
+                                        class="w-full"
+                                        as-child>
+                                        <Link :href="useRoute('register')">
+                                            Start Free
+                                        </Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                            <Card class="border-primary border-2">
+                                <CardHeader>
+                                    <CardTitle class="font-serif text-xl font-semibold">
+                                        Pro
+                                    </CardTitle>
+                                    <div class="-mt-1 text-3xl font-bold">
+                                        {{ price }}<span class="text-base font-normal text-secondary-foreground"> / {{ interval }}</span>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <ul class="-mt-2 space-y-3 text-secondary-foreground">
+                                        <li
+                                            v-for="feature in proFeatures"
+                                            :key="feature.title"
+                                            :class="feature.bold ? 'font-bold' : ''"
+                                            class="flex items-start gap-2">
+                                            <Icon
+                                                name="Check"
+                                                class="mt-0.5 size-5 text-primary" />
+                                            {{ feature.title }}
+                                        </li>
+                                    </ul>
+                                </CardContent>
+                                <CardFooter class="mt-auto">
+                                    <Button
+                                        class="w-full"
+                                        as-child>
+                                        <Link :href="useRoute('register', { plan: 'pro' })">
+                                            Upgrade to Pro
+                                        </Link>
+                                    </Button>
+                                </CardFooter>
                             </Card>
                         </div>
-                    </div>
-                </div>
-            </section>
-            <section
-                id="pricing"
-                class="container mx-auto px-4 py-16 sm:py-20">
-                <div>
-                    <div class="mb-8 sm:mb-10">
-                        <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-                            Plans &amp; Pricing
-                        </h2>
-                        <p class="mt-2 text-secondary-foreground">
-                            Start free, upgrade anytime. Cancel whenever you like.
-                        </p>
-                    </div>
-                    <div class="grid max-w-4xl mx-auto gap-6 md:grid-cols-2">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>
-                                    Free
-                                </CardTitle>
-                                <CardDescription>
-                                    Basic library management for getting started.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ul class="space-y-2 text-sm text-secondary-foreground">
-                                    <li
-                                        v-for="feature in freeFeatures"
-                                        :key="feature.title"
-                                        class="flex items-start gap-2">
-                                        <Icon
-                                            name="Check"
-                                            class="size-4 mt-0.5 text-primary" />
-                                        {{ feature.title }}
-                                    </li>
-                                </ul>
-                            </CardContent>
-                            <CardFooter class="mt-auto">
-                                <Button
-                                    class="w-full"
-                                    as-child>
-                                    <Link :href="useRoute('register')">
-                                        Start Free
-                                    </Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>
-                                    Pro
-                                    <span class="rounded-full bg-secondary px-2 py-1 text-xs font-medium text-primary">Most popular</span>
-                                </CardTitle>
-                                <CardDescription> Unlimited books, advanced analytics, and priority support. </CardDescription>
-                                <div class="mt-2 text-3xl font-semibold">
-                                    $4.99<span class="text-base font-normal text-secondary-foreground">/mo</span>
-                                </div>
-                                <div class="text-sm text-secondary-foreground">
-                                    Save with annual billing.
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <ul class="space-y-2 text-sm text-secondary-foreground">
-                                    <li
-                                        v-for="feature in proFeatures"
-                                        :key="feature.title"
-                                        class="flex items-start gap-2">
-                                        <Icon
-                                            name="Check"
-                                            class="size-4 mt-0.5 text-primary" />
-                                        {{ feature.title }}
-                                    </li>
-                                </ul>
-                            </CardContent>
-                            <CardFooter class="mt-auto">
-                                <Button
-                                    class="w-full"
-                                    as-child>
-                                    <Link :href="useRoute('register', { plan: 'pro' })">
-                                        Upgrade to Pro
-                                    </Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
                     </div>
                 </div>
             </section>
@@ -710,8 +742,7 @@ watch(mobileMenuOpen, (newValue) => {
                         type="single"
                         class="w-full"
                         collapsible
-                        :default-value="'0'"
-                    >
+                        :default-value="'0'">
                         <AccordionItem
                             v-for="(item, index) in faqs"
                             :key="index"
@@ -725,7 +756,7 @@ watch(mobileMenuOpen, (newValue) => {
                 </div>
             </section>
         </main>
-        <footer class="mt-16 pb-4 border-t border-sidebar-border/80 bg-background">
+        <footer class="mt-16 border-t border-sidebar-border/80 bg-background pb-4">
             <div class="container mx-auto grid gap-10 px-4 py-10 md:grid-cols-2">
                 <div>
                     <a
@@ -739,12 +770,12 @@ watch(mobileMenuOpen, (newValue) => {
                         Track your reading, organize your library, and share what you love.
                     </p>
                 </div>
-                <div class="grid grid-cols-6 w-full  gap-6 text-sm">
+                <div class="grid w-full grid-cols-6 gap-6 text-sm">
                     <div class="col-span-4">
                         <div class="mb-2 font-medium">
                             Quick Links
                         </div>
-                        <ul class="space-y-2 columns-2 text-secondary-foreground">
+                        <ul class="columns-2 space-y-2 text-secondary-foreground">
                             <li
                                 v-for="link in links"
                                 :key="link.href">
@@ -764,7 +795,7 @@ watch(mobileMenuOpen, (newValue) => {
                     </div>
                 </div>
             </div>
-            <div class="container px-4 mx-auto">
+            <div class="container mx-auto px-4">
                 <div class="text-xs text-secondary-foreground">
                     <div>© {{ new Date().getFullYear() }} {{ page.props.app.name }} by SpacemanCodes LTD. All rights reserved.</div>
                 </div>
@@ -774,7 +805,9 @@ watch(mobileMenuOpen, (newValue) => {
 </template>
 
 <style scoped>
-html, body, *{
+html,
+body,
+* {
     scroll-behavior: smooth !important;
 }
 </style>
