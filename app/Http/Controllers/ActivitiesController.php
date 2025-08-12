@@ -18,7 +18,7 @@ class ActivitiesController extends Controller
         return Inertia::render('user/Activities', [
             'activities' => ActivityResource::collection($activities),
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('home')],
+                ['title' => 'Home', 'href' => route('dashboard')],
                 ['title' => 'Activities', 'href' => route('user.activities.index')],
             ],
         ])->withMeta([

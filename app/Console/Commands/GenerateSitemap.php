@@ -15,7 +15,7 @@ class GenerateSitemap extends Command
     {
         $sitemap = Sitemap::create()
             ->add(
-                Url::create(route('home'))
+                Url::create(route('dashboard'))
                     ->setLastModificationDate(now())
                     ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
                     ->setPriority(0.5)

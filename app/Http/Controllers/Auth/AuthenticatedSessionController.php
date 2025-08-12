@@ -41,7 +41,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $defaultRedirect = route('home');
+        $defaultRedirect = route('dashboard');
 
         if ($request->has('redirect')) {
             $redirectUrl = $request->input('redirect');

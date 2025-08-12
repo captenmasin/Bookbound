@@ -68,7 +68,7 @@ class Handler extends ExceptionHandler
                 return Inertia::render('Error', [
                     'status' => $response->status(),
                     'breadcrumbs' => [
-                        ['title' => 'Home', 'href' => route('home')],
+                        ['title' => 'Home', 'href' => route('dashboard')],
                         ['title' => 'Error '.$response->status()],
                     ],
                 ])->withMeta(['title' => 'Error '.$response->status()])

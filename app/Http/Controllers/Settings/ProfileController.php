@@ -24,7 +24,7 @@ class ProfileController extends Controller
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => $request->session()->get('status'),
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('home')],
+                ['title' => 'Home', 'href' => route('dashboard')],
                 ['title' => 'Settings', 'href' => route('user.settings.profile.edit')],
             ],
         ])->withMeta([
@@ -37,7 +37,7 @@ class ProfileController extends Controller
     {
         return Inertia::render('settings/Danger', [
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('home')],
+                ['title' => 'Home', 'href' => route('dashboard')],
                 ['title' => 'Settings', 'href' => route('user.settings.profile.edit')],
                 ['title' => 'Danger zone', 'href' => route('user.settings.profile.danger')],
             ],

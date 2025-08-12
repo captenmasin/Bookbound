@@ -45,7 +45,7 @@ const message = computed(() => {
                 <div class="mt-6">
                     <Button
                         as-child>
-                        <Link :href="useRoute('home')">
+                        <Link :href="useRoute('dashboard')">
                             <span v-if="[404, 403].includes(status)">
                                 Go home
                             </span>

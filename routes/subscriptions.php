@@ -13,13 +13,13 @@ Route::get('checkout', function (Request $request) {
 })->name('checkout');
 
 Route::get('billing', function (Request $request) {
-    return $request->user()->redirectToBillingPortal(route('home'));
+    return $request->user()->redirectToBillingPortal(route('dashboard'));
 })->middleware(['auth'])->name('billing');
 
 Route::get('checkout/success',
-    fn () => redirect()->route('home')->with('upgrade_success', true)
+    fn () => redirect()->route('dashboard')->with('upgrade_success', true)
 )->name('checkout-success');
 
 Route::get('checkout/cancel',
-    fn () => redirect()->route('home')->with('info', 'Your subscription was not completed.')
+    fn () => redirect()->route('dashboard')->with('info', 'Your subscription was not completed.')
 )->name('checkout-cancel');

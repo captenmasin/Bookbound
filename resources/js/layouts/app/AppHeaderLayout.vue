@@ -19,7 +19,7 @@ const breadcrumbs = ref(page.props.breadcrumbs as BreadcrumbItemType[] | undefin
 const mainNavItems = ref<NavItem[]>([
     {
         title: 'Home',
-        href: useRoute('home'),
+        href: useRoute('dashboard'),
         icon: Home,
         isActive: false
     },
@@ -51,7 +51,7 @@ const notUsingInput = computed(() =>
     activeElement.value?.tagName !== 'INPUT' &&
     activeElement.value?.tagName !== 'TEXTAREA')
 
-whenever(logicAnd(h, notUsingInput), () => router.get(useRoute('home')))
+whenever(logicAnd(h, notUsingInput), () => router.get(useRoute('dashboard')))
 whenever(logicAnd(b, notUsingInput), () => router.get(useRoute('user.books.index')))
 whenever(logicAnd(s, notUsingInput), () => router.get(useRoute('books.search')))
 

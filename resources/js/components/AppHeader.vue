@@ -133,7 +133,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                     <Link
                         tabindex="-1"
                         class="flex -ml-4 pl-2 text-primary"
-                        :href="$page.props.backUrl ?? useRoute('home')">
+                        :href="$page.props.backUrl ?? useRoute('dashboard')">
                         <Icon
                             name="ChevronLeft"
                             class="size-8 stroke-[1.5px]" />
@@ -141,7 +141,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                 </div>
 
                 <Link
-                    :href="useRoute('home')"
+                    :href="useRoute('dashboard')"
                     prefetch
                     class="flex items-center gap-x-2">
                     <span class="sr-only">

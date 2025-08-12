@@ -57,7 +57,7 @@ class BookController extends Controller
                 )
             )->deepMerge()->matchOn(''),
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('home')],
+                ['title' => 'Home', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
                 ['title' => 'Add Book', 'href' => route('books.search')],
             ],
@@ -71,7 +71,7 @@ class BookController extends Controller
     {
         return Inertia::render('books/Scan', [
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('home')],
+                ['title' => 'Home', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
                 ['title' => 'Scan Book', 'href' => route('books.scan')],
             ],
@@ -116,7 +116,7 @@ class BookController extends Controller
                     ->reject(fn ($review) => Auth::check() ? $review->user_id === Auth::id() : false)
             )),
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('home')],
+                ['title' => 'Home', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
                 ['title' => Str::limit($book->title, 52), 'href' => route('books.show', $book)],
             ],
@@ -145,7 +145,7 @@ class BookController extends Controller
         return Inertia::render('books/Preview', [
             'identifier' => $identifier,
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('home')],
+                ['title' => 'Home', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
                 ['title' => 'Importing Book'],
             ],

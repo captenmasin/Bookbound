@@ -1,344 +1,780 @@
-<script setup lang="ts">
+<script setup>
+import 'aos/dist/aos.css'
+import AOS from 'aos'
 import Icon from '@/components/Icon.vue'
-import AppLayout from '@/layouts/AppLayout.vue'
-import TagCloud from '@/components/TagCloud.vue'
-import useEmitter from '@/composables/useEmitter'
-import BookCard from '@/components/books/BookCard.vue'
-import SingleActivity from '@/components/SingleActivity.vue'
-import JoinProTrigger from '@/components/JoinProTrigger.vue'
-import { Tag } from '@/types/tag'
-import { Book } from '@/types/book'
-import { Author } from '@/types/author'
-import { Activity } from '@/types/activity'
-import { Button } from '@/components/ui/button'
-import { useRoute } from '@/composables/useRoute'
-import { UserBookStatus } from '@/enums/UserBookStatus'
-import { Link, router, usePage } from '@inertiajs/vue3'
-import { computed, onMounted, PropType, ref } from 'vue'
-import { useAuthedUser } from '@/composables/useAuthedUser'
-import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-
-type Stats = {
-    booksInLibrary: number;
-    completedBooks: number;
-    readingBooks: number;
-    pagesRead: number | string;
-    planToRead: number | string;
-};
-
-const props = defineProps({
-    activities: {
-        type: Array as PropType<Activity[]>,
-        default: () => []
-    },
-    currentlyReading: {
-        type: Array as PropType<Book[]>,
-        default: () => []
-    },
-    statValues: {
-        type: Object as PropType<Stats>,
-        default: () => ({})
-    },
-    tags: {
-        type: Array as PropType<Tag[]>,
-        default: () => []
-    },
-    authors: {
-        type: Array as PropType<Author[]>,
-        default: () => []
-    }
-})
+import AppLogo from '@/components/AppLogo.vue'
+import Silk from '@/components/backgrounds/Silk/Silk.vue'
+import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
+import SplitText from '@/components/textanimations/SplitText/SplitText.vue'
+import { useMediaQuery } from '@vueuse/core'
+import { Link, usePage } from '@inertiajs/vue3'
+import { useRoute } from '@/composables/useRoute.js'
+import { nextTick, onMounted, ref, watch } from 'vue'
+import { Button } from '@/components/ui/button/index.js'
+import { getInitials } from '@/composables/useInitials.js'
+import { useAuthedUser } from '@/composables/useAuthedUser.js'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card/index.js'
 
 const page = usePage()
-const { authedUser } = useAuthedUser()
-const hasUpgraded = ref(false)
+const mobileMenuOpen = ref(false)
+const hasScrolled = ref(false)
+const isDesktop = useMediaQuery('(min-width: 768px)')
 
-const breakpoints = useBreakpoints(breakpointsTailwind)
-const mdAndSmaller = breakpoints.smallerOrEqual('md')
+const { authed } = useAuthedUser()
 
-const actions = [
+const screenshots = [
     {
-        name: 'View your library',
-        smallName: 'Your library',
+        src: 'https://placehold.co/600x400/EEE/31343C',
+        alt: 'Home dashboard with stats and activity'
+    },
+    {
+        src: 'https://placehold.co/600x400/EEE/31343C',
+        alt: 'Library view with list of books'
+    },
+    {
+        src: 'https://placehold.co/600x400/EEE/31343C',
+        alt: 'Add Book search results and filters'
+    },
+    {
+        src: 'https://placehold.co/600x400/EEE/31343C',
+        alt: 'Book detail page with notes and reviews'
+    },
+    {
+        src: 'https://placehold.co/600x400/EEE/31343C',
+        alt: 'Barcode scanning interface'
+    }
+]
+
+const links = [
+    {
+        href: '#benefits',
+        label: 'Features'
+    },
+    {
+        href: '#showcase',
+        label: 'Showcase'
+    },
+    {
+        href: '#how-it-works',
+        label: 'How it works'
+    },
+    {
+        href: '#pricing',
+        label: 'Pricing'
+    },
+    {
+        href: '#faq',
+        label: 'FAQ'
+    }
+]
+
+const keyBenefits = [
+    {
+        title: 'Organize Without Overthinking',
+        description: 'Sort by author, title, or colour. No more messy shelves.',
         icon: 'LibraryBig',
-        url: useRoute('user.books.index')
+        pro: false
     },
     {
-        name: 'Find a new book',
-        smallName: 'Find book',
-        icon: 'Search',
-        url: useRoute('books.search')
-    },
-    {
-        name: 'Scan a barcode',
-        smallName: 'Scan barcode',
+        title: 'Scan, Don’t Type',
+        description: 'Point your camera at a barcode and boom, it’s in your library.',
         icon: 'ScanBarcode',
-        url: useRoute('books.scan'),
-        mobileOnly: true
+        pro: false
+    },
+    {
+        title: 'Review What You’ve Read',
+        description: 'Share your thoughts… even if it’s just “meh.”',
+        icon: 'Star',
+        pro: false
+    },
+    {
+        title: 'Know Your Trends',
+        description: 'See your top subjects and authors – find out what you really love.',
+        icon: 'ChartLine',
+        pro: false
+    },
+    {
+        title: 'TODO',
+        description: 'TODO',
+        icon: 'ChartLine',
+        pro: true
     }
 ]
 
-const stats = [
+const howItWorksSteps = [
     {
-        name: 'Books in library',
-        value: props.statValues.booksInLibrary,
-        link: useRoute('user.books.index'),
-        icon: 'LibraryBig',
-        color: 'text-primary'
+        title: 'Add Books',
+        description: 'Search or scan barcodes to build your library fast.',
+        icon: 'ScanBarcode'
     },
     {
-        name: 'Completed',
-        value: props.statValues.completedBooks,
-        link: useRoute('user.books.index', { 'status[]': UserBookStatus.Completed }),
-        icon: 'CircleCheck',
-        color: 'text-green-500'
+        title: 'Sort & Filter',
+        description: 'Slice your collection any way you want: by author, subject, colour, or status.',
+        icon: 'ArrowDownNarrowWide'
     },
     {
-        name: 'Reading',
-        value: props.statValues.readingBooks,
-        link: useRoute('user.books.index', { 'status[]': UserBookStatus.Reading }),
-        icon: 'BookOpen',
-        color: 'text-yellow-500'
-    },
-    {
-        name: 'Plan to read',
-        // value: props.statValues.pagesRead,
-        value: props.statValues.planToRead,
-        link: useRoute('user.books.index', { 'status[]': UserBookStatus.PlanToRead }),
-        icon: 'BookMarked',
-        color: 'text-blue-500'
+        title: 'Explore Your Books',
+        description: ' Open any book to see its description, your notes, your review, and reviews from other readers.',
+        icon: 'BookOpen'
     }
-    // {
-    //     name: 'Pages read this year',
-    //     // value: props.statValues.pagesRead,
-    //     value: '//TODO',
-    //     link: useRoute('user.books.index'),
-    //     icon: 'Hash',
-    //     color: 'text-blue-500'
-    // }
+
 ]
 
-const firstName = computed(() => {
-    if (!authedUser.value) return ''
-    return authedUser.value.name.split(' ')[0]
-})
+const testimonials = [
+    {
+        name: 'Emma',
+        role: 'Avid Reader',
+        rating: 5,
+        feedback: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod.'
+    },
+    {
+        name: 'Marcus',
+        role: 'Non-fiction Fan',
+        rating: 5,
+        feedback: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod.'
+    },
+    {
+        name: 'Lena',
+        role: 'Librarian',
+        rating: 4,
+        feedback: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod.'
+    }
+]
+
+const freeFeatures = [
+    {
+        title: 'Personal Library',
+        description: 'Track your reading journey with a personal library that grows with you.',
+        icon: 'LibraryBig'
+    },
+    {
+        title: 'Barcode Scanning',
+        description: 'Add books instantly by scanning barcodes or searching by title/author.',
+        icon: 'ScanBarcode'
+    },
+    {
+        title: 'Reading Stats',
+        description: 'Get insights into your reading habits and progress over time.',
+        icon: 'ChartLine'
+    },
+    {
+        title: 'Social Sharing',
+        description: 'Share your favorite reads and discover new books through friends.',
+        icon: 'Share2'
+    }
+]
+
+const proFeatures = [
+    {
+        title: 'Unlimited Books',
+        description: 'No limits on the number of books you can track.',
+        icon: 'LibraryBig'
+    },
+    {
+        title: 'Advanced Analytics',
+        description: 'Detailed insights into your reading patterns and preferences.',
+        icon: 'ChartLine'
+    },
+    {
+        title: 'Private Notes',
+        description: 'Keep personal notes and reviews for each book.',
+        icon: 'Note'
+    },
+    {
+        title: 'Priority Support',
+        description: 'Get faster responses and dedicated help from our support team.',
+        icon: 'Support'
+    }
+]
+
+const faqs = [
+    {
+        question: 'Is my data private?',
+        answer: 'Yes, your data is stored securely and never shared with third parties.'
+    },
+    {
+        question: 'Can I import from other services?',
+        answer: 'Yes, you can import your library from Goodreads, LibraryThing, and more.'
+    },
+    {
+        question: 'What if I need help?',
+        answer: 'We offer email support and a community forum for all users.'
+    }
+]
+
+function moveSliderRight () {
+    const slider = document.getElementById('product-screenshots')
+    const singleSlide = document.querySelector('.single-screenshot')
+    if (slider) {
+        slider.scrollBy({
+            left: singleSlide.clientWidth,
+            behavior: 'smooth'
+        })
+    }
+}
+
+function moveSliderLeft () {
+    const slider = document.getElementById('product-screenshots')
+    const singleSlide = document.querySelector('.single-screenshot')
+    if (slider) {
+        slider.scrollBy({
+            left: -singleSlide.clientWidth,
+
+            behavior: 'smooth'
+        })
+    }
+}
 
 onMounted(() => {
-    router.prefetch(useRoute('user.books.index'), { method: 'get' }, { cacheFor: '5m' })
+    nextTick(() => {
+        AOS.init({
+            once: true
+        })
+    })
 
-    router.prefetch(useRoute('books.search'), { method: 'get' }, { cacheFor: '5m' })
-
-    if (page.props.flash?.upgrade_success) {
-        hasUpgraded.value = true
+    let scrollLimit = 20
+    if (isDesktop.value) {
+        scrollLimit = 100
     }
+
+    hasScrolled.value = window.scrollY > scrollLimit
+
+    window.addEventListener('scroll', () => {
+        hasScrolled.value = window.scrollY > scrollLimit
+    })
 })
 
-defineOptions({ layout: AppLayout })
+watch(mobileMenuOpen, (newValue) => {
+    if (newValue) {
+        document.body.style.overflow = 'hidden'
+    } else {
+        document.body.style.overflow = ''
+    }
+})
 </script>
 
 <template>
-    <div>
-        <Alert
-            v-if="hasUpgraded"
-            class="relative mb-6 md:mb-0">
-            <Icon
-                name="Rocket"
-                class="mt-1" />
-            <AlertTitle class="font-serif text-xl text-primary">
-                Welcome to {{ page.props.app.name }} Pro!
-            </AlertTitle>
-            <AlertDescription> You've successfully upgraded to Pro. Enjoy all the premium features and benefits. </AlertDescription>
-            <button
-                class="absolute top-3 right-4 size-4 cursor-pointer text-muted-foreground hover:text-primary"
-                @click="hasUpgraded = false">
-                <Icon
-                    name="X"
-                    class="size-4" />
-            </button>
-        </Alert>
-
-        <header class="mt-0 mb-4 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-6 md:items-center">
+    <div class="bg-background">
+        <div
+            :class="mobileMenuOpen ? 'pointer-events-auto bg-black/60 backdrop-blur-sm dark:bg-white/20 ' : 'bg-transparent backdrop-blur-none pointer-events-none'"
+            class="fixed w-full h-full z-30 left-0 top-14"
+            @click="mobileMenuOpen = false" />
+        <header
+            class="fixed top-0 z-40 w-full rounded-full left-1/2 md:pt-2 -translate-x-1/2 transition-all">
             <div
-                v-if="authedUser"
-                class="flex flex-col">
-                <h1 class="font-serif text-2xl font-semibold text-foreground md:text-3xl">
-                    Welcome back, {{ firstName }}
-                </h1>
-                <p class="text-sm text-accent-foreground">
-                    Here's a quick look at your library
-                </p>
-            </div>
-            <ul class="flex gap-1 md:gap-4">
-                <li
-                    v-for="action in actions"
-                    :key="action.name"
-                    :class="action.mobileOnly ? 'md:hidden' : ''">
-                    <Button
-                        :variant="mdAndSmaller ? 'ghost' : 'ghost'"
-                        :size="mdAndSmaller ? 'icon' : 'sm'"
-                        :as="Link"
-                        :href="action.url"
-                        class="md:text-primary"
-                    >
-                        <Icon
-                            :name="action.icon"
-                            class="size-4" />
-                        <span class="sr-only">
-                            {{ action.name }}
-                        </span>
-                        <span class="hidden xl:inline">
-                            {{ action.name }}
-                        </span>
-                        <span class="hidden md:inline xl:hidden">
-                            {{ action.smallName }}
-                        </span>
+                :class="[
+                    mobileMenuOpen ? 'bg-background md:bg-background' :
+                    (hasScrolled ? 'bg-white/75 md:bg-white/75 backdrop-blur-sm shadow-sm' : 'bg-transparent shadow-none ')
+                ]"
+                class="container md:rounded-xl transition-all mx-auto px-2.5 flex h-14 items-center justify-between">
+                <a
+                    class="flex items-center gap-2 font-semibold"
+                    :href="useRoute('dashboard')">
+                    <AppLogo
+                        logo-border-color="border-primary/20"
+                        class="flex items-center" />
+                </a>
+                <nav class="hidden items-center gap-8 text-sm md:flex">
+                    <a
+                        v-for="link in links"
+                        :key="link.href"
+                        :href="link.href"
+                        class="text-foreground hover:text-accent-foreground/75 transition-all text-sm font-medium">
+                        {{ link.label }}
+                    </a>
+                </nav>
+                <div class="hidden gap-2 md:flex">
+                    <Button as-child>
+                        <Link :href="authed ? useRoute('user.books.index') : useRoute('register')">
+                            <Icon
+                                v-if="authed"
+                                name="LibraryBig" />
+                            {{ authed ? 'Your Library' : 'Get Started Free' }}
+                        </Link>
                     </Button>
-                </li>
-            </ul>
-        </header>
-
-        <section>
-            <div class="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
-                <Link
-                    v-for="stat in stats"
-                    :key="stat.name"
-                    :href="stat.link"
-                    prefetch
-                    class="relative flex items-center justify-between rounded-md border-0 border-accent bg-secondary px-3 py-2 transition-all hover:bg-primary/20 md:p-4"
+                </div>
+                <Button
+                    class="md:hidden"
+                    variant="outline"
+                    size="icon"
+                    aria-expanded="false"
+                    aria-controls="mobile-menu"
+                    @click="mobileMenuOpen = !mobileMenuOpen"
                 >
+                    <span class="sr-only">Toggle navigation</span>
+                    <Icon :name="mobileMenuOpen ? 'X' : 'Menu'" />
+                </Button>
+            </div>
+            <div
+                id="mobile-menu"
+                :class="mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
+                class="absolute top-full overflow-hidden left-0 w-full border-t border-b border-sidebar-border/80 bg-background md:hidden">
+                <div class="container mx-auto flex flex-col gap-2 px-4 pt-4 pb-6">
+                    <a
+                        v-for="link in links"
+                        :key="link.href"
+                        :href="link.href"
+                        class="block py-1 text-foreground hover:text-accent-foreground/75"
+                        @click="mobileMenuOpen = false"
+                    >
+                        {{ link.label }}
+                    </a>
+                    <Button as-child>
+                        <Link :href="authed ? useRoute('user.books.index') : useRoute('register')">
+                            <Icon
+                                v-if="authed"
+                                name="LibraryBig" />
+                            {{ authed ? 'Your Library' : 'Get Started Free' }}
+                        </Link>
+                    </Button>
+                </div>
+            </div>
+        </header>
+        <main>
+            <section class="relative overflow-hidden">
+                <div class="silk-container absolute z-1 opacity-10 inset-0">
+                    <Silk
+                        :speed="15"
+                        :scale="1"
+                        color="#ffffff"
+                        :noise-intensity="5"
+                        :rotation="0"
+                        class="w-full h-full"
+                    />
+                </div>
+                <div class="w-full h-36 bg-gradient-to-b from-transparent to-background absolute bottom-0 left-0 z-20" />
+                <div
+                    aria-hidden="true"
+                    class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]" />
+                <div class="relative z-10 container mx-auto grid items-center gap-10 px-4 pt-20 pb-16 sm:pb-28 sm:pt-48 md:grid-cols-2">
                     <div>
-                        <p class="pr-5 text-sm text-current/60">
-                            {{ stat.name }}
+                        <SplitText
+                            text="Your Reading Life at a Glance"
+                            class-name="font-serif text-4xl sm:text-5xl md:text-6xl/16 text-pretty font-medium"
+                            :delay="100"
+                            :duration="0.6"
+                            ease="power3.out"
+                            split-type="words"
+                            :from="{ opacity: 0, y: 40 }"
+                            :to="{ opacity: 1, y: 0 }"
+                            :threshold="0.1"
+                            root-margin="-100px"
+                            text-align="left"
+                        />
+
+                        <p
+                            data-aos="fade-up"
+                            data-aos-delay="300"
+                            class="mt-4 text-lg text-foreground">
+                            Track what you’re reading, discover new favorites, and keep your library tidy – all without the dusty shelves.
                         </p>
-                        <p class="text-xl font-semibold md:text-2xl">
-                            {{ stat.value }}
+                        <div
+                            data-aos="fade-up"
+                            data-aos-delay="400"
+                            class="mt-8 flex flex-wrap gap-3">
+                            <Button as-child>
+                                <Link :href="useRoute('register')">
+                                    Get Started Free
+                                </Link>
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                as-child>
+                                <a href="#showcase"> See It in Action </a>
+                            </Button>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="mx-auto max-w-2xl">
+                            <div
+                                data-aos="zoom-in"
+                                class="relative -rotate-1 rounded-xl border border-sidebar-border/80 bg-white p-2 shadow-sm">
+                                <img
+                                    loading="lazy"
+                                    src="https://placehold.co/600x400/EEE/31343C"
+                                    :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
+                                    class="h-auto w-full rounded-lg"
+                                >
+                                <div
+                                    data-aos="zoom-in"
+                                    data-aos-delay="200"
+                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-40 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
+                                    <img
+                                        loading="lazy"
+                                        src="https://placehold.co/600x400/EEE/31343C"
+                                        alt="Library view"
+                                        class="rounded">
+                                </div>
+                                <div
+                                    data-aos="zoom-in"
+                                    data-aos-delay="300"
+                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-40 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
+                                    <img
+                                        loading="lazy"
+                                        src="https://placehold.co/600x400/EEE/31343C"
+                                        alt="Book detail page"
+                                        class="rounded">
+                                </div>
+                            </div>
+                            <div class="mt-4 text-center text-sm text-secondary-foreground/50">
+                                Product UI previews
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section
+                id="benefits"
+                class="container mx-auto px-4 py-16 sm:py-20">
+                <div>
+                    <div class="mb-8 sm:mb-10">
+                        <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+                            Why You’ll Love It
+                        </h2>
+                        <p class="mt-2 text-secondary-foreground">
+                            Everything you need to love your reading routine.
                         </p>
                     </div>
-                    <Icon
-                        v-if="stat.icon"
-                        :name="stat.icon"
-                        class="absolute top-4 right-4 size-4 text-primary md:size-4" />
-                </Link>
-            </div>
-        </section>
-
-        <div class="mt-4 flex flex-col items-start gap-6 md:mt-12 md:flex-row md:gap-8">
-            <div class="flex w-full flex-col md:mt-0 md:w-auto md:flex-1">
-                <section>
-                    <h2
-                        v-if="currentlyReading && currentlyReading.length"
-                        class="mb-2 font-serif text-xl font-semibold text-accent-foreground">
-                        Currently reading
-                    </h2>
-
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <Card
+                            v-for="benefit in keyBenefits"
+                            :key="benefit.title"
+                            class="bg-white relative">
+                            <div
+                                v-if="benefit.pro"
+                                class="absolute top-3 right-3 rounded-full bg-primary px-2 py-1 text-xs font-medium text-white">
+                                Pro Feature
+                            </div>
+                            <CardHeader>
+                                <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
+                                    <Icon
+                                        :name="benefit.icon"
+                                        class="h-5 w-5" />
+                                </div>
+                                <CardTitle class="mt-2">
+                                    {{ benefit.title }}
+                                </CardTitle>
+                                <CardDescription class="text-pretty">
+                                    {{ benefit.description }}
+                                </CardDescription>
+                            </CardHeader>
+                        </Card>
+                    </div>
+                </div>
+            </section>
+            <section
+                id="showcase"
+                class="bg-white py-16 sm:py-28">
+                <div class="container mx-auto px-4">
+                    <div class="mb-8 sm:mb-10">
+                        <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+                            See {{ page.props.app.name }} in action
+                        </h2>
+                        <p class="mt-2 text-secondary-foreground">
+                            Highlights from the dashboard, library, and book details.
+                        </p>
+                    </div>
+                </div>
+                <div class="relative">
                     <div
-                        v-if="currentlyReading && currentlyReading.length"
-                        class="-mx-4 snap-x snap-mandatory overflow-x-auto px-4 md:mx-0 md:px-0">
-                        <ul class="flex w-max flex-row gap-4 md:grid md:w-full md:grid-cols-5 md:gap-4">
+                        id="product-screenshots"
+                        class="flex snap-x snap-mandatory gap-10 overflow-x-auto scroll-smooth px-4 md:px-28 pb-4"
+                        aria-label="Product showcase">
+                        <div
+                            v-for="screenshot in screenshots"
+                            :key="screenshot.src"
+                            class="single-screenshot shrink-0 basis-10/12 snap-center md:basis-1/2">
+                            <div class="relative aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-xl border border-sidebar-border/80 shadow-sm">
+                                <div
+                                    class="absolute inset-0 h-5 rounded-t-xl"
+                                    aria-hidden="true" />
+                                <img
+                                    loading="lazy"
+                                    :src="screenshot.src"
+                                    :alt="screenshot.alt"
+                                    class="absolute inset-0 h-full w-full object-cover">
+                            </div>
+                            <p class="mt-3 text-center text-sm text-secondary-foreground">
+                                {{ screenshot.alt }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="absolute inset-y-1/2 left-0 z-50 hidden w-full -translate-y-12 justify-between px-4 md:flex">
+                        <Button
+                            size="icon"
+                            variant="white"
+                            @click="moveSliderLeft">
+                            <Icon
+                                name="ChevronLeft"
+                                class="h-5 w-5" />
+                        </Button>
+                        <Button
+                            size="icon"
+                            variant="white"
+                            @click="moveSliderRight">
+                            <Icon
+                                name="ChevronRight"
+                                class="h-5 w-5" />
+                        </Button>
+                    </div>
+                </div>
+            </section>
+            <section
+                id="how-it-works"
+                class="container mx-auto px-4 py-16 sm:py-20">
+                <div>
+                    <div class="mb-8 sm:mb-10">
+                        <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+                            How it works
+                        </h2>
+                        <p class="mt-2 text-secondary-foreground">
+                            Three simple steps to level up your reading.
+                        </p>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-3">
+                        <Card
+                            v-for="step in howItWorksSteps"
+                            :key="step.title"
+                            class="bg-white">
+                            <CardHeader>
+                                <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
+                                    <Icon
+                                        :name="step.icon"
+                                        class="h-5 w-5" />
+                                </div>
+                                <CardTitle class="mt-2">
+                                    {{ step.title }}
+                                </CardTitle>
+                                <CardDescription class="text-pretty">
+                                    {{ step.description }}
+                                </CardDescription>
+                            </CardHeader>
+                        </Card>
+                    </div>
+                </div>
+            </section>
+            <section
+                id="testimonials"
+                class="bg-white">
+                <div class="container mx-auto px-4 py-16 sm:py-20">
+                    <div>
+                        <div class="mb-8 sm:mb-10">
+                            <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+                                Loved by early readers
+                                <Icon
+                                    name="Heart"
+                                    class="inline-block animate-beat size-10 -mt-6 rotate-24 fill-current text-red-500" />
+                            </h2>
+                            <p class="mt-2 text-secondary-foreground">
+                                A few words from our beta users.
+                            </p>
+                        </div>
+                        <div class="grid gap-4 md:grid-cols-3">
+                            <Card
+                                v-for="testimonial in testimonials"
+                                :key="testimonial.name">
+                                <CardHeader>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary">
+                                            <span class="text-sm font-semibold">
+                                                {{ getInitials(testimonial.name) }}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium">
+                                                {{ testimonial.name }}
+                                            </div>
+                                            <div class="text-sm text-secondary-foreground">
+                                                {{ testimonial.role }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <div
+                                        class="mb-2 -mt-4 flex items-center gap-1 text-yellow-600"
+                                        aria-label="5 out of 5 stars">
+                                        <StarRatingDisplay
+                                            :star-width="16"
+                                            :rating="testimonial.rating" />
+                                    </div>
+                                    <p class="text-secondary-foreground">
+                                        {{ testimonial.feedback }}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section
+                id="pricing"
+                class="container mx-auto px-4 py-16 sm:py-20">
+                <div>
+                    <div class="mb-8 sm:mb-10">
+                        <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+                            Plans &amp; Pricing
+                        </h2>
+                        <p class="mt-2 text-secondary-foreground">
+                            Start free, upgrade anytime. Cancel whenever you like.
+                        </p>
+                    </div>
+                    <div class="grid max-w-4xl mx-auto gap-6 md:grid-cols-2">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    Free
+                                </CardTitle>
+                                <CardDescription>
+                                    Basic library management for getting started.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <ul class="space-y-2 text-sm text-secondary-foreground">
+                                    <li
+                                        v-for="feature in freeFeatures"
+                                        :key="feature.title"
+                                        class="flex items-start gap-2">
+                                        <Icon
+                                            name="Check"
+                                            class="size-4 mt-0.5 text-primary" />
+                                        {{ feature.title }}
+                                    </li>
+                                </ul>
+                            </CardContent>
+                            <CardFooter class="mt-auto">
+                                <Button
+                                    class="w-full"
+                                    as-child>
+                                    <Link :href="useRoute('register')">
+                                        Start Free
+                                    </Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    Pro
+                                    <span class="rounded-full bg-secondary px-2 py-1 text-xs font-medium text-primary">Most popular</span>
+                                </CardTitle>
+                                <CardDescription> Unlimited books, advanced analytics, and priority support. </CardDescription>
+                                <div class="mt-2 text-3xl font-semibold">
+                                    $4.99<span class="text-base font-normal text-secondary-foreground">/mo</span>
+                                </div>
+                                <div class="text-sm text-secondary-foreground">
+                                    Save with annual billing.
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <ul class="space-y-2 text-sm text-secondary-foreground">
+                                    <li
+                                        v-for="feature in proFeatures"
+                                        :key="feature.title"
+                                        class="flex items-start gap-2">
+                                        <Icon
+                                            name="Check"
+                                            class="size-4 mt-0.5 text-primary" />
+                                        {{ feature.title }}
+                                    </li>
+                                </ul>
+                            </CardContent>
+                            <CardFooter class="mt-auto">
+                                <Button
+                                    class="w-full"
+                                    as-child>
+                                    <Link :href="useRoute('register', { plan: 'pro' })">
+                                        Upgrade to Pro
+                                    </Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                </div>
+            </section>
+            <section
+                id="faq"
+                class="container mx-auto px-4 py-16 sm:py-20">
+                <div>
+                    <div class="mb-8 sm:mb-10">
+                        <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+                            Frequently asked questions
+                        </h2>
+                        <p class="mt-2 text-secondary-foreground">
+                            Answers to common questions.
+                        </p>
+                    </div>
+
+                    <Accordion
+                        type="single"
+                        class="w-full"
+                        collapsible
+                        :default-value="'0'"
+                    >
+                        <AccordionItem
+                            v-for="(item, index) in faqs"
+                            :key="index"
+                            :value="index.toString()">
+                            <AccordionTrigger>{{ item.question }}</AccordionTrigger>
+                            <AccordionContent>
+                                {{ item.answer }}
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                </div>
+            </section>
+        </main>
+        <footer class="mt-16 pb-4 border-t border-sidebar-border/80 bg-background">
+            <div class="container mx-auto grid gap-10 px-4 py-10 md:grid-cols-2">
+                <div>
+                    <a
+                        class="flex items-center gap-2 font-semibold"
+                        :href="useRoute('dashboard')">
+                        <AppLogo
+                            logo-border-color="border-primary/20"
+                            class="flex items-center" />
+                    </a>
+                    <p class="mt-3 max-w-sm text-sm text-secondary-foreground">
+                        Track your reading, organize your library, and share what you love.
+                    </p>
+                </div>
+                <div class="grid grid-cols-6 w-full  gap-6 text-sm">
+                    <div class="col-span-4">
+                        <div class="mb-2 font-medium">
+                            Quick Links
+                        </div>
+                        <ul class="space-y-2 columns-2 text-secondary-foreground">
                             <li
-                                v-for="book in currentlyReading"
-                                :key="book.identifier"
-                                class="w-40 snap-center md:w-auto">
-                                <BookCard :book="book" />
-                            </li>
-                            <li class="w-40 snap-center md:w-auto">
-                                <Link
-                                    :href="useRoute('books.search')"
-                                    class="flex aspect-book size-full items-center justify-center rounded-md border-2 border-dashed border-primary/10 bg-secondary/50 p-4 text-center text-base font-semibold text-primary/50 transition-all hover:bg-secondary/75"
-                                >
-                                    Find more books
-                                </Link>
+                                v-for="link in links"
+                                :key="link.href">
+                                <a :href="link.href">
+                                    {{ link.label }}
+                                </a>
                             </li>
                         </ul>
                     </div>
-
-                    <article
-                        v-else
-                        class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground md:py-12"
-                    >
-                        <Icon
-                            name="BookOpen"
-                            class="size-8" />
-                        <h2 class="font-serif text-2xl font-semibold">
-                            Currently reading
-                        </h2>
-                        <p>You aren't reading anything right now</p>
-                        <Button
-                            class="mt-2"
-                            as-child>
-                            <Link :href="useRoute('books.search')">
-                                Add books to your library
-                            </Link>
-                        </Button>
-                    </article>
-                </section>
-
-                <section
-                    v-if="activities && activities.length"
-                    class="mt-4 md:mt-12">
-                    <div class="mb-1 flex items-center justify-between">
-                        <h2 class="font-serif text-xl font-semibold text-accent-foreground">
-                            Recent activity
-                        </h2>
-                        <Button
-                            as-child
-                            class="px-0"
-                            variant="link">
-                            <Link :href="useRoute('user.activities.index')">
-                                View all
-                            </Link>
-                        </Button>
-                    </div>
-                    <ul class="divide-y divide-muted rounded-xl bg-white shadow dark:divide-zinc-950 dark:bg-zinc-900">
-                        <SingleActivity
-                            v-for="activity in activities"
-                            :key="activity.id"
-                            :activity="activity" />
-                    </ul>
-                </section>
-            </div>
-            <div class="w-full md:w-72">
-                <div>
-                    <h2 class="mb-2 font-serif text-xl font-semibold text-accent-foreground">
-                        Top tags
-                    </h2>
-                    <TagCloud
-                        v-if="tags && tags.length"
-                        :tags
-                        :limit="10" />
-                    <div v-else>
-                        <p class="text-sm text-muted-foreground">
-                            Add more books to see your top tags.
-                        </p>
-                    </div>
-                </div>
-                <div class="my-8">
-                    <h2 class="mb-2 font-serif text-xl font-semibold text-accent-foreground">
-                        Top authors
-                    </h2>
-                    <ul
-                        v-if="authors && authors.length"
-                        class="mt-2 divide-y divide-muted p-0">
-                        <li
-                            v-for="author in authors"
-                            :key="author.uuid"
-                            class="flex items-center gap-2 py-2">
-                            <Link
-                                class="text-sm text-accent-foreground hover:text-primary"
-                                :href="useRoute('user.books.index', { author: author.slug })"
-                            >
-                                {{ author.name }}
-                            </Link>
-                        </li>
-                    </ul>
-                    <div v-else>
-                        <p class="text-sm text-muted-foreground">
-                            Add more books to see your top authors.
-                        </p>
+                    <div class="col-span-2">
+                        <div class="mb-2 font-medium">
+                            Legal
+                        </div>
+                        <ul class="space-y-2 text-secondary-foreground">
+                            <li><a :href="useRoute('privacy-policy')">Privacy Policy</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="container px-4 mx-auto">
+                <div class="text-xs text-secondary-foreground">
+                    <div>© {{ new Date().getFullYear() }} {{ page.props.app.name }} by SpacemanCodes LTD. All rights reserved.</div>
+                </div>
+            </div>
+        </footer>
     </div>
 </template>
+
+<style scoped>
+html, body, *{
+    scroll-behavior: smooth !important;
+}
+</style>

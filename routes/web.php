@@ -12,6 +12,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\UserBookController;
 use App\Http\Controllers\BookCoverController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ActivitiesController;
 use App\Http\Controllers\GeneralPageController;
 use App\Http\Controllers\ImageTransformerController;
@@ -20,9 +21,10 @@ use App\Http\Controllers\Settings\PasswordController;
 
 Horizon::auth(fn ($request) => Gate::check('viewHorizon', [$request->user()]));
 
-// Homepage
-Route::get('/', HomeController::class)
-    ->middleware(['auth', 'verified', PwaDevice::class])->name('home');
+Route::get('/', HomeController::class)->withoutMiddleware(['auth', 'verified'])->name('home');
+
+Route::get('dashboard', DashboardController::class)
+    ->middleware(['auth', 'verified', PwaDevice::class])->name('dashboard');
 
 Route::get('privacy-policy', [GeneralPageController::class, 'privacy'])
     ->withoutMiddleware(['auth', 'verified'])
@@ -96,7 +98,7 @@ Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
             Route::get('appearance', function () {
                 return Inertia::render('settings/Appearance', [
                     'breadcrumbs' => [
-                        ['title' => 'Home', 'href' => route('home')],
+                        ['title' => 'Home', 'href' => route('dashboard')],
                         ['title' => 'Settings', 'href' => route('user.settings.profile.edit')],
                         ['title' => 'Appearance', 'href' => route('user.settings.appearance')],
                     ],
@@ -110,10 +112,6 @@ Route::get('image-transform/{options}/{path}', ImageTransformerController::class
     ->where('options', '([a-zA-Z]+=-?[a-zA-Z0-9]+,?)+')
     ->where('path', '.*\..*')
     ->name('image.transform');
-
-Route::inertia('marketing-home', 'MarketingHome')
-    ->withoutMiddleware(['auth', 'verified'])
-    ->name('marketing.home');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/testing.php';
