@@ -8,6 +8,8 @@
 
     $buildId = Vite::manifestHash('build');
 
+    $appearance = $appearance ?? 'system';
+
     $isPwa = request()->boolean('pwa-mode') || \Illuminate\Support\Facades\Cookie::get('pwa-mode') === 'true';
     $isPwaIos = $isPwa && (request('pwa-device') === 'ios' || \Illuminate\Support\Facades\Cookie::get('pwa-device') === 'ios');
     $isPwaAndroid = $isPwa && (request('pwa-device') === 'android' || \Illuminate\Support\Facades\Cookie::get('pwa-device') === 'android');
