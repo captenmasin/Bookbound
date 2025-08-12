@@ -5,6 +5,7 @@ import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import Silk from '@/components/backgrounds/Silk/Silk.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
+import SplitText from '@/components/textanimations/SplitText/SplitText.vue'
 import { onMounted, ref, watch } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import { Link, usePage } from '@inertiajs/vue3'
@@ -320,7 +321,7 @@ watch(mobileMenuOpen, (newValue) => {
                         :speed="15"
                         :scale="1"
                         color="#fcfbf8"
-                        :noise-intensity="1.5"
+                        :noise-intensity="5"
                         :rotation="0"
                         class="w-full h-full"
                     />
@@ -331,9 +332,20 @@ watch(mobileMenuOpen, (newValue) => {
                     class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]" />
                 <div class="relative z-10 container mx-auto grid items-center gap-10 px-4 pt-20 pb-16 sm:pb-28 sm:pt-48 md:grid-cols-2">
                     <div>
-                        <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl/16 text-pretty font-medium">
-                            Your Reading Life at a Glance
-                        </h1>
+                        <SplitText
+                            text="Your Reading Life at a Glance"
+                            class-name="font-serif text-4xl sm:text-5xl md:text-6xl/16 text-pretty font-medium"
+                            :delay="100"
+                            :duration="0.6"
+                            ease="power3.out"
+                            split-type="words"
+                            :from="{ opacity: 0, y: 40 }"
+                            :to="{ opacity: 1, y: 0 }"
+                            :threshold="0.1"
+                            root-margin="-100px"
+                            text-align="left"
+                        />
+
                         <p class="mt-4 text-lg text-foreground">
                             Discover, track, and share your favorite books with {{ page.props.app.name }}—your personal library companion.
                         </p>
