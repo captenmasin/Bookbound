@@ -35,9 +35,6 @@ defineProps({
                 :class="textSize">
                 {{ page.props.app.name }}
             </span>
-            <span class="-mt-1 text-xs font-normal text-secondary-foreground">
-                beta
-            </span>
         </div>
     </div>
 </template>

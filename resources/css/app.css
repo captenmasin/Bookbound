@@ -95,9 +95,20 @@
             top: 100%;
         }
     }
+
+    --animate-beat: beat 1.5s ease-in-out infinite;
+    @keyframes beat {
+        0%,
+        100% {
+            transform: scale(0.90);
+        }
+        50% {
+            transform: scale(1);
+        }
+    }
+
     --animate-accordion-down: accordion-down 0.2s ease-out;
-    --animate-accordion-up: accordion-up 0.2s ease-out
-;
+    --animate-accordion-up: accordion-up 0.2s ease-out;
     @keyframes accordion-down {
         from {
             height: 0;

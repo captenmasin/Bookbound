@@ -6,10 +6,10 @@ import AppLogo from '@/components/AppLogo.vue'
 import Silk from '@/components/backgrounds/Silk/Silk.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
 import SplitText from '@/components/textanimations/SplitText/SplitText.vue'
-import { onMounted, ref, watch } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button/index.js'
 import { getInitials } from '@/composables/useInitials.js'
 import { useAuthedUser } from '@/composables/useAuthedUser.js'
@@ -71,23 +71,23 @@ const links = [
 
 const keyBenefits = [
     {
-        title: 'Organize Your Library',
-        description: 'Easily categorize books by status: Reading, Completed, Plan to Read.',
+        title: 'Organize Without Overthinking',
+        description: 'TODO',
         icon: 'LibraryBig'
     },
     {
-        title: 'Effortless Scanning',
-        description: 'Scan barcodes or search by title/author to instantly add books.',
+        title: 'Scan, Don’t Type',
+        description: 'Point your camera at a barcode and boom, it’s in your library.',
         icon: 'ScanBarcode'
     },
     {
-        title: 'Track Progress',
-        description: 'Update statuses and view reading trends.',
+        title: 'TODO',
+        description: 'TODO',
         icon: 'ChartLine'
     },
     {
-        title: 'Share & Discover',
-        description: 'Connect with friends and uncover new recommendations.',
+        title: 'TODO',
+        description: 'TODO',
         icon: 'Share2'
     }
 ]
@@ -216,8 +216,10 @@ function moveSliderLeft () {
 }
 
 onMounted(() => {
-    AOS.init({
-        once: true
+    nextTick(() => {
+        AOS.init({
+            once: true
+        })
     })
 
     let scrollLimit = 20
@@ -350,10 +352,16 @@ watch(mobileMenuOpen, (newValue) => {
                             text-align="left"
                         />
 
-                        <p class="mt-4 text-lg text-foreground">
-                            Discover, track, and share your favorite books with {{ page.props.app.name }}—your personal library companion.
+                        <p
+                            data-aos="fade-up"
+                            data-aos-delay="300"
+                            class="mt-4 text-lg text-foreground">
+                            Track what you’re reading, discover new favorites, and keep your library tidy – all without the dusty shelves.
                         </p>
-                        <div class="mt-8 flex flex-wrap gap-3">
+                        <div
+                            data-aos="fade-up"
+                            data-aos-delay="400"
+                            class="mt-8 flex flex-wrap gap-3">
                             <Button as-child>
                                 <Link :href="useRoute('register')">
                                     Get Started Free
@@ -372,6 +380,7 @@ watch(mobileMenuOpen, (newValue) => {
                                 data-aos="zoom-in"
                                 class="relative -rotate-1 rounded-xl border border-sidebar-border/80 bg-white p-2 shadow-sm">
                                 <img
+                                    loading="lazy"
                                     src="https://placehold.co/600x400/EEE/31343C"
                                     :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
                                     class="h-auto w-full rounded-lg"
@@ -381,6 +390,7 @@ watch(mobileMenuOpen, (newValue) => {
                                     data-aos-delay="200"
                                     class="pointer-events-none absolute -top-6 -right-6 hidden w-40 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
                                     <img
+                                        loading="lazy"
                                         src="https://placehold.co/600x400/EEE/31343C"
                                         alt="Library view"
                                         class="rounded">
@@ -390,6 +400,7 @@ watch(mobileMenuOpen, (newValue) => {
                                     data-aos-delay="300"
                                     class="pointer-events-none absolute -bottom-6 -left-6 hidden w-40 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block">
                                     <img
+                                        loading="lazy"
                                         src="https://placehold.co/600x400/EEE/31343C"
                                         alt="Book detail page"
                                         class="rounded">
@@ -438,7 +449,7 @@ watch(mobileMenuOpen, (newValue) => {
             </section>
             <section
                 id="showcase"
-                class="bg-white py-16 sm:py-20">
+                class="bg-white py-16 sm:py-28">
                 <div class="container mx-auto px-4">
                     <div class="mb-8 sm:mb-10">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -452,7 +463,7 @@ watch(mobileMenuOpen, (newValue) => {
                 <div class="relative">
                     <div
                         id="product-screenshots"
-                        class="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-4 md:px-20 pb-4"
+                        class="flex snap-x snap-mandatory gap-10 overflow-x-auto scroll-smooth px-4 md:px-28 pb-4"
                         aria-label="Product showcase">
                         <div
                             v-for="screenshot in screenshots"
@@ -463,6 +474,7 @@ watch(mobileMenuOpen, (newValue) => {
                                     class="absolute inset-0 h-5 rounded-t-xl"
                                     aria-hidden="true" />
                                 <img
+                                    loading="lazy"
                                     :src="screenshot.src"
                                     :alt="screenshot.alt"
                                     class="absolute inset-0 h-full w-full object-cover">
@@ -534,6 +546,9 @@ watch(mobileMenuOpen, (newValue) => {
                         <div class="mb-8 sm:mb-10">
                             <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                                 Loved by early readers
+                                <Icon
+                                    name="Heart"
+                                    class="inline-block animate-beat size-10 -mt-6 rotate-24 fill-current text-red-500" />
                             </h2>
                             <p class="mt-2 text-secondary-foreground">
                                 A few words from our beta users.
@@ -579,7 +594,7 @@ watch(mobileMenuOpen, (newValue) => {
             </section>
             <section
                 id="pricing"
-                class="container mx-auto max-w-4xl px-4 py-16 sm:py-20">
+                class="container mx-auto px-4 py-16 sm:py-20">
                 <div>
                     <div class="mb-8 sm:mb-10">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -589,7 +604,7 @@ watch(mobileMenuOpen, (newValue) => {
                             Start free, upgrade anytime. Cancel whenever you like.
                         </p>
                     </div>
-                    <div class="grid gap-6 md:grid-cols-2">
+                    <div class="grid max-w-4xl mx-auto gap-6 md:grid-cols-2">
                         <Card>
                             <CardHeader>
                                 <CardTitle>
@@ -692,22 +707,26 @@ watch(mobileMenuOpen, (newValue) => {
                 </div>
             </section>
         </main>
-        <footer class="mt-16 border-t border-sidebar-border/80 bg-background">
-            <div class="container mx-auto grid gap-10 px-4 py-10 md:grid-cols-3">
+        <footer class="mt-16 pb-4 border-t border-sidebar-border/80 bg-background">
+            <div class="container mx-auto grid gap-10 px-4 py-10 md:grid-cols-2">
                 <div>
-                    <div class="font-serif text-xl">
-                        {{ page.props.app.name }}
-                    </div>
-                    <p class="mt-2 max-w-sm text-sm text-secondary-foreground">
+                    <a
+                        class="flex items-center gap-2 font-semibold"
+                        :href="useRoute('home')">
+                        <AppLogo
+                            logo-border-color="border-primary/20"
+                            class="flex items-center" />
+                    </a>
+                    <p class="mt-3 max-w-sm text-sm text-secondary-foreground">
                         Track your reading, organize your library, and share what you love.
                     </p>
                 </div>
-                <div class="grid grid-cols-2 gap-6 text-sm">
-                    <div>
+                <div class="grid grid-cols-6 w-full  gap-6 text-sm">
+                    <div class="col-span-4">
                         <div class="mb-2 font-medium">
                             Quick Links
                         </div>
-                        <ul class="space-y-2 text-secondary-foreground">
+                        <ul class="space-y-2 columns-2 text-secondary-foreground">
                             <li
                                 v-for="link in links"
                                 :key="link.href">
@@ -717,7 +736,7 @@ watch(mobileMenuOpen, (newValue) => {
                             </li>
                         </ul>
                     </div>
-                    <div>
+                    <div class="col-span-2">
                         <div class="mb-2 font-medium">
                             Legal
                         </div>
