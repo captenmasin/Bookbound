@@ -274,8 +274,10 @@ watch(mobileMenuOpen, (newValue) => {
                 <div class="hidden gap-2 md:flex">
                     <Button as-child>
                         <Link :href="authed ? useRoute('user.books.index') : useRoute('register')">
-                            <Icon name="Home" />
-                            {{ authed ? 'Home' : 'Get Started Free' }}
+                            <Icon
+                                v-if="authed"
+                                name="LibraryBig" />
+                            {{ authed ? 'Your Library' : 'Get Started Free' }}
                         </Link>
                     </Button>
                 </div>
@@ -307,8 +309,10 @@ watch(mobileMenuOpen, (newValue) => {
                     </a>
                     <Button as-child>
                         <Link :href="authed ? useRoute('user.books.index') : useRoute('register')">
-                            <Icon name="Home" />
-                            {{ authed ? 'Home' : 'Get Started Free' }}
+                            <Icon
+                                v-if="authed"
+                                name="LibraryBig" />
+                            {{ authed ? 'Your Library' : 'Get Started Free' }}
                         </Link>
                     </Button>
                 </div>
