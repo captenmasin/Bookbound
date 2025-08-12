@@ -324,7 +324,7 @@ watch(mobileMenuOpen, (newValue) => {
                     <Silk
                         :speed="15"
                         :scale="1"
-                        color="#fcfbf8"
+                        color="#ffffff"
                         :noise-intensity="5"
                         :rotation="0"
                         class="w-full h-full"
