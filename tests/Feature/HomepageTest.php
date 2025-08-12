@@ -1,14 +1,14 @@
 <?php
 
 test('guests are redirected to the login page', function () {
-    $response = $this->get('/');
+    $response = $this->get('/dashboard');
     $response->assertRedirect('/login');
 });
 
-test('authenticated users can view their homepage', function () {
+test('authenticated users can view their dashboard', function () {
     $user = \App\Models\User::factory()->create();
     $this->actingAs($user);
 
-    $response = $this->get('/');
+    $response = $this->get('/dashboard');
     $response->assertStatus(200);
 });
