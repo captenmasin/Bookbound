@@ -27,7 +27,7 @@ const tagsLimit = ref(props.limit)
         >
             <Link
                 :href="useRoute('user.books.index', { tag: tag.slug })"
-                class="px-2 py-0.5 rounded-full text-xs bg-black/2 text-muted-foreground dark:bg-primary/10 hover:bg-primary dark:hover:text-primary hover:text-primary-foreground transition-colors">
+                class="px-2 py-0.5 rounded-full text-xs bg-black/2 text-muted-foreground dark:bg-primary/10 hover:bg-primary dark:hover:text-primary hover:text-primary-foreground md:transition-colors">
                 {{ tag.name }}
             </Link>
         </li>

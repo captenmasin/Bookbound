@@ -33,7 +33,7 @@ const url = computed(() => {
 <template>
     <article
         :id="`book-card-${book.id}`"
-        class="flex gap-4 book-card active:scale-105 transition-all">
+        class="flex gap-4 book-card active:scale-102 transition-all">
         <div
             class="flex w-full flex-col overflow-hidden rounded-md shadow-sm group"
             :style="{

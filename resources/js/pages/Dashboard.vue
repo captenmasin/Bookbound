@@ -14,7 +14,9 @@ import { UserBookStatus } from '@/enums/UserBookStatus'
 import { Link, router, usePage } from '@inertiajs/vue3'
 import { computed, onMounted, PropType, ref } from 'vue'
 import { useAuthedUser } from '@/composables/useAuthedUser'
+import { useCookies } from '@vueuse/integrations/useCookies'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Dialog, DialogContent, DialogClose, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 type Stats = {
@@ -48,12 +50,16 @@ const props = defineProps({
     }
 })
 
+const cookies = useCookies(['displayProBanner'])
+
 const page = usePage()
-const { authedUser } = useAuthedUser()
+const { authedUser, subscribedToPro } = useAuthedUser()
 const hasUpgraded = ref(false)
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
 const mdAndSmaller = breakpoints.smallerOrEqual('md')
+
+const displayProBanner = ref(false)
 
 const actions = [
     {
@@ -122,6 +128,11 @@ const firstName = computed(() => {
     return authedUser.value.name.split(' ')[0]
 })
 
+function closeProBanner () {
+    displayProBanner.value = false
+    cookies.set('displayProBanner', false)
+}
+
 onMounted(() => {
     router.prefetch(useRoute('user.books.index'), { method: 'get' }, { cacheFor: '5m' })
 
@@ -130,6 +141,10 @@ onMounted(() => {
     if (page.props.flash?.upgrade_success) {
         hasUpgraded.value = true
     }
+
+    if (!subscribedToPro.value && cookies.get('displayProBanner') !== false) {
+        displayProBanner.value = true
+    }
 })
 
 defineOptions({ layout: AppLayout })
@@ -137,6 +152,46 @@ defineOptions({ layout: AppLayout })
 
 <template>
     <div>
+        <Transition>
+            <Alert
+                v-show="displayProBanner"
+                class="relative mb-6 md:mb-0 bg-primary border-primary text-white">
+                <Icon
+                    name="Sparkles"
+                    class="mt-1 size-6" />
+                <AlertTitle class="font-serif text-lg md:text-xl text-white">
+                    Get more with Pro!
+                </AlertTitle>
+                <AlertDescription class="text-white">
+                    Upgrade to Pro for advanced features like unlimited books, private notes, and more.
+                    <div class="flex items-center gap-4 mt-4">
+                        <Button
+                            variant="white"
+                            class="text-primary"
+                            as-child>
+                            <a
+                                :href="useRoute('billing')">
+                                Upgrade now
+                            </a>
+                        </Button>
+                        <a
+                            target="_blank"
+                            :href="useRoute('home') + '#pricing'"
+                            class="text-white underline hover:text-white/80">
+                            See features
+                        </a>
+                    </div>
+                </AlertDescription>
+                <button
+                    class="absolute top-3 right-4 size-4 cursor-pointer text-white/50 hover:text-white"
+                    @click="closeProBanner">
+                    <Icon
+                        name="X"
+                        class="size-4" />
+                </button>
+            </Alert>
+        </Transition>
+
         <Dialog
             v-model:open="hasUpgraded"
             class="relative mb-6 md:mb-0">
@@ -220,7 +275,7 @@ defineOptions({ layout: AppLayout })
                     :key="stat.name"
                     :href="stat.link"
                     prefetch
-                    class="relative flex items-center justify-between rounded-md border-0 border-accent bg-secondary px-3 py-2 transition-all hover:bg-primary/20 md:p-4"
+                    class="relative flex items-center justify-between rounded-md border-0 border-accent bg-secondary px-3 py-2 md:transition-all hover:bg-primary/20 active:bg-primary/20 md:p-4"
                 >
                     <div>
                         <p class="pr-5 text-sm text-current/60">

@@ -10,6 +10,7 @@ export function useAuthedUser () {
     const auth = computed(() => page.props.auth || {})
     const authedUser = computed(() => auth.value.user || null)
     const authed = computed(() => auth.value.check || false)
+    const subscribedToPro = computed(() => authedUser.value.subscription?.subscribed)
 
     const permissions = useMemoize(() => authedUser.value?.permissions || [])
 
@@ -25,6 +26,7 @@ export function useAuthedUser () {
 
     return {
         hasPermission,
+        subscribedToPro,
         authedUser,
         authed,
         logout
