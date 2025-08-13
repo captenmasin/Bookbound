@@ -234,6 +234,18 @@ defineOptions({
                         Start searching
                     </h3>
                     <p>Search for books by title or author.</p>
+                    <p class="md:hidden">
+                        or
+                    </p>
+                    <Button
+                        as-child
+                        class="md:hidden">
+                        <Link :href="useRoute('books.scan')">
+                            <Icon
+                                name="ScanBarcode" />
+                            Scan Barcode
+                        </Link>
+                    </Button>
                 </div>
 
                 <Deferred

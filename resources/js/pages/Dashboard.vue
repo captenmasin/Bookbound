@@ -2,10 +2,8 @@
 import Icon from '@/components/Icon.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import TagCloud from '@/components/TagCloud.vue'
-import useEmitter from '@/composables/useEmitter'
 import BookCard from '@/components/books/BookCard.vue'
 import SingleActivity from '@/components/SingleActivity.vue'
-import JoinProTrigger from '@/components/JoinProTrigger.vue'
 import { Tag } from '@/types/tag'
 import { Book } from '@/types/book'
 import { Author } from '@/types/author'
@@ -17,7 +15,7 @@ import { Link, router, usePage } from '@inertiajs/vue3'
 import { computed, onMounted, PropType, ref } from 'vue'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Dialog, DialogContent, DialogClose, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 type Stats = {
     booksInLibrary: number;
@@ -139,24 +137,41 @@ defineOptions({ layout: AppLayout })
 
 <template>
     <div>
-        <Alert
-            v-if="hasUpgraded"
+        <Dialog
+            v-model:open="hasUpgraded"
             class="relative mb-6 md:mb-0">
-            <Icon
-                name="Rocket"
-                class="mt-1" />
-            <AlertTitle class="font-serif text-xl text-primary">
-                Welcome to {{ page.props.app.name }} Pro!
-            </AlertTitle>
-            <AlertDescription> You've successfully upgraded to Pro. Enjoy all the premium features and benefits. </AlertDescription>
-            <button
-                class="absolute top-3 right-4 size-4 cursor-pointer text-muted-foreground hover:text-primary"
-                @click="hasUpgraded = false">
-                <Icon
-                    name="X"
-                    class="size-4" />
-            </button>
-        </Alert>
+            <DialogContent class="sm:max-w-xl">
+                <DialogHeader>
+                    <DialogTitle class="flex items-center gap-2">
+                        <Icon
+                            name="Sparkles"
+                            class="size-6 text-primary" />
+                        <h2 class="font-serif text-xl text-primary">
+                            Welcome to {{ page.props.app.name }} Pro!
+                        </h2>
+                    </DialogTitle>
+                </DialogHeader>
+                <div class="mt-4">
+                    <p class="text-secondary-foreground">
+                        You've successfully upgraded to Pro. Enjoy all the premium features and benefits.
+                    </p>
+                </div>
+                <DialogFooter class="mt-4">
+                    <Button as-child>
+                        <a :href="useRoute('billing')">
+                            Manage Billing
+                        </a>
+                    </Button>
+                    <DialogClose as-child>
+                        <Button
+                            variant="outline"
+                            class="ml-2">
+                            Close
+                        </Button>
+                    </DialogClose>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
 
         <header class="mt-0 mb-4 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-6 md:items-center">
             <div
@@ -228,13 +243,13 @@ defineOptions({ layout: AppLayout })
                 <section>
                     <h2
                         v-if="currentlyReading && currentlyReading.length"
-                        class="mb-2 font-serif text-xl font-semibold text-accent-foreground">
+                        class="font-serif text-xl font-semibold text-accent-foreground">
                         Currently reading
                     </h2>
 
                     <div
                         v-if="currentlyReading && currentlyReading.length"
-                        class="-mx-4 snap-x snap-mandatory overflow-x-auto px-4 md:mx-0 md:px-0">
+                        class="-mx-4 snap-x py-4 -mt-2 snap-mandatory overflow-x-auto px-4 md:-mx-2 md:px-2">
                         <ul class="flex w-max flex-row gap-4 md:grid md:w-full md:grid-cols-5 md:gap-4">
                             <li
                                 v-for="book in currentlyReading"

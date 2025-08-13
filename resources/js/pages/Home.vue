@@ -460,7 +460,7 @@ watch(mobileMenuOpen, (newValue) => {
                         <Card
                             v-for="step in howItWorksSteps"
                             :key="step.title"
-                            class="bg-white">
+                            class="bg-white pb-0 overflow-hidden">
                             <CardHeader>
                                 <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
                                     <Icon
@@ -478,7 +478,7 @@ watch(mobileMenuOpen, (newValue) => {
                                 loading="lazy"
                                 :src="step.image"
                                 :alt="`${step.title} screenshot`"
-                                class="mt-auto w-full rounded-lg">
+                                class="mt-auto w-full">
                         </Card>
                     </div>
                 </div>
