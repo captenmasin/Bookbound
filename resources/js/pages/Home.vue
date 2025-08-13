@@ -202,20 +202,14 @@ const proFeatures = cloned
 proFeatures.value[0].title = 'Unlimited Books'
 proFeatures.value[0].bold = true
 
-const faqs = [
+let faqs = [
     {
-        question: 'Is my data private?',
-        answer: 'Yes, your data is stored securely and never shared with third parties.'
-    },
-    {
-        question: 'Can I import from other services?',
-        answer: 'Yes, you can import your library from Goodreads, LibraryThing, and more.'
-    },
-    {
-        question: 'What if I need help?',
-        answer: 'We offer email support and a community forum for all users.'
+        question: 'Question 1',
+        answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
     }
 ]
+
+faqs = [...faqs, ...faqs, ...faqs, ...faqs, ...faqs, ...faqs]
 
 function moveSliderRight () {
     const slider = document.getElementById('product-screenshots')
@@ -658,7 +652,7 @@ watch(mobileMenuOpen, (newValue) => {
                                     <CardTitle class="font-serif text-xl font-semibold">
                                         Starter
                                     </CardTitle>
-                                    <div class="-mt-1 text-3xl font-bold">
+                                    <div class="-mt-1 text-3xl font-medium text-primary">
                                         Free<span class="text-base font-normal text-secondary-foreground"> / forever</span>
                                     </div>
                                 </CardHeader>
@@ -693,7 +687,7 @@ watch(mobileMenuOpen, (newValue) => {
                                     <CardTitle class="font-serif text-xl font-semibold">
                                         Pro
                                     </CardTitle>
-                                    <div class="-mt-1 text-3xl font-bold">
+                                    <div class="-mt-1 text-3xl font-medium text-primary">
                                         {{ price }}<span class="text-base font-normal text-secondary-foreground"> / {{ interval }}</span>
                                     </div>
                                 </CardHeader>
@@ -728,8 +722,8 @@ watch(mobileMenuOpen, (newValue) => {
             <section
                 id="faq"
                 class="container mx-auto px-4 py-16 sm:py-20">
-                <div>
-                    <div class="mb-8 sm:mb-10">
+                <div class="flex">
+                    <div class="mb-8 sm:mb-10 w-1/2">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                             Frequently asked questions
                         </h2>
@@ -738,21 +732,25 @@ watch(mobileMenuOpen, (newValue) => {
                         </p>
                     </div>
 
-                    <Accordion
-                        type="single"
-                        class="w-full"
-                        collapsible
-                        :default-value="'0'">
-                        <AccordionItem
-                            v-for="(item, index) in faqs"
-                            :key="index"
-                            :value="index.toString()">
-                            <AccordionTrigger>{{ item.question }}</AccordionTrigger>
-                            <AccordionContent>
-                                {{ item.answer }}
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
+                    <div class="flex flex-1">
+                        <Accordion
+                            type="single"
+                            class="w-full"
+                            collapsible
+                            :default-value="'0'">
+                            <AccordionItem
+                                v-for="(item, index) in faqs"
+                                :key="index"
+                                :value="index.toString()">
+                                <AccordionTrigger class="cursor-pointer">
+                                    {{ item.question }}
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    {{ item.answer }}
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
                 </div>
             </section>
         </main>
