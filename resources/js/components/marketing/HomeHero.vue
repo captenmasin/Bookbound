@@ -28,7 +28,7 @@ const page = usePage()
             aria-hidden="true"
             class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]"
         />
-        <div class="relative z-20 container mx-auto flex flex-col md:flex-row items-center gap-12 px-4 pt-20 pb-0 md:pt-48 md:pb-28">
+        <div class="relative z-20 container mx-auto flex flex-col md:flex-row items-center gap-12 px-4 pt-28 pb-0 md:pt-48 md:pb-28">
             <div class="w-full md:w-5/12 md:pr-24">
                 <SplitText
                     text="Your Reading Life at a Glance"
