@@ -309,7 +309,7 @@ watch(mobileMenuOpen, (newValue) => {
                     ? 'pointer-events-auto bg-black/60 backdrop-blur-sm dark:bg-white/20'
                     : 'pointer-events-none bg-transparent backdrop-blur-none'
             "
-            class="fixed top-14 left-0 z-30 h-full w-full"
+            class="fixed top-14 left-0 z-40 h-full w-full"
             @click="mobileMenuOpen = false"
         />
         <header class="fixed top-0 md:px-12 left-1/2 z-40 w-full -translate-x-1/2 rounded-full transition-all md:pt-2">
@@ -341,6 +341,14 @@ watch(mobileMenuOpen, (newValue) => {
                     </a>
                 </nav>
                 <div class="hidden gap-2 md:flex">
+                    <Button
+                        v-if="!authed"
+                        variant="white"
+                        as-child>
+                        <Link :href="useRoute('login')">
+                            Log in
+                        </Link>
+                    </Button>
                     <Button as-child>
                         <Link :href="authed ? useRoute('user.books.index') : useRoute('register')">
                             <Icon
@@ -350,17 +358,37 @@ watch(mobileMenuOpen, (newValue) => {
                         </Link>
                     </Button>
                 </div>
-                <Button
-                    class="md:hidden"
-                    variant="outline"
-                    size="icon"
-                    aria-expanded="false"
-                    aria-controls="mobile-menu"
-                    @click="mobileMenuOpen = !mobileMenuOpen"
-                >
-                    <span class="sr-only">Toggle navigation</span>
-                    <Icon :name="mobileMenuOpen ? 'X' : 'Menu'" />
-                </Button>
+                <div class="flex items-center gap-2 md:hidden">
+                    <Button
+                        v-if="!authed"
+                        variant="white"
+                        as-child>
+                        <Link :href="useRoute('login')">
+                            Log in
+                        </Link>
+                    </Button>
+                    <Button
+                        v-else
+                        variant="default"
+                        as-child>
+                        <Link :href="useRoute('user.books.index')">
+                            <Icon
+                                v-if="authed"
+                                name="LibraryBig" />
+                            Library
+                        </Link>
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-expanded="false"
+                        aria-controls="mobile-menu"
+                        @click="mobileMenuOpen = !mobileMenuOpen"
+                    >
+                        <span class="sr-only">Toggle navigation</span>
+                        <Icon :name="mobileMenuOpen ? 'X' : 'Menu'" />
+                    </Button>
+                </div>
             </div>
             <div
                 id="mobile-menu"
