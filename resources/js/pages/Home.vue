@@ -343,13 +343,16 @@ watch(mobileMenuOpen, (newValue) => {
                 <div class="hidden gap-2 md:flex">
                     <Button
                         v-if="!authed"
+                        size="sm"
                         variant="white"
                         as-child>
                         <Link :href="useRoute('login')">
                             Log in
                         </Link>
                     </Button>
-                    <Button as-child>
+                    <Button
+                        size="sm"
+                        as-child>
                         <Link :href="authed ? useRoute('user.books.index') : useRoute('register')">
                             <Icon
                                 v-if="authed"
@@ -362,6 +365,7 @@ watch(mobileMenuOpen, (newValue) => {
                     <Button
                         v-if="!authed"
                         variant="white"
+                        size="sm"
                         as-child>
                         <Link :href="useRoute('login')">
                             Log in
@@ -369,6 +373,7 @@ watch(mobileMenuOpen, (newValue) => {
                     </Button>
                     <Button
                         v-else
+                        size="sm"
                         variant="default"
                         as-child>
                         <Link :href="useRoute('user.books.index')">

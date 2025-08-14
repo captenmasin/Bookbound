@@ -63,9 +63,6 @@ const points = [
                 <AppLogoIcon class="mr-2 rounded-lg fill-current size-8" />
                 <div class="flex flex-col relative">
                     <span>{{ name }}</span>
-                    <span class="absolute top-full font-sans -mt-1.5 text-sm font-normal">
-                        beta
-                    </span>
                 </div>
             </Link>
         </div>
