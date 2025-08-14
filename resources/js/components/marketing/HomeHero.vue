@@ -1,8 +1,10 @@
 <script setup>
 import Silk from '@/components/backgrounds/Silk/Silk.vue'
-import HomeScreenshot from '~/images/marketing/home-screenshot-med.webp'
+import HomeScreenshot from '~/images/marketing/home-screenshot-med.png'
 import SplitText from '@/components/textanimations/SplitText/SplitText.vue'
-import HomeScreenshotDark from '~/images/marketing/home-screenshot-med-dark.webp'
+import HomeScreenshotDark from '~/images/marketing/home-screenshot-med-dark.png'
+import HomeScreenshotMobile from '~/images/marketing/home-screenshot-mobile.png'
+import HomeScreenshotMobileDark from '~/images/marketing/home-screenshot-mobile-dark.png'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
 import { Button } from '@/components/ui/button/index.js'
@@ -21,13 +23,13 @@ const page = usePage()
                 :rotation="0"
                 class="h-full w-full" />
         </div>
-        <div class="absolute bottom-0 left-0 z-20 h-36 w-full bg-gradient-to-b from-transparent to-background" />
+        <div class="absolute bottom-0 left-0 z-30 md:z-10 h-36 w-full bg-gradient-to-b from-transparent to-background" />
         <div
             aria-hidden="true"
             class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]"
         />
-        <div class="relative z-10 container mx-auto flex items-center gap-0 px-4 pt-20 pb-16 sm:pt-48 sm:pb-28">
-            <div class="w-5/12 md:pr-24">
+        <div class="relative z-20 container mx-auto flex flex-col md:flex-row items-center gap-12 px-4 pt-20 pb-0 md:pt-48 md:pb-28">
+            <div class="w-full md:w-5/12 md:pr-24">
                 <SplitText
                     text="Your Reading Life at a Glance"
                     class-name="font-serif text-4xl sm:text-5xl md:text-6xl/16 text-pretty font-medium"
@@ -64,18 +66,18 @@ const page = usePage()
                     </Button>
                 </div>
             </div>
-            <div class="w-7/12 relative">
+            <div class="w-full md:w-7/12 relative">
                 <div class="mx-auto w-full">
                     <div
                         data-aos="zoom-in"
-                        class="relative rotate-3 rounded-xl border border-sidebar-border/80 bg-white dark:bg-neutral-900 p-2 shadow-sm">
+                        class="relative md:rotate-3 rounded-t-xl md:rounded-xl border max-h-[300px] sm:max-h-[450px] md:max-h-[500px] overflow-hidden border-sidebar-border/80 bg-white dark:bg-neutral-900 p-2 md:shadow-sm">
                         <img
                             loading="lazy"
                             width="730"
                             height="450"
                             :src="HomeScreenshot"
                             :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
-                            class="h-auto w-full rounded-lg dark:hidden"
+                            class="h-auto w-full rounded-lg not-md:hidden dark:hidden"
                         >
                         <img
                             loading="lazy"
@@ -83,7 +85,24 @@ const page = usePage()
                             width="730"
                             height="450"
                             :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
-                            class="h-auto w-full rounded-lg hidden dark:block"
+                            class="h-auto w-full rounded-lg not-md:hidden hidden dark:md:block"
+                        >
+
+                        <img
+                            loading="lazy"
+                            width="730"
+                            height="450"
+                            :src="HomeScreenshotMobile"
+                            :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
+                            class="h-auto w-full rounded-lg md:hidden dark:hidden"
+                        >
+                        <img
+                            loading="lazy"
+                            :src="HomeScreenshotMobileDark"
+                            width="730"
+                            height="450"
+                            :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
+                            class="h-auto w-full rounded-lg md:hidden hidden dark:not-md:block"
                         >
                         <!--                                <div-->
                         <!--                                    data-aos="zoom-in"-->
@@ -108,7 +127,7 @@ const page = usePage()
                         <!--                                        class="rounded">-->
                         <!--                                </div>-->
                     </div>
-                    <div class="mt-4 text-center text-sm text-secondary-foreground/50">
+                    <div class="mt-4 hidden md:block text-center text-sm text-secondary-foreground/50">
                         Product UI previews
                     </div>
                 </div>
