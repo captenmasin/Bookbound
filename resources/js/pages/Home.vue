@@ -60,16 +60,16 @@ const screenshots = [
 
 const links = [
     {
-        href: '#benefits',
-        label: 'Features'
+        href: '#how-it-works',
+        label: 'How it works'
     },
     {
         href: '#showcase',
         label: 'Showcase'
     },
     {
-        href: '#how-it-works',
-        label: 'How it works'
+        href: '#features',
+        label: 'Features'
     },
     {
         href: '#pricing',
@@ -202,14 +202,32 @@ const proFeatures = cloned
 proFeatures.value[0].title = 'Unlimited Books'
 proFeatures.value[0].bold = true
 
-let faqs = [
+const faqs = [
     {
-        question: 'Question 1',
-        answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+        question: 'How do I add new books to my library',
+        answer: 'Books can be added by searching for them or by scanning their barcodes using your device’s camera.'
+    },
+    {
+        question: 'Can I track the status of my books?',
+        answer: 'Yes, you can mark books as read, currently reading, or want to read.'
+    },
+    {
+        question: 'Is there a limit to how many books I can add?',
+        answer: `The free plan allows you to add up to ${props.freeLimits?.max_books} books. Upgrade to Pro for unlimited books.`
+    },
+    {
+        question: 'Are reviews and ratings public?',
+        answer: 'Yes, your reviews will be displayed publicly, but Pro users can write private notes that only they can see.'
+    },
+    {
+        question: 'What if I forget my password?',
+        answer: 'You can reset your password using the “Forgot Password” link on the login page.'
+    },
+    {
+        question: 'Is my data secure?',
+        answer: 'Yes, we take data security seriously and use industry-standard encryption to protect your information.'
     }
 ]
-
-faqs = [...faqs, ...faqs, ...faqs, ...faqs, ...faqs, ...faqs]
 
 function moveSliderRight () {
     const slider = document.getElementById('product-screenshots')
@@ -417,7 +435,7 @@ watch(mobileMenuOpen, (newValue) => {
                                 <div
                                     data-aos="zoom-in"
                                     data-aos-delay="200"
-                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-40 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block"
+                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-40 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1.5 shadow md:block"
                                 >
                                     <img
                                         loading="lazy"
@@ -428,7 +446,7 @@ watch(mobileMenuOpen, (newValue) => {
                                 <div
                                     data-aos="zoom-in"
                                     data-aos-delay="300"
-                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-40 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1 shadow md:block"
+                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-40 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1.5 shadow md:block"
                                 >
                                     <img
                                         loading="lazy"
@@ -460,7 +478,7 @@ watch(mobileMenuOpen, (newValue) => {
                         <Card
                             v-for="step in howItWorksSteps"
                             :key="step.title"
-                            class="bg-white pb-0 overflow-hidden">
+                            class="overflow-hidden bg-white pb-0">
                             <CardHeader>
                                 <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
                                     <Icon
@@ -544,7 +562,7 @@ watch(mobileMenuOpen, (newValue) => {
             </section>
 
             <section
-                id="benefits"
+                id="features"
                 class="container mx-auto px-4 py-16 sm:py-20">
                 <div>
                     <div class="mb-8 sm:mb-10">
@@ -667,7 +685,8 @@ watch(mobileMenuOpen, (newValue) => {
                                             <Icon
                                                 :name="feature.enabled ? 'Check' : 'X'"
                                                 :class="feature.enabled ? 'text-primary' : ''"
-                                                class="mt-0.5 size-5" />
+                                                class="mt-0.5 size-5"
+                                            />
                                             {{ feature.title }}
                                         </li>
                                     </ul>
@@ -682,7 +701,7 @@ watch(mobileMenuOpen, (newValue) => {
                                     </Button>
                                 </CardFooter>
                             </Card>
-                            <Card class="border-primary border-2">
+                            <Card class="border-2 border-primary">
                                 <CardHeader>
                                     <CardTitle class="font-serif text-xl font-semibold">
                                         Pro
@@ -697,7 +716,8 @@ watch(mobileMenuOpen, (newValue) => {
                                             v-for="feature in proFeatures"
                                             :key="feature.title"
                                             :class="feature.bold ? 'font-bold' : ''"
-                                            class="flex items-start gap-2">
+                                            class="flex items-start gap-2"
+                                        >
                                             <Icon
                                                 name="Check"
                                                 class="mt-0.5 size-5 text-primary" />
@@ -723,7 +743,7 @@ watch(mobileMenuOpen, (newValue) => {
                 id="faq"
                 class="container mx-auto px-4 py-16 sm:py-20">
                 <div class="flex">
-                    <div class="mb-8 sm:mb-10 w-1/2">
+                    <div class="mb-8 w-1/2 sm:mb-10">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                             Frequently asked questions
                         </h2>
