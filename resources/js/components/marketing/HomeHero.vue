@@ -70,7 +70,7 @@ const page = usePage()
                 <div class="mx-auto w-full">
                     <div
                         data-aos="zoom-in"
-                        class="relative md:rotate-3 rounded-t-xl md:rounded-xl border max-h-[300px] sm:max-h-[450px] md:max-h-[500px] overflow-hidden border-sidebar-border/80 bg-white dark:bg-neutral-900 p-2 md:shadow-sm">
+                        class="relative md:rotate-3 rounded-t-xl md:rounded-xl border max-h-[400px] sm:max-h-[450px] md:max-h-[500px] overflow-hidden border-sidebar-border/80 bg-white dark:bg-neutral-900 p-2 md:shadow-sm">
                         <img
                             loading="lazy"
                             width="730"

@@ -492,6 +492,7 @@ watch(mobileMenuOpen, (newValue) => {
                             size="icon"
                             variant="white"
                             @click="moveSliderLeft">
+                            <span class="sr-only">Previous slide</span>
                             <Icon
                                 name="ChevronLeft"
                                 class="h-5 w-5" />
@@ -500,6 +501,7 @@ watch(mobileMenuOpen, (newValue) => {
                             size="icon"
                             variant="white"
                             @click="moveSliderRight">
+                            <span class="sr-only">Next slide</span>
                             <Icon
                                 name="ChevronRight"
                                 class="h-5 w-5" />
@@ -689,8 +691,8 @@ watch(mobileMenuOpen, (newValue) => {
             <section
                 id="faq"
                 class="container mx-auto px-4 py-16 sm:py-20">
-                <div class="flex">
-                    <div class="mb-8 w-1/2 sm:mb-10">
+                <div class="flex flex-col md:flex-row">
+                    <div class="mb-2 w-full md:w-1/2 sm:mb-10">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                             Frequently asked questions
                         </h2>
