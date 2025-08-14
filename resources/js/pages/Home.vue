@@ -3,14 +3,23 @@ import 'aos/dist/aos.css'
 import AOS from 'aos'
 import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
-import Silk from '@/components/backgrounds/Silk/Silk.vue'
 import HomeHero from '@/components/marketing/HomeHero.vue'
 import ScanScreenshot from '~/images/marketing/scan-screenshot.png'
 import FilterScreenshot from '~/images/marketing/filter-screenshot.png'
-import HomeHeroStacked from '@/components/marketing/HomeHeroStacked.vue'
-import SplitText from '@/components/textanimations/SplitText/SplitText.vue'
+import ScanScreenshotDark from '~/images/marketing/scan-screenshot-dark.png'
+import FilterScreenshotDark from '~/images/marketing/filter-screenshot-dark.png'
 import SingleBookScreenshot from '~/images/marketing/single-book-screenshot.png'
-import PlanToReadScreenshot from '~/images/marketing/single-book-screenshot.png'
+import SliderSearchScreenshot from '~/images/marketing/slider-search-screenshot.png'
+import SliderLibraryScreenshot from '~/images/marketing/slider-library-screenshot.png'
+import SingleBookScreenshotDark from '~/images/marketing/single-book-screenshot-dark.png'
+import SliderSearchScreenshotDark from '~/images/marketing/slider-search-screenshot-dark.png'
+import SliderSingleBookScreenshot from '~/images/marketing/slider-single-book-screenshot.png'
+import SliderLibraryScreenshotDark from '~/images/marketing/slider-library-screenshot-dark.png'
+import SliderLibraryShelfScreenshot from '~/images/marketing/slider-library-shelf-screenshot.png'
+import SliderSingleBookScreenshotDark from '~/images/marketing/slider-single-book-screenshot-dark.png'
+import SliderLibraryFilteredScreenshot from '~/images/marketing/slider-library-filtered-screenshot.png'
+import SliderLibraryShelfScreenshotDark from '~/images/marketing/slider-library-shelf-screenshot-dark.png'
+import SliderLibraryFilteredScreenshotDark from '~/images/marketing/slider-library-filtered-screenshot-dark.png'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
 import { useCloned, useMediaQuery } from '@vueuse/core'
@@ -41,29 +50,6 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 
 const { authed } = useAuthedUser()
 
-const screenshots = [
-    {
-        src: 'https://placehold.co/600x400/EEE/31343C',
-        alt: 'Home dashboard with stats and activity'
-    },
-    {
-        src: 'https://placehold.co/600x400/EEE/31343C',
-        alt: 'Library view with list of books'
-    },
-    {
-        src: 'https://placehold.co/600x400/EEE/31343C',
-        alt: 'Add Book search results and filters'
-    },
-    {
-        src: 'https://placehold.co/600x400/EEE/31343C',
-        alt: 'Book detail page with notes and reviews'
-    },
-    {
-        src: 'https://placehold.co/600x400/EEE/31343C',
-        alt: 'Barcode scanning interface'
-    }
-]
-
 const links = [
     {
         href: '#how-it-works',
@@ -84,6 +70,62 @@ const links = [
     {
         href: '#faq',
         label: 'FAQ'
+    }
+]
+
+const howItWorksSteps = [
+    {
+        title: 'Add Books',
+        description: 'Search or scan barcodes to build your library fast.',
+        icon: 'ScanBarcode',
+        image: ScanScreenshot,
+        darkImage: ScanScreenshotDark
+    },
+    {
+        title: 'Sort & Filter',
+        description: 'Slice your collection any way you want: by author, subject, colour, or status.',
+        icon: 'ArrowUpNarrowWide',
+        image: FilterScreenshot,
+        darkImage: FilterScreenshotDark
+    },
+    {
+        title: 'Explore & Rate',
+        description: 'Open any book to see its details, rate, add notes, and leave reviews.',
+        icon: 'BookOpen',
+        image: SingleBookScreenshot,
+        darkImage: SingleBookScreenshotDark
+    }
+]
+
+const screenshots = [
+    // {
+    //     src: SliderHomeScreenshot,
+    //     alt: 'Home dashboard with stats and activity'
+    // },
+    {
+        src: SliderLibraryScreenshot,
+        darkSrc: SliderLibraryScreenshotDark,
+        alt: 'Library view with grid of books'
+    },
+    {
+        src: SliderLibraryFilteredScreenshot,
+        darkSrc: SliderLibraryFilteredScreenshotDark,
+        alt: 'Filtered library view '
+    },
+    {
+        src: SliderLibraryShelfScreenshot,
+        darkSrc: SliderLibraryShelfScreenshotDark,
+        alt: 'Alternative library view with shelf layout'
+    },
+    {
+        src: SliderSearchScreenshot,
+        darkSrc: SliderSearchScreenshotDark,
+        alt: 'Book search and filter interface'
+    },
+    {
+        src: SliderSingleBookScreenshot,
+        darkSrc: SliderSingleBookScreenshotDark,
+        alt: 'Single book details with reviews and notes'
     }
 ]
 
@@ -120,48 +162,9 @@ const keyBenefits = [
     // }
 ]
 
-const howItWorksSteps = [
-    {
-        title: 'Add Books',
-        description: 'Search or scan barcodes to build your library fast.',
-        icon: 'ScanBarcode',
-        image: ScanScreenshot
-    },
-    {
-        title: 'Sort & Filter',
-        description: 'Slice your collection any way you want: by author, subject, colour, or status.',
-        icon: 'ArrowUpNarrowWide',
-        image: FilterScreenshot
-    },
-    {
-        title: 'Explore & Rate',
-        description: 'Open any book to see its details, rate, add notes, and leave reviews.',
-        icon: 'BookOpen',
-        image: SingleBookScreenshot
-    }
-]
-
-const testimonials = [
-    {
-        name: 'Future Me',
-        rating: 5,
-        feedback: 'Finally, I know which books I’ve lent out… and to who!'
-    },
-    {
-        name: 'Probably You',
-        rating: 5,
-        feedback: 'I’m blaming this app for my overflowing TBR list.'
-    },
-    {
-        name: 'Someone Clever',
-        rating: 5,
-        feedback: 'It’s like a personal librarian, but it doesn’t shush me.'
-    }
-]
-
 const features = ref([
     {
-        title: 'Up to ' + props.freeLimits.max_books + ' Books',
+        title: 'Up to ' + props.freeLimits?.max_books + ' Books',
         enabled: true,
         bold: false
     },
@@ -240,7 +243,7 @@ function moveSliderRight () {
     const singleSlide = document.querySelector('.single-screenshot')
     if (slider) {
         slider.scrollBy({
-            left: singleSlide.clientWidth,
+            left: singleSlide?.clientWidth,
             behavior: 'smooth'
         })
     }
@@ -251,7 +254,7 @@ function moveSliderLeft () {
     const singleSlide = document.querySelector('.single-screenshot')
     if (slider) {
         slider.scrollBy({
-            left: -singleSlide.clientWidth,
+            left: singleSlide ? -singleSlide.clientWidth : 0,
 
             behavior: 'smooth'
         })
@@ -303,7 +306,7 @@ watch(mobileMenuOpen, (newValue) => {
                     mobileMenuOpen
                         ? 'bg-background md:bg-background'
                         : hasScrolled
-                            ? 'bg-white/75 shadow-sm backdrop-blur-sm md:bg-white/75'
+                            ? 'bg-white/75 dark:bg-black/75 shadow-sm backdrop-blur-sm md:bg-white/75 md:dark:bg-black/75'
                             : 'bg-transparent shadow-none',
                 ]"
                 class="mx-auto flex h-14 items-center justify-between px-2.5 transition-all md:rounded-xl"
@@ -392,7 +395,7 @@ watch(mobileMenuOpen, (newValue) => {
                         <Card
                             v-for="step in howItWorksSteps"
                             :key="step.title"
-                            class="overflow-hidden bg-white pb-0">
+                            class="overflow-hidden bg-white dark:bg-background pb-0">
                             <CardHeader>
                                 <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
                                     <Icon
@@ -410,14 +413,19 @@ watch(mobileMenuOpen, (newValue) => {
                                 loading="lazy"
                                 :src="step.image"
                                 :alt="`${step.title} screenshot`"
-                                class="mt-auto w-full">
+                                class="mt-auto w-full dark:hidden">
+                            <img
+                                loading="lazy"
+                                :src="step.darkImage"
+                                :alt="`${step.title} screenshot`"
+                                class="mt-auto w-full hidden dark:block">
                         </Card>
                     </div>
                 </div>
             </section>
             <section
                 id="showcase"
-                class="bg-white py-16 sm:py-28">
+                class="bg-white dark:bg-neutral-900 py-16 sm:py-28">
                 <div class="container mx-auto px-4">
                     <div class="mb-8 sm:mb-10">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -447,7 +455,12 @@ watch(mobileMenuOpen, (newValue) => {
                                     loading="lazy"
                                     :src="screenshot.src"
                                     :alt="screenshot.alt"
-                                    class="absolute inset-0 h-full w-full object-cover">
+                                    class="absolute inset-0 w-full object-cover dark:hidden">
+                                <img
+                                    loading="lazy"
+                                    :src="screenshot.darkSrc"
+                                    :alt="screenshot.alt"
+                                    class="absolute inset-0 w-full object-cover hidden dark:block">
                             </div>
                             <p class="mt-3 text-center text-sm text-secondary-foreground">
                                 {{ screenshot.alt }}
@@ -491,7 +504,7 @@ watch(mobileMenuOpen, (newValue) => {
                         <Card
                             v-for="benefit in keyBenefits"
                             :key="benefit.title"
-                            class="relative bg-white">
+                            class="relative bg-white dark:bg-background">
                             <div
                                 v-if="benefit.pro"
                                 class="absolute top-3 right-3 rounded-full bg-primary px-2 py-1 text-xs font-medium text-white">
@@ -567,7 +580,7 @@ watch(mobileMenuOpen, (newValue) => {
             <!--            </section>-->
             <section
                 id="pricing"
-                class="bg-white">
+                class="bg-white dark:bg-neutral-900">
                 <div class="container mx-auto px-4 py-16 sm:py-20">
                     <div>
                         <div class="mb-8 sm:mb-10">

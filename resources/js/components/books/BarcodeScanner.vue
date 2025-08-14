@@ -37,11 +37,11 @@ async function startScan () {
     book.value = null
     scanning.value = true
 
-    // useRequest(useRoute('api.books.fetch_or_create', '9780307763051'), 'GET')
-    //     .then(response => {
-    //         book.value = response.book
-    //         result.value = '9780307763051'
-    //     })
+    useRequest(useRoute('api.books.fetch_or_create', '9780307763051'), 'GET')
+        .then(response => {
+            book.value = response.book
+            result.value = '9780307763051'
+        })
 
     try {
         controls = await codeReader.decodeFromConstraints(

@@ -1,5 +1,7 @@
 import { AppPageProps } from '@/types/index'
 
+declare module 'aos';
+
 declare global {
     interface Window {
         browserSupportsWebAuthn: object;

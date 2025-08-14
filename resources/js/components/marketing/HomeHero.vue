@@ -2,6 +2,7 @@
 import Silk from '@/components/backgrounds/Silk/Silk.vue'
 import HomeScreenshot from '~/images/marketing/home-screenshot.png'
 import SplitText from '@/components/textanimations/SplitText/SplitText.vue'
+import HomeScreenshotDark from '~/images/marketing/home-screenshot-dark.png'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
 import { Button } from '@/components/ui/button/index.js'
@@ -67,12 +68,18 @@ const page = usePage()
                 <div class="mx-auto w-full">
                     <div
                         data-aos="zoom-in"
-                        class="relative rotate-3 rounded-xl border border-sidebar-border/80 bg-white p-2 shadow-sm">
+                        class="relative rotate-3 rounded-xl border border-sidebar-border/80 bg-white dark:bg-neutral-900 p-2 shadow-sm">
                         <img
                             loading="lazy"
                             :src="HomeScreenshot"
                             :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
-                            class="h-auto w-full rounded-lg"
+                            class="h-auto w-full rounded-lg dark:hidden"
+                        >
+                        <img
+                            loading="lazy"
+                            :src="HomeScreenshotDark"
+                            :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
+                            class="h-auto w-full rounded-lg hidden dark:block"
                         >
                         <!--                                <div-->
                         <!--                                    data-aos="zoom-in"-->
