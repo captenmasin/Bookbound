@@ -233,7 +233,8 @@ defineOptions({ layout: AppLayout })
                 v-if="authedUser"
                 class="flex flex-col">
                 <h1 class="font-serif text-2xl font-semibold text-foreground md:text-3xl">
-                    Welcome back, {{ firstName }}
+                    <!--                    Welcome back, {{ firstName }}-->
+                    Welcome back
                 </h1>
                 <p class="text-sm text-accent-foreground">
                     Here's a quick look at your library
