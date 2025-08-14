@@ -291,7 +291,7 @@ watch(mobileMenuOpen, (newValue) => {
             class="fixed top-14 left-0 z-30 h-full w-full"
             @click="mobileMenuOpen = false"
         />
-        <header class="fixed top-0 left-1/2 z-40 w-full -translate-x-1/2 rounded-full transition-all md:pt-2">
+        <header class="fixed top-0 px-12 left-1/2 z-40 w-full -translate-x-1/2 rounded-full transition-all md:pt-2">
             <div
                 :class="[
                     mobileMenuOpen
@@ -300,7 +300,7 @@ watch(mobileMenuOpen, (newValue) => {
                             ? 'bg-white/75 shadow-sm backdrop-blur-sm md:bg-white/75'
                             : 'bg-transparent shadow-none',
                 ]"
-                class="container mx-auto flex h-14 items-center justify-between px-2.5 transition-all md:rounded-xl"
+                class="mx-auto flex h-14 items-center justify-between px-2.5 transition-all md:rounded-xl"
             >
                 <a
                     class="flex items-center gap-2 font-semibold"

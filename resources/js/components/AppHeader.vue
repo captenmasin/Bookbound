@@ -191,14 +191,14 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                             PRO
                         </div>
 
-                        <JoinProTrigger v-else>
-                            <button class="font-medium hidden cursor-pointer mt-1.5 mr-2 text-xs xs:flex items-center gap-1 text-primary">
-                                <Icon
-                                    name="Sparkles"
-                                    class="size-4" />
-                                Upgrade to Pro
-                            </button>
-                        </JoinProTrigger>
+                        <!--                        <JoinProTrigger v-else>-->
+                        <!--                            <button class="font-medium hidden cursor-pointer mt-1.5 mr-2 text-xs xs:flex items-center gap-1 text-primary">-->
+                        <!--                                <Icon-->
+                        <!--                                    name="Sparkles"-->
+                        <!--                                    class="size-4" />-->
+                        <!--                                Upgrade to Pro-->
+                        <!--                            </button>-->
+                        <!--                        </JoinProTrigger>-->
                     </div>
 
                     <UserMenuDropdown

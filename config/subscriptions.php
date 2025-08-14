@@ -11,7 +11,7 @@ return [
                 'Up to 10 books',
             ],
             'limits' => [
-                'max_books' => 5,
+                'max_books' => 500,
                 'private_notes' => false,
                 'custom_covers' => false,
             ],
