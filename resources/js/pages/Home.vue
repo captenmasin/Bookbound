@@ -4,22 +4,22 @@ import AOS from 'aos'
 import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import HomeHero from '@/components/marketing/HomeHero.vue'
-import ScanScreenshot from '~/images/marketing/scan-screenshot.png'
-import FilterScreenshot from '~/images/marketing/filter-screenshot.png'
-import ScanScreenshotDark from '~/images/marketing/scan-screenshot-dark.png'
-import FilterScreenshotDark from '~/images/marketing/filter-screenshot-dark.png'
-import SingleBookScreenshot from '~/images/marketing/single-book-screenshot.png'
-import SliderSearchScreenshot from '~/images/marketing/slider-search-screenshot.png'
-import SliderLibraryScreenshot from '~/images/marketing/slider-library-screenshot.png'
-import SingleBookScreenshotDark from '~/images/marketing/single-book-screenshot-dark.png'
-import SliderSearchScreenshotDark from '~/images/marketing/slider-search-screenshot-dark.png'
-import SliderSingleBookScreenshot from '~/images/marketing/slider-single-book-screenshot.png'
-import SliderLibraryScreenshotDark from '~/images/marketing/slider-library-screenshot-dark.png'
-import SliderLibraryShelfScreenshot from '~/images/marketing/slider-library-shelf-screenshot.png'
-import SliderSingleBookScreenshotDark from '~/images/marketing/slider-single-book-screenshot-dark.png'
-import SliderLibraryFilteredScreenshot from '~/images/marketing/slider-library-filtered-screenshot.png'
-import SliderLibraryShelfScreenshotDark from '~/images/marketing/slider-library-shelf-screenshot-dark.png'
-import SliderLibraryFilteredScreenshotDark from '~/images/marketing/slider-library-filtered-screenshot-dark.png'
+import ScanScreenshot from '~/images/marketing/scan-screenshot.webp'
+import FilterScreenshot from '~/images/marketing/filter-screenshot.webp'
+import ScanScreenshotDark from '~/images/marketing/scan-screenshot-dark.webp'
+import FilterScreenshotDark from '~/images/marketing/filter-screenshot-dark.webp'
+import SingleBookScreenshot from '~/images/marketing/single-book-screenshot.webp'
+import SliderSearchScreenshot from '~/images/marketing/slider-search-screenshot.webp'
+import SliderLibraryScreenshot from '~/images/marketing/slider-library-screenshot.webp'
+import SingleBookScreenshotDark from '~/images/marketing/single-book-screenshot-dark.webp'
+import SliderSearchScreenshotDark from '~/images/marketing/slider-search-screenshot-dark.webp'
+import SliderSingleBookScreenshot from '~/images/marketing/slider-single-book-screenshot.webp'
+import SliderLibraryScreenshotDark from '~/images/marketing/slider-library-screenshot-dark.webp'
+import SliderLibraryShelfScreenshot from '~/images/marketing/slider-library-shelf-screenshot.webp'
+import SliderSingleBookScreenshotDark from '~/images/marketing/slider-single-book-screenshot-dark.webp'
+import SliderLibraryFilteredScreenshot from '~/images/marketing/slider-library-filtered-screenshot.webp'
+import SliderLibraryShelfScreenshotDark from '~/images/marketing/slider-library-shelf-screenshot-dark.webp'
+import SliderLibraryFilteredScreenshotDark from '~/images/marketing/slider-library-filtered-screenshot-dark.webp'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
 import { useCloned, useMediaQuery } from '@vueuse/core'
@@ -70,6 +70,18 @@ const links = [
     {
         href: '#faq',
         label: 'FAQ'
+    }
+]
+
+const footerLinks = [
+    ...links,
+    {
+        href: useRoute('login'),
+        label: 'Login'
+    },
+    {
+        href: useRoute('register'),
+        label: 'Get Started Free'
     }
 ]
 
@@ -412,11 +424,15 @@ watch(mobileMenuOpen, (newValue) => {
                             <img
                                 loading="lazy"
                                 :src="step.image"
+                                width="400"
+                                height="330"
                                 :alt="`${step.title} screenshot`"
                                 class="mt-auto w-full dark:hidden">
                             <img
                                 loading="lazy"
                                 :src="step.darkImage"
+                                width="400"
+                                height="330"
                                 :alt="`${step.title} screenshot`"
                                 class="mt-auto w-full hidden dark:block">
                         </Card>
@@ -455,11 +471,15 @@ watch(mobileMenuOpen, (newValue) => {
                                     loading="lazy"
                                     :src="screenshot.src"
                                     :alt="screenshot.alt"
+                                    width="630"
+                                    height="370"
                                     class="absolute inset-0 w-full object-cover dark:hidden">
                                 <img
                                     loading="lazy"
                                     :src="screenshot.darkSrc"
                                     :alt="screenshot.alt"
+                                    width="630"
+                                    height="370"
                                     class="absolute inset-0 w-full object-cover hidden dark:block">
                             </div>
                             <p class="mt-3 text-center text-sm text-secondary-foreground">
@@ -722,7 +742,7 @@ watch(mobileMenuOpen, (newValue) => {
                         </div>
                         <ul class="columns-2 space-y-2 text-secondary-foreground">
                             <li
-                                v-for="link in links"
+                                v-for="link in footerLinks"
                                 :key="link.href">
                                 <a :href="link.href">
                                     {{ link.label }}

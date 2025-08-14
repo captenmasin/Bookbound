@@ -1,8 +1,8 @@
 <script setup>
 import Silk from '@/components/backgrounds/Silk/Silk.vue'
-import HomeScreenshot from '~/images/marketing/home-screenshot.png'
+import HomeScreenshot from '~/images/marketing/home-screenshot-med.webp'
 import SplitText from '@/components/textanimations/SplitText/SplitText.vue'
-import HomeScreenshotDark from '~/images/marketing/home-screenshot-dark.png'
+import HomeScreenshotDark from '~/images/marketing/home-screenshot-med-dark.webp'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
 import { Button } from '@/components/ui/button/index.js'
@@ -71,6 +71,8 @@ const page = usePage()
                         class="relative rotate-3 rounded-xl border border-sidebar-border/80 bg-white dark:bg-neutral-900 p-2 shadow-sm">
                         <img
                             loading="lazy"
+                            width="730"
+                            height="450"
                             :src="HomeScreenshot"
                             :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
                             class="h-auto w-full rounded-lg dark:hidden"
@@ -78,6 +80,8 @@ const page = usePage()
                         <img
                             loading="lazy"
                             :src="HomeScreenshotDark"
+                            width="730"
+                            height="450"
                             :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
                             class="h-auto w-full rounded-lg hidden dark:block"
                         >
