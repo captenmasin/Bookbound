@@ -3,7 +3,6 @@ import Icon from '@/components/Icon.vue'
 import Loader from '@/components/Loader.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import PageTitle from '@/components/PageTitle.vue'
-import JoinProDialog from '@/components/JoinProDialog.vue'
 import JoinProTrigger from '@/components/JoinProTrigger.vue'
 import HorizontalSkeleton from '@/components/books/HorizontalSkeleton.vue'
 import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
@@ -152,8 +151,8 @@ defineOptions({
                                 </Button>
                             </div>
                         </div>
-                        <span class="pl-1 hidden md:flex text-xs text-muted-foreground">
-                            Search by author using <code class="bg-muted px-1 rounded-sm">author: name</code>
+                        <span class="hidden pl-1 text-xs text-muted-foreground md:flex">
+                            Search by author using <code class="rounded-sm px-1 bg-muted">author: name</code>
                         </span>
                     </div>
                     <Deferred
@@ -162,12 +161,12 @@ defineOptions({
 
                         <div
                             v-if="previousSearches && previousSearches.length"
-                            class="hidden md:flex flex-col">
+                            class="hidden flex-col md:flex">
                             <h2 class="font-serif text-xl font-semibold text-accent-foreground">
                                 Previous searches...
                             </h2>
                             <ul
-                                class="divide-y divide-muted p-0">
+                                class="p-0 divide-y divide-muted">
                                 <li
                                     v-for="previousSearch in previousSearches"
                                     :key="previousSearch.id"
@@ -182,14 +181,14 @@ defineOptions({
                         </div>
                     </Deferred>
                 </form>
-                <span class="pl-1 pt-1 text-xs flex md:hidden text-muted-foreground">
-                    Search by author using <code class="bg-muted px-1 rounded-sm">author: name</code>
+                <span class="flex pt-1 pl-1 text-xs text-muted-foreground md:hidden">
+                    Search by author using <code class="rounded-sm px-1 bg-muted">author: name</code>
                 </span>
             </aside>
             <section class="flex w-full flex-1 flex-col md:w-auto">
                 <div
                     v-if="hasSearch && results && results.total > 0"
-                    class="mb-4 flex font-medium justify-between text-sm text-muted-foreground">
+                    class="mb-4 flex justify-between text-sm font-medium text-muted-foreground">
                     <p class="hidden md:flex">
                         Found {{ formatNumber(results.total) }} books
                     </p>
@@ -205,7 +204,7 @@ defineOptions({
                     v-if="!hasSearch && !authedUser?.subscription.can_add_book"
                     class="mb-4">
                     <Alert
-                        class="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
+                        class="flex flex-col justify-between gap-2 md:flex-row md:items-center md:gap-4">
                         <div>
                             <AlertTitle>Heads up!</AlertTitle>
                             <AlertDescription>
@@ -225,7 +224,7 @@ defineOptions({
 
                 <div
                     v-if="!hasSearch"
-                    class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground md:py-16"
+                    class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 text-center text-sm border-primary/10 text-muted-foreground md:py-16"
                 >
                     <Icon
                         name="Search"
@@ -265,13 +264,13 @@ defineOptions({
                                         <HorizontalSkeleton />
                                     </li>
                                 </ul>
-                                <div class="absolute top-24 left-1/2 flex -translate-1/2 flex-col items-center gap-2 md:top-1/2">
+                                <div class="absolute top-24 left-1/2 flex flex-col items-center gap-2 -translate-1/2 md:top-1/2">
                                     <Loader
                                         color="#FFFFFF"
-                                        class="mx-auto hidden w-10 md:w-18 dark:flex" />
+                                        class="mx-auto hidden w-10 dark:flex md:w-18" />
                                     <Loader
                                         color="#913608"
-                                        class="mx-auto flex w-10 md:w-18 dark:hidden" />
+                                        class="mx-auto flex w-10 dark:hidden md:w-18" />
                                     <p>Searching&hellip;</p>
                                 </div>
                             </div>
@@ -314,7 +313,7 @@ defineOptions({
                     </div>
                     <div
                         v-else
-                        class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground md:py-16"
+                        class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 text-center text-sm border-primary/10 text-muted-foreground md:py-16"
                     >
                         <Icon
                             name="BookDashed"

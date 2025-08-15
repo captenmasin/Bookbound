@@ -155,16 +155,16 @@ defineOptions({ layout: AppLayout })
         <Transition>
             <Alert
                 v-show="displayProBanner"
-                class="relative mb-6 md:mb-0 bg-primary border-primary text-white">
+                class="relative mb-6 text-white bg-primary border-primary md:mb-0">
                 <Icon
                     name="Sparkles"
                     class="mt-1 size-6" />
-                <AlertTitle class="font-serif text-lg md:text-xl text-white">
+                <AlertTitle class="font-serif text-lg text-white md:text-xl">
                     Get more with Pro!
                 </AlertTitle>
                 <AlertDescription class="text-white">
                     Upgrade to Pro for advanced features like unlimited books, private notes, and more.
-                    <div class="flex items-center gap-4 mt-4">
+                    <div class="mt-4 flex items-center gap-4">
                         <Button
                             variant="white"
                             class="text-primary"
@@ -183,7 +183,7 @@ defineOptions({ layout: AppLayout })
                     </div>
                 </AlertDescription>
                 <button
-                    class="absolute top-3 right-4 size-4 cursor-pointer text-white/50 hover:text-white"
+                    class="absolute top-3 right-4 cursor-pointer text-white/50 size-4 hover:text-white"
                     @click="closeProBanner">
                     <Icon
                         name="X"
@@ -233,8 +233,7 @@ defineOptions({ layout: AppLayout })
                 v-if="authedUser"
                 class="flex flex-col">
                 <h1 class="font-serif text-2xl font-semibold text-foreground md:text-3xl">
-                    <!--                    Welcome back, {{ firstName }}-->
-                    Welcome back
+                    Welcome back, {{ firstName }}
                 </h1>
                 <p class="text-sm text-accent-foreground">
                     Here's a quick look at your library
@@ -276,7 +275,7 @@ defineOptions({ layout: AppLayout })
                     :key="stat.name"
                     :href="stat.link"
                     prefetch
-                    class="relative flex items-center justify-between rounded-md border-0 border-accent bg-secondary px-3 py-2 md:transition-all hover:bg-primary/20 active:bg-primary/20 md:p-4"
+                    class="relative flex items-center justify-between rounded-md border-0 px-3 py-2 border-accent bg-secondary hover:bg-primary/20 active:bg-primary/20 md:p-4 md:transition-all"
                 >
                     <div>
                         <p class="pr-5 text-sm text-current/60">
@@ -305,7 +304,7 @@ defineOptions({ layout: AppLayout })
 
                     <div
                         v-if="currentlyReading && currentlyReading.length"
-                        class="-mx-4 snap-x py-4 -mt-2 snap-mandatory overflow-x-auto px-4 md:-mx-2 md:px-2">
+                        class="-mx-4 -mt-2 snap-x snap-mandatory overflow-x-auto px-4 py-4 md:-mx-2 md:px-2">
                         <ul class="flex w-max flex-row gap-4 md:grid md:w-full md:grid-cols-5 md:gap-4">
                             <li
                                 v-for="book in currentlyReading"
@@ -316,7 +315,7 @@ defineOptions({ layout: AppLayout })
                             <li class="w-40 snap-center md:w-auto">
                                 <Link
                                     :href="useRoute('books.search')"
-                                    class="flex aspect-book size-full items-center justify-center rounded-md border-2 border-dashed border-primary/10 bg-secondary/50 p-4 text-center text-base font-semibold text-primary/50 transition-all hover:bg-secondary/75"
+                                    class="flex items-center justify-center rounded-md border-2 border-dashed p-4 text-center text-base font-semibold transition-all aspect-book size-full border-primary/10 bg-secondary/50 text-primary/50 hover:bg-secondary/75"
                                 >
                                     Find more books
                                 </Link>
@@ -326,7 +325,7 @@ defineOptions({ layout: AppLayout })
 
                     <article
                         v-else
-                        class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground md:py-12"
+                        class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 text-center text-sm border-primary/10 text-muted-foreground md:py-12"
                     >
                         <Icon
                             name="BookOpen"
@@ -361,7 +360,7 @@ defineOptions({ layout: AppLayout })
                             </Link>
                         </Button>
                     </div>
-                    <ul class="divide-y divide-muted rounded-xl bg-white shadow dark:divide-zinc-950 dark:bg-zinc-900">
+                    <ul class="rounded-xl bg-white shadow divide-y divide-muted dark:divide-zinc-950 dark:bg-zinc-900">
                         <SingleActivity
                             v-for="activity in activities"
                             :key="activity.id"
@@ -390,7 +389,7 @@ defineOptions({ layout: AppLayout })
                     </h2>
                     <ul
                         v-if="authors && authors.length"
-                        class="mt-2 divide-y divide-muted p-0">
+                        class="mt-2 p-0 divide-y divide-muted">
                         <li
                             v-for="author in authors"
                             :key="author.uuid"

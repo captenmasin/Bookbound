@@ -3,7 +3,6 @@ import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import useEmitter from '@/composables/useEmitter'
 import UserMenuSheet from '@/components/UserMenuSheet.vue'
-import JoinProDialog from '@/components/JoinProDialog.vue'
 import JoinProTrigger from '@/components/JoinProTrigger.vue'
 import UserMenuDropdown from '@/components/UserMenuDropdown.vue'
 import { useMediaQuery } from '@vueuse/core'
@@ -15,8 +14,8 @@ import { UserPermission } from '@/enums/UserPermission'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
+import { Activity, BriefcaseBusiness, ChartLine, NotebookPen, Settings, Shield, Star, Wallet, Sparkles } from 'lucide-vue-next'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
-import { Activity, BriefcaseBusiness, CircleArrowUp, ChartLine, NotebookPen, Settings, Shield, Star, Wallet, Sparkles } from 'lucide-vue-next'
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
@@ -122,17 +121,17 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 
 <template>
     <div
-        class="sticky md:static top-0 md:translate-y-0 bg-background z-50 transition-all duration-300 ease-in-out"
+        class="sticky top-0 z-50 transition-all duration-300 ease-in-out bg-background md:static md:translate-y-0"
         :class="{ '-translate-y-full': !isVisible }">
         <div class="border-b border-sidebar-border/80">
-            <div class="mx-auto flex h-14 md:h-16 items-center px-4 md:max-w-7xl pwa:md:max-w-none">
+            <div class="mx-auto flex h-14 items-center px-4 pwa:md:max-w-none md:h-16 md:max-w-7xl">
                 <div
                     v-if="authed"
                     :class="$page.props.backUrl ? 'ml-0 opacity-100' : '-ml-8 opacity-0'"
-                    class="lg:hidden mr-2 transition-all duration-300">
+                    class="mr-2 transition-all duration-300 lg:hidden">
                     <Link
                         tabindex="-1"
-                        class="flex -ml-4 pl-2 text-primary"
+                        class="-ml-4 flex pl-2 text-primary"
                         :href="$page.props.backUrl ?? useRoute('dashboard')">
                         <Icon
                             name="ChevronLeft"
@@ -183,22 +182,22 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 
                 <div
                     v-if="authed && authedUser"
-                    class="flex ml-auto items-center space-x-2">
+                    class="ml-auto flex items-center space-x-2">
                     <div>
                         <div
                             v-if="authedUser.subscription.subscribed"
-                            class="text-[10px] font-semibold font-serif bg-primary text-primary-foreground rounded-full px-2 py-px">
+                            class="rounded-full px-2 py-px font-serif font-semibold text-[10px] bg-primary text-primary-foreground">
                             PRO
                         </div>
 
-                        <!--                        <JoinProTrigger v-else>-->
-                        <!--                            <button class="font-medium hidden cursor-pointer mt-1.5 mr-2 text-xs xs:flex items-center gap-1 text-primary">-->
-                        <!--                                <Icon-->
-                        <!--                                    name="Sparkles"-->
-                        <!--                                    class="size-4" />-->
-                        <!--                                Upgrade to Pro-->
-                        <!--                            </button>-->
-                        <!--                        </JoinProTrigger>-->
+                        <JoinProTrigger v-else>
+                            <button class="mr-2 hidden cursor-pointer items-center gap-1 text-xs font-medium mt-1.5 text-primary xs:flex">
+                                <Icon
+                                    name="Sparkles"
+                                    class="size-4" />
+                                Upgrade to Pro
+                            </button>
+                        </JoinProTrigger>
                     </div>
 
                     <UserMenuDropdown
@@ -214,7 +213,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                 </div>
                 <div
                     v-else
-                    class="flex gap-2 md:gap-4 ml-auto">
+                    class="ml-auto flex gap-2 md:gap-4">
                     <Button
                         variant="secondary"
                         class="sm"

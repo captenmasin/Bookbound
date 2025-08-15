@@ -85,7 +85,7 @@ function getUrl (book: Book): string {
         <li
             v-for="(book, index) in books"
             :key="book.identifier"
-            class="mb-8 border-b-2 border-amber-900 dark:border-neutral-700 book-card-shelf-item group pb-[2px]">
+            class="mb-8 border-b-2 border-amber-900 book-card-shelf-item group pb-[2px] dark:border-neutral-700">
             <Link
                 :href="getUrl(book)"
                 prefetch

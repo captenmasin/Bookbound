@@ -18,7 +18,7 @@ const loaded = ref(false)
             :src="placeholder"
             alt=""
             aria-hidden="true"
-            class="filter blur-md scale-105 transition-opacity duration-500"
+            class="scale-105 blur-md filter transition-opacity duration-500"
             :class="[loaded ? 'opacity-0' : '', imageClass ]"
         >
 

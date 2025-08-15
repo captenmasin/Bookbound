@@ -14,7 +14,7 @@ const page = usePage()
 
 <template>
     <section class="relative overflow-hidden">
-        <div class="silk-container absolute inset-0 z-1 opacity-10">
+        <div class="absolute inset-0 opacity-10 silk-container z-1">
             <Silk
                 :speed="15"
                 :scale="1"
@@ -23,12 +23,12 @@ const page = usePage()
                 :rotation="0"
                 class="h-full w-full" />
         </div>
-        <div class="absolute bottom-0 left-0 z-30 md:z-10 h-36 w-full bg-gradient-to-b from-transparent to-background" />
+        <div class="absolute bottom-0 left-0 z-30 h-36 w-full bg-gradient-to-b from-transparent to-background md:z-10" />
         <div
             aria-hidden="true"
             class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]"
         />
-        <div class="relative z-20 container mx-auto flex flex-col md:flex-row items-center gap-12 px-4 pt-28 pb-0 md:pt-48 md:pb-28">
+        <div class="container relative z-20 mx-auto flex flex-col items-center gap-12 px-4 pt-28 pb-0 md:flex-row md:pt-48 md:pb-28">
             <div class="w-full md:w-5/12 md:pr-24">
                 <SplitText
                     text="Your Reading Life at a Glance"
@@ -66,18 +66,18 @@ const page = usePage()
                     </Button>
                 </div>
             </div>
-            <div class="w-full md:w-7/12 relative">
+            <div class="relative w-full md:w-7/12">
                 <div class="mx-auto w-full">
                     <div
                         data-aos="zoom-in"
-                        class="relative md:rotate-3 rounded-t-xl md:rounded-xl border max-h-[400px] sm:max-h-[450px] md:max-h-[500px] overflow-hidden border-sidebar-border/80 bg-white dark:bg-neutral-900 p-2 md:shadow-sm">
+                        class="relative overflow-hidden rounded-t-xl border bg-white p-2 max-h-[400px] border-sidebar-border/80 dark:bg-neutral-900 sm:max-h-[450px] md:max-h-[500px] md:rotate-3 md:rounded-xl md:shadow-sm">
                         <img
                             loading="lazy"
                             width="730"
                             height="450"
                             :src="HomeScreenshot"
                             :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
-                            class="h-auto w-full rounded-lg not-md:hidden dark:hidden"
+                            class="not-md:hidden h-auto w-full rounded-lg dark:hidden"
                         >
                         <img
                             loading="lazy"
@@ -85,7 +85,7 @@ const page = usePage()
                             width="730"
                             height="450"
                             :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
-                            class="h-auto w-full rounded-lg not-md:hidden hidden dark:md:block"
+                            class="not-md:hidden hidden h-auto w-full rounded-lg dark:md:block"
                         >
 
                         <img
@@ -94,7 +94,7 @@ const page = usePage()
                             height="450"
                             :src="HomeScreenshotMobile"
                             :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
-                            class="h-auto w-full rounded-lg md:hidden dark:hidden"
+                            class="h-auto w-full rounded-lg dark:hidden md:hidden"
                         >
                         <img
                             loading="lazy"
@@ -102,12 +102,12 @@ const page = usePage()
                             width="730"
                             height="450"
                             :alt="`${page.props.app.name} dashboard showing stats and recent activity`"
-                            class="h-auto w-full rounded-lg md:hidden hidden dark:not-md:block"
+                            class="hidden h-auto w-full rounded-lg dark:not-md:block md:hidden"
                         >
                         <!--                                <div-->
                         <!--                                    data-aos="zoom-in"-->
                         <!--                                    data-aos-delay="200"-->
-                        <!--                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-52 rotate-4 rounded-lg border border-sidebar-border/80 bg-white p-1.5 shadow md:block"-->
+                        <!--                                    class="pointer-events-none absolute -top-6 -right-6 hidden w-52 rounded-lg border bg-white shadow rotate-4 border-sidebar-border/80 p-1.5 md:block"-->
                         <!--                                >-->
                         <!--                                    <img-->
                         <!--                                        loading="lazy"-->
@@ -118,7 +118,7 @@ const page = usePage()
                         <!--                                <div-->
                         <!--                                    data-aos="zoom-in"-->
                         <!--                                    data-aos-delay="300"-->
-                        <!--                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-52 -rotate-6 rounded-lg border border-sidebar-border/80 bg-white p-1.5 shadow md:block"-->
+                        <!--                                    class="pointer-events-none absolute -bottom-6 -left-6 hidden w-52 -rotate-6 rounded-lg border bg-white shadow border-sidebar-border/80 p-1.5 md:block"-->
                         <!--                                >-->
                         <!--                                    <img-->
                         <!--                                        loading="lazy"-->
@@ -127,7 +127,7 @@ const page = usePage()
                         <!--                                        class="rounded">-->
                         <!--                                </div>-->
                     </div>
-                    <div class="mt-4 hidden md:block text-center text-sm text-secondary-foreground/50">
+                    <div class="mt-4 hidden text-center text-sm text-secondary-foreground/50 md:block">
                         Product UI previews
                     </div>
                 </div>

@@ -37,7 +37,7 @@ const forwarded = useForwardPropsEmits(props, emits)
                     </slot>
                 </DialogDescription>
             </DialogHeader>
-            <DialogFooter class="flex gap-2 mt-4 sm:justify-end">
+            <DialogFooter class="mt-4 flex gap-2 sm:justify-end">
                 <DialogClose as-child>
                     <Button
                         variant="outline"

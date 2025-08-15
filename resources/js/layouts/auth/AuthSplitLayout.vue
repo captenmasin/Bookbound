@@ -32,17 +32,17 @@ const points = [
 </script>
 
 <template>
-    <div class="relative grid flex-col items-center bg-background justify-center px-8 h-dvh sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
+    <div class="relative grid flex-col items-center justify-center px-8 bg-background h-dvh sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
         <div class="relative hidden h-full flex-col p-10 text-white dark:border-r lg:flex">
             <div
-                class="absolute inset-4 flex flex-col justify-end bg-cover overflow-hidden shadow-md bg-center bg-secondary text-secondary-foreground rounded-xl">
+                class="absolute inset-4 flex flex-col justify-end overflow-hidden rounded-xl bg-cover bg-center shadow-md bg-secondary text-secondary-foreground">
                 <ProgressiveImage
                     :src="BookPile"
                     :placeholder="BookPileSmall"
                     alt="Book Pile"
-                    image-class="absolute inset-0 w-full h-full object-cover"
+                    image-class="absolute inset-0 h-full w-full object-cover"
                 />
-                <div class="z-10 bg-gradient-to-t from-black/60 via-black/30 text-white to-transparent absolute inset-0 flex items-end p-8">
+                <div class="absolute inset-0 z-10 flex items-end bg-gradient-to-t from-black/60 via-black/30 to-transparent p-8 text-white">
                     <ul class="flex flex-col gap-6">
                         <li
                             v-for="point in points"
@@ -50,7 +50,7 @@ const points = [
                             <h3 class="text-lg font-semibold">
                                 {{ point.title }}
                             </h3>
-                            <p class="text-sm text-white/80 pl-6">
+                            <p class="pl-6 text-sm text-white/80">
                                 {{ point.description }}
                             </p>
                         </li>
@@ -58,20 +58,20 @@ const points = [
                 </div>
             </div>
             <Link
-                :href="useRoute('user.books.index')"
-                class="relative z-20 flex items-center text-2xl text-white font-serif font-semibold tracking-tight">
+                :href="useRoute('home')"
+                class="relative z-20 flex items-center font-serif text-2xl font-semibold tracking-tight text-white">
                 <AppLogoIcon class="mr-2 rounded-lg fill-current size-8" />
-                <div class="flex flex-col relative">
+                <div class="relative flex flex-col">
                     <span>{{ name }}</span>
                 </div>
             </Link>
         </div>
         <div class="lg:p-8">
-            <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-sm py-4">
+            <div class="mx-auto flex w-full flex-col justify-center py-4 space-y-6 sm:w-sm">
                 <AppLogo
                     logo-size="size-12"
                     text-size="text-2xl"
-                    class="text-primary items-center gap-1 justify-center flex flex-col mx-auto lg:hidden mb-5" />
+                    class="mx-auto mb-5 flex flex-col items-center justify-center gap-1 text-primary lg:hidden" />
                 <div class="flex flex-col text-center space-y-1">
                     <h1
                         v-if="title"

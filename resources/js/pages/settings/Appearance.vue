@@ -58,10 +58,10 @@ defineOptions({
             </div>
         </div>
 
-        <div class="grid grid-cols-3 md:grid-cols-2 items-center">
+        <div class="grid grid-cols-3 items-center md:grid-cols-2">
             <Label
                 for="library-tilt"
-                class="grid col-span-2 md:col-span-1 gap-1">
+                class="col-span-2 grid gap-1 md:col-span-1">
                 <p>Book tilting</p>
                 <p class="text-xs text-muted-foreground">
                     Enable or disable the tilt effect for books in your library.
@@ -70,7 +70,7 @@ defineOptions({
                     v-if="formError"
                     :message="formError" />
             </Label>
-            <div class="flex flex-col w-full items-end">
+            <div class="flex w-full flex-col items-end">
                 <Switch
                     id="library-tilt"
                     v-model="settings['library.tilt_books']" />

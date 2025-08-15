@@ -8,9 +8,9 @@ function openDialog () {
 </script>
 
 <template>
-    <button
+    <Button
         as-child
         @click="openDialog">
         <slot />
-    </button>
+    </Button>
 </template>

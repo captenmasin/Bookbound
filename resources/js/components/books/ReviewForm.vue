@@ -62,14 +62,14 @@ function deleteReview () {
     <div>
         <div
             v-if="authed && authedUser && !displayForm && !hasExistingReview"
-            class="py-8 items-center flex text-center gap-2 border-2 border-dashed border-primary/20 rounded flex-col justify-center">
+            class="flex flex-col items-center justify-center gap-2 rounded border-2 border-dashed py-8 text-center border-primary/20">
             <UserAvatar
                 :user="authedUser"
                 class="size-10 md:size-14"
                 :size="64"
                 font-size="text-lg md:text-xl" />
 
-            <h2 class="font-semibold text-lg md:text-2xl font-serif">
+            <h2 class="font-serif text-lg font-semibold md:text-2xl">
                 Share your thoughts
             </h2>
 
@@ -122,12 +122,12 @@ function deleteReview () {
             v-if="!displayForm && hasExistingReview && existingReview"
             :review="existingReview"
             :book="book"
-            class="mb-4 border-2 border-dashed border-secondary rounded p-4"
+            class="mb-4 rounded border-2 border-dashed p-4 border-secondary"
             @deleted="deleteReview" />
 
         <div
             v-if="!displayForm"
-            class="mb-4 flex w-full gap-4 justify-end items-end">
+            class="mb-4 flex w-full items-end justify-end gap-4">
             <Button
                 v-if="hasExistingReview"
                 variant="secondary"

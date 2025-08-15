@@ -38,7 +38,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
         <SheetOverlay />
         <DialogContent
             data-slot="sheet-content"
-            class="focus:ring-0 focus:outline-hidden"
+            class="focus:outline-hidden focus:ring-0"
             :class="cn(
                 'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-100 data-[state=open]:duration-200',
                 side === 'right'

@@ -20,12 +20,12 @@ import SliderSingleBookScreenshotDark from '~/images/marketing/slider-single-boo
 import SliderLibraryFilteredScreenshot from '~/images/marketing/slider-library-filtered-screenshot.webp'
 import SliderLibraryShelfScreenshotDark from '~/images/marketing/slider-library-shelf-screenshot-dark.webp'
 import SliderLibraryFilteredScreenshotDark from '~/images/marketing/slider-library-filtered-screenshot-dark.webp'
+import { useMediaQuery } from '@vueuse/core'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
-import { useCloned, useMediaQuery } from '@vueuse/core'
 import { Button } from '@/components/ui/button/index.js'
 import { useAuthedUser } from '@/composables/useAuthedUser.js'
-import { nextTick, onMounted, PropType, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, PropType, ref, watch } from 'vue'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card/index.js'
 
@@ -38,7 +38,18 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    freeFeatures: {
+        type: Array as PropType<String[]>,
+        default: () => []
+    },
     freeLimits: {
+        type: Object as PropType<{ max_books: number }>
+    },
+    proFeatures: {
+        type: Array as PropType<String[]>,
+        default: () => []
+    },
+    proLimits: {
         type: Object as PropType<{ max_books: number }>
     }
 })
@@ -165,6 +176,18 @@ const keyBenefits = [
         description: 'See your top subjects and authors – find out what you really love.',
         icon: 'ChartLine',
         pro: false
+    },
+    {
+        title: 'Private Notes',
+        description: 'Write private notes that only you can see. Perfect for spoilers.',
+        icon: 'NotebookPen',
+        pro: true
+    },
+    {
+        title: 'Custom Book Covers',
+        description: 'Upload your own book covers to personalize your library.',
+        icon: 'BookImage',
+        pro: true
     }
     // {
     //     title: 'TODO',
@@ -174,54 +197,18 @@ const keyBenefits = [
     // }
 ]
 
-const features = ref([
-    {
-        title: 'Up to ' + props.freeLimits?.max_books + ' Books',
-        enabled: true,
-        bold: false
-    },
-    {
-        title: 'Scan Barcodes',
-        enabled: true,
-        bold: false
-    },
-    {
-        title: 'Search and Filter your Library',
-        enabled: true,
-        bold: false
-    },
-    {
-        title: 'Preview Book Details',
-        enabled: true,
-        bold: false
-    },
-    {
-        title: 'Track Book Status',
-        enabled: true,
-        bold: false
-    },
-    {
-        title: 'Review and Rate Books',
-        enabled: true,
-        bold: false
-    },
-    {
-        title: 'Private Notes',
-        enabled: false,
-        bold: false
-    },
-    {
-        title: 'Custom Book Covers',
-        enabled: false,
-        bold: false
-    }
-])
-
-const { cloned } = useCloned(features)
-const proFeatures = cloned
-
-proFeatures.value[0].title = 'Unlimited Books'
-proFeatures.value[0].bold = true
+const nonProFeaturesDisplay = computed(() => {
+    return props.proFeatures?.map((feature, index) => {
+        if (!props.freeFeatures[index]) {
+            return {
+                feature
+            }
+        }
+        return undefined
+    }).filter((item) => {
+        return item !== undefined
+    })
+})
 
 const faqs = [
     {
@@ -312,7 +299,7 @@ watch(mobileMenuOpen, (newValue) => {
             class="fixed top-14 left-0 z-40 h-full w-full"
             @click="mobileMenuOpen = false"
         />
-        <header class="fixed top-0 md:px-12 left-1/2 z-40 w-full -translate-x-1/2 rounded-full transition-all md:pt-2">
+        <header class="fixed top-0 left-1/2 z-40 w-full -translate-x-1/2 rounded-full transition-all md:px-12 md:pt-2">
             <div
                 :class="[
                     mobileMenuOpen
@@ -321,7 +308,7 @@ watch(mobileMenuOpen, (newValue) => {
                             ? 'bg-white/75 dark:bg-black/75 shadow-sm backdrop-blur-sm md:bg-white/75 md:dark:bg-black/75'
                             : 'bg-transparent shadow-none',
                 ]"
-                class="mx-auto flex h-14 items-center justify-between px-2.5 transition-all md:rounded-xl"
+                class="mx-auto flex h-14 items-center justify-between transition-all px-2.5 md:rounded-xl"
             >
                 <a
                     class="flex items-center gap-2 font-semibold"
@@ -335,7 +322,7 @@ watch(mobileMenuOpen, (newValue) => {
                         v-for="link in links"
                         :key="link.href"
                         :href="link.href"
-                        class="text-sm font-medium text-foreground transition-all hover:text-accent-foreground/75"
+                        class="text-sm font-medium transition-all text-foreground hover:text-accent-foreground/75"
                     >
                         {{ link.label }}
                     </a>
@@ -440,7 +427,7 @@ watch(mobileMenuOpen, (newValue) => {
                         <Card
                             v-for="step in howItWorksSteps"
                             :key="step.title"
-                            class="overflow-hidden bg-white dark:bg-background pb-0">
+                            class="overflow-hidden bg-white pb-0 dark:bg-background">
                             <CardHeader>
                                 <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
                                     <Icon
@@ -467,14 +454,14 @@ watch(mobileMenuOpen, (newValue) => {
                                 width="400"
                                 height="330"
                                 :alt="`${step.title} screenshot`"
-                                class="mt-auto w-full hidden dark:block">
+                                class="mt-auto hidden w-full dark:block">
                         </Card>
                     </div>
                 </div>
             </section>
             <section
                 id="showcase"
-                class="bg-white dark:bg-neutral-900 py-16 sm:py-28">
+                class="bg-white py-16 dark:bg-neutral-900 sm:py-28">
                 <div class="container mx-auto px-4">
                     <div class="mb-8 sm:mb-10">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -494,9 +481,9 @@ watch(mobileMenuOpen, (newValue) => {
                         <div
                             v-for="screenshot in screenshots"
                             :key="screenshot.src"
-                            class="single-screenshot shrink-0 basis-10/12 snap-center md:basis-1/2"
+                            class="shrink-0 basis-10/12 snap-center single-screenshot md:basis-1/2"
                         >
-                            <div class="relative aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-xl border border-sidebar-border/80 shadow-sm">
+                            <div class="relative w-full max-w-3xl overflow-hidden rounded-xl border shadow-sm aspect-[16/9] border-sidebar-border/80">
                                 <div
                                     class="absolute inset-0 h-5 rounded-t-xl"
                                     aria-hidden="true" />
@@ -513,7 +500,7 @@ watch(mobileMenuOpen, (newValue) => {
                                     :alt="screenshot.alt"
                                     width="630"
                                     height="370"
-                                    class="absolute inset-0 w-full object-cover hidden dark:block">
+                                    class="absolute inset-0 hidden w-full object-cover dark:block">
                             </div>
                             <p class="mt-3 text-center text-sm text-secondary-foreground">
                                 {{ screenshot.alt }}
@@ -555,30 +542,33 @@ watch(mobileMenuOpen, (newValue) => {
                             Everything you need to love your reading routine.
                         </p>
                     </div>
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                        <Card
+                    <div class="-mx-2 flex flex-wrap justify-center">
+                        <div
                             v-for="benefit in keyBenefits"
                             :key="benefit.title"
-                            class="relative bg-white dark:bg-background">
-                            <div
-                                v-if="benefit.pro"
-                                class="absolute top-3 right-3 rounded-full bg-primary px-2 py-1 text-xs font-medium text-white">
-                                Pro Feature
-                            </div>
-                            <CardHeader>
-                                <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
-                                    <Icon
-                                        :name="benefit.icon"
-                                        class="h-5 w-5" />
-                                </div>
-                                <CardTitle class="mt-2">
-                                    {{ benefit.title }}
-                                </CardTitle>
-                                <CardDescription class="text-pretty">
-                                    {{ benefit.description }}
-                                </CardDescription>
-                            </CardHeader>
-                        </Card>
+                            class="w-full p-2 sm:w-1/2 md:w-1/4">
+                            <Card class="relative w-full bg-white dark:bg-background">
+                                <a
+                                    v-if="benefit.pro"
+                                    href="#pricing"
+                                    class="absolute top-3 right-3 rounded-full px-2 py-1 text-xs font-medium text-white bg-primary">
+                                    Pro Feature
+                                </a>
+                                <CardHeader>
+                                    <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
+                                        <Icon
+                                            :name="benefit.icon"
+                                            class="h-5 w-5" />
+                                    </div>
+                                    <CardTitle class="mt-2">
+                                        {{ benefit.title }}
+                                    </CardTitle>
+                                    <CardDescription class="text-pretty">
+                                        {{ benefit.description }}
+                                    </CardDescription>
+                                </CardHeader>
+                            </Card>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -592,7 +582,7 @@ watch(mobileMenuOpen, (newValue) => {
             <!--                                Loved by early readers-->
             <!--                                <Icon-->
             <!--                                    name="Heart"-->
-            <!--                                    class="inline-block animate-beat size-10 -mt-6 rotate-24 fill-current text-red-500" />-->
+            <!--                                    class="-mt-6 inline-block fill-current text-red-500 animate-beat size-10 rotate-24" />-->
             <!--                            </h2>-->
             <!--                            <p class="mt-2 text-secondary-foreground">-->
             <!--                                A few words from our beta users.-->
@@ -618,7 +608,7 @@ watch(mobileMenuOpen, (newValue) => {
             <!--                                </CardHeader>-->
             <!--                                <CardContent>-->
             <!--                                    <div-->
-            <!--                                        class="mb-2 -mt-4 flex items-center gap-1 text-yellow-600"-->
+            <!--                                        class="-mt-4 mb-2 flex items-center gap-1 text-yellow-600"-->
             <!--                                        aria-label="5 out of 5 stars">-->
             <!--                                        <StarRatingDisplay-->
             <!--                                            :star-width="16"-->
@@ -659,17 +649,24 @@ watch(mobileMenuOpen, (newValue) => {
                                 <CardContent>
                                     <ul class="-mt-2 space-y-3 text-secondary-foreground">
                                         <li
-                                            v-for="feature in features"
-                                            :key="feature.title"
-                                            :class="feature.enabled ? '' : 'text-secondary-foreground line-through opacity-50'"
-                                            class="flex items-start gap-2"
-                                        >
+                                            v-for="(feature, index) in freeFeatures"
+                                            :key="index"
+                                            class="flex items-start gap-2">
                                             <Icon
-                                                :name="feature.enabled ? 'Check' : 'X'"
-                                                :class="feature.enabled ? 'text-primary' : ''"
+                                                name="Check"
+                                                class="mt-0.5 size-5 text-primary"
+                                            />
+                                            {{ feature }}
+                                        </li>
+                                        <li
+                                            v-for="(feature, index) in nonProFeaturesDisplay"
+                                            :key="index"
+                                            class="flex items-start gap-2 line-through opacity-50">
+                                            <Icon
+                                                name="X"
                                                 class="mt-0.5 size-5"
                                             />
-                                            {{ feature.title }}
+                                            {{ feature.feature }}
                                         </li>
                                     </ul>
                                 </CardContent>
@@ -695,15 +692,16 @@ watch(mobileMenuOpen, (newValue) => {
                                 <CardContent>
                                     <ul class="-mt-2 space-y-3 text-secondary-foreground">
                                         <li
-                                            v-for="feature in proFeatures"
-                                            :key="feature.title"
-                                            :class="feature.bold ? 'font-bold' : ''"
+                                            v-for="(feature, index) in proFeatures"
+                                            :key="index"
+                                            :class="index === 0 ? 'font-bold' : ''"
                                             class="flex items-start gap-2"
                                         >
                                             <Icon
                                                 name="Check"
-                                                class="mt-0.5 size-5 text-primary" />
-                                            {{ feature.title }}
+                                                class="mt-0.5 size-5 text-primary"
+                                            />
+                                            {{ feature }}
                                         </li>
                                     </ul>
                                 </CardContent>
@@ -711,9 +709,9 @@ watch(mobileMenuOpen, (newValue) => {
                                     <Button
                                         class="w-full"
                                         as-child>
-                                        <Link :href="useRoute('register', { plan: 'pro' })">
+                                        <a :href="authed ? useRoute('checkout') : useRoute('register', { plan: 'pro' })">
                                             Upgrade to Pro
-                                        </Link>
+                                        </a>
                                     </Button>
                                 </CardFooter>
                             </Card>
@@ -725,7 +723,7 @@ watch(mobileMenuOpen, (newValue) => {
                 id="faq"
                 class="container mx-auto px-4 py-16 sm:py-20">
                 <div class="flex flex-col md:flex-row">
-                    <div class="mb-2 w-full md:w-1/2 sm:mb-10">
+                    <div class="mb-2 w-full sm:mb-10 md:w-1/2">
                         <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
                             Frequently asked questions
                         </h2>
@@ -756,7 +754,7 @@ watch(mobileMenuOpen, (newValue) => {
                 </div>
             </section>
         </main>
-        <footer class="mt-16 border-t border-sidebar-border/80 bg-background pb-4">
+        <footer class="mt-16 border-t pb-4 border-sidebar-border/80 bg-background">
             <div class="container mx-auto grid gap-10 px-4 py-10 md:grid-cols-2">
                 <div>
                     <a

@@ -26,7 +26,7 @@ const props = defineProps({
 
         <div
             v-if="activities.meta.total === 0 || activities.data.length === 0"
-            class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 md:py-12 text-center text-sm text-muted-foreground"
+            class="mb-4 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 text-center text-sm border-primary/10 text-muted-foreground md:py-12"
         >
             <Icon
                 name="Activity"
@@ -44,7 +44,7 @@ const props = defineProps({
 
         <ul
             v-else
-            class="divide-y divide-muted rounded-xl dark:divide-zinc-950 bg-white dark:bg-zinc-900 shadow">
+            class="rounded-xl bg-white shadow divide-y divide-muted dark:divide-zinc-950 dark:bg-zinc-900">
             <SingleActivity
                 v-for="activity in props.activities.data"
                 :key="activity.id"

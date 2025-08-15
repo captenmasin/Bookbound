@@ -59,7 +59,7 @@ const { userRating } = useBook(props.book)
 <template>
     <div
         :id="`book-card-${book.id}`"
-        class="flex w-full flex-col group gap-2 md:items-center book-card-horizontal"
+        class="flex w-full flex-col gap-2 group book-card-horizontal md:items-center"
         :class="narrow ? '' : 'md:flex-row md:gap-8'">
         <div class="flex w-full gap-4">
             <component
@@ -67,16 +67,16 @@ const { userRating } = useBook(props.book)
                 :href="url"
                 :target="target"
                 prefetch>
-                <div class="aspect-book relative w-20 shrink-0 overflow-hidden rounded-sm shadow-sm md:w-22">
+                <div class="relative w-20 shrink-0 overflow-hidden rounded-sm shadow-sm aspect-book md:w-22">
                     <span
                         v-if="book.binding"
-                        class="absolute opacity-0 group-hover:opacity-100 transition-all top-1 right-1 text-[10px] bg-white/75 text-zinc-900 px-1.5 py-px rounded-full">
+                        class="absolute top-1 right-1 rounded-full bg-white/75 py-px text-zinc-900 opacity-0 transition-all text-[10px] px-1.5 group-hover:opacity-100">
                         {{ book.binding }}
                     </span>
                     <img
                         :src="book.cover ?? DefaultCover"
                         :alt="`Book cover image for ${book.title}`"
-                        class="size-full bg-gray-200 object-cover">
+                        class="bg-gray-200 object-cover size-full">
                 </div>
             </component>
             <div class="flex w-full min-w-0 flex-col">
@@ -88,7 +88,7 @@ const { userRating } = useBook(props.book)
                         prefetch>
                         <h3
                             :class="isLink ? 'hover:text-primary dark:hover:text-primary/80' : ''"
-                            class="line-clamp-1 font-serif text-lg transition-colors md:line-clamp-2 md:text-lg/6 text-pretty"
+                            class="font-serif text-lg transition-colors line-clamp-1 text-pretty md:line-clamp-2 md:text-lg/6"
                         >
                             {{ book.title }}
                         </h3>
@@ -96,13 +96,13 @@ const { userRating } = useBook(props.book)
                 </div>
                 <p
                     v-if="book.authors && book.authors.length > 0"
-                    class="-mt-0.5 md:mt-0.5 line-clamp-1 text-xs text-muted-foreground/65 md:text-sm">
+                    class="text-xs -mt-0.5 line-clamp-1 text-muted-foreground/65 md:mt-0.5 md:text-sm">
                     By {{ book.authors?.map((a) => a.name).join(', ') }}
                 </p>
                 <p
                     v-if="book.description"
                     :class="userRating ? 'line-clamp-1' : 'line-clamp-2'"
-                    class="mt-0.5 md:mt-1 md:line-clamp-2 text-xs text-muted-foreground">
+                    class="text-xs mt-0.5 text-muted-foreground md:line-clamp-2 md:mt-1">
                     {{ book.description_clean }}
                 </p>
                 <StarRatingDisplay
@@ -115,7 +115,7 @@ const { userRating } = useBook(props.book)
         <div
             v-if="includeActions"
             :class="userRating ? '-mt-11' : '-mt-11'"
-            class="w-full md:max-w-64 shrink-0 pl-24 md:ml-auto md:w-40 md:max-w-none md:pl-0">
+            class="w-full shrink-0 pl-24 md:max-w-64 md:ml-auto md:w-40 md:max-w-none md:pl-0">
             <BookActions :book="book" />
         </div>
     </div>

@@ -7,9 +7,9 @@ import { logicAnd } from '@vueuse/math'
 import { Label } from '@/components/ui/label'
 import { useRoute } from '@/composables/useRoute'
 import { Link, router, usePage } from '@inertiajs/vue3'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import type { BreadcrumbItemType, NavItem } from '@/types'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useActiveElement, useMagicKeys, whenever } from '@vueuse/core'
 import { Home, LibraryBig, PlusSquareIcon, ScanBarcode } from 'lucide-vue-next'
 
@@ -96,8 +96,8 @@ router.on('navigate', (event) => {
         </AppContent>
         <div
             style="padding-bottom: env(safe-area-inset-bottom)"
-            class="sticky lg:hidden bg-background/75 border-t border-background-foreground backdrop-blur-sm bottom-0 left-0 right-0 z-50">
-            <ul class="flex items-center w-full  pb-2 max-w-xl mx-auto">
+            class="sticky right-0 bottom-0 left-0 z-50 border-t backdrop-blur-sm bg-background/75 border-background-foreground lg:hidden">
+            <ul class="mx-auto flex w-full max-w-xl items-center pb-2">
                 <li
                     v-for="item in mainNavItems"
                     :key="item.title"
@@ -106,16 +106,16 @@ router.on('navigate', (event) => {
                         :href="item.href"
                         prefetch
                         :class="[activeItemStyles(item)]"
-                        class="flex flex-col sm:flex-row py-2 gap-1 sm:gap-2 relative w-full items-center justify-center text-sm text-foreground hover:text-primary"
+                        class="relative flex w-full flex-col items-center justify-center gap-1 py-2 text-sm text-foreground hover:text-primary sm:flex-row sm:gap-2"
                         @click="handleClick(item)">
                         <div
                             :class="[item.isActive ? 'bg-primary/10' : 'bg-transparent']"
-                            class="rounded-full px-5 sm:px-4 sm:py-1 py-1.5 transition-all">
+                            class="rounded-full px-5 transition-all py-1.5 sm:px-4 sm:py-1">
                             <component
                                 :is="item.icon"
                                 class="size-5" />
                         </div>
-                        <Label class="font-medium text-xs sm:text-sm">
+                        <Label class="text-xs font-medium sm:text-sm">
                             {{ item.title }}
                         </Label>
                     </Link>

@@ -30,12 +30,12 @@ const message = computed(() => {
 
 <template>
     <AppLayout>
-        <div class="md:min-h-[80vh] py-20 md:py-0 flex items-center justify-center px-6">
-            <div class="max-w-md mx-auto h-full flex flex-col justify-center text-center">
-                <div class="text-8xl font-bold font-serif text-primary">
+        <div class="flex items-center justify-center px-6 py-20 md:min-h-[80vh] md:py-0">
+            <div class="mx-auto flex h-full max-w-md flex-col justify-center text-center">
+                <div class="font-serif text-8xl font-bold text-primary">
                     {{ status }}
                 </div>
-                <h1 class="text-2xl font-semibold font-serif text-foreground">
+                <h1 class="font-serif text-2xl font-semibold text-foreground">
                     {{ title }}
                 </h1>
                 <p class="mt-2 text-base text-foreground/50 text-pretty">

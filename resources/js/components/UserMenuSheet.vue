@@ -8,7 +8,6 @@ import { Link, router } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAuthedUser } from '@/composables/useAuthedUser'
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 
 interface Props {
@@ -75,7 +74,7 @@ router.on('navigate', (event) => {
                         </div>
                     </SheetTitle>
                 </SheetHeader>
-                <div class="px-6 pb-8 -mt-4 gap-2 flex flex-col h-full">
+                <div class="-mt-4 flex h-full flex-col gap-2 px-6 pb-8">
                     <template
                         v-for="item in items"
                         :key="item.title">
@@ -84,7 +83,7 @@ router.on('navigate', (event) => {
                             :as-child="true">
                             <component
                                 :is="item.tag ? item.tag : (item.target === '_blank' ? 'a' : Link)"
-                                class="flex items-center py-2 text-foreground text-lg font-medium gap-4 w-full"
+                                class="flex w-full items-center gap-4 py-2 text-lg font-medium text-foreground"
                                 :href="item.url"
                                 :prefetch="item.target !== '_blank'"
                                 @click="userMobileMenuOpen = false; item.action ? item.action() : null">
@@ -99,7 +98,7 @@ router.on('navigate', (event) => {
                     <Separator class="mt-auto" />
                     <button
                         tabindex="-1"
-                        class="flex items-center py-2 text-lg font-medium gap-4 w-full"
+                        class="flex w-full items-center gap-4 py-2 text-lg font-medium"
                         @click="logout">
                         <LogOut class="size-4.5" />
                         Log out

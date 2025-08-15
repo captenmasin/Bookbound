@@ -164,7 +164,7 @@ defineOptions({ layout: AppLayout })
                 </PageTitle>
                 <BookViewTabs
                     v-model="view"
-                    class="flex w-32 book-view-tabs mobile-book-view-tabs flex-1 shrink-0 max-w-32 md:hidden" />
+                    class="flex w-32 flex-1 shrink-0 book-view-tabs mobile-book-view-tabs max-w-32 md:hidden" />
             </div>
 
             <!-- View & Sort Controls ---------------------------------------- -->
@@ -240,7 +240,7 @@ defineOptions({ layout: AppLayout })
 
         <!-- Main layout ----------------------------------------------------- -->
         <div
-            class="flex flex-col items-start gap-0 md:gap-8 md:pt-0 md:mt-4 md:flex-row">
+            class="flex flex-col items-start gap-0 md:mt-4 md:flex-row md:gap-8 md:pt-0">
             <aside
                 :class="displayFilters ? 'mt-0 mb-4 h-[calc-size(auto,size)] overflow-auto border-secondary' : 'mt-0 h-0 overflow-hidden border-background'"
                 class="relative md:sticky top-4 md:mb-0 -mx-4 w-[calc(100%+calc(var(--spacing)*8))] flex-col gap-2 md:mt-0 border-y bg-muted px-4 transition-all duration-500 md:mx-0 md:flex md:h-auto md:w-72 md:overflow-visible md:border-0 md:bg-transparent md:px-0"
@@ -248,9 +248,9 @@ defineOptions({ layout: AppLayout })
                 <!-- Search ---------------------------------------------------- -->
                 <div class="mt-4 flex flex-col gap-2 md:mt-0">
                     <form
-                        class="flex flex-col gap-2 w-full"
+                        class="flex w-full flex-col gap-2"
                         @submit.prevent="submitForm">
-                        <div class="grid gap-2 w-full">
+                        <div class="grid w-full gap-2">
                             <!--                            <Label for="query">Search</Label>-->
                             <div class="relative flex w-full">
                                 <Input
@@ -275,7 +275,7 @@ defineOptions({ layout: AppLayout })
                         </div>
 
                         <!-- Author filter -------------------------------------------- -->
-                        <div class="grid gap-2 w-full">
+                        <div class="grid w-full gap-2">
                             <!--                            <Label for="query">Author</Label>-->
                             <Select v-model="author">
                                 <SelectTrigger class="w-full">
@@ -303,11 +303,11 @@ defineOptions({ layout: AppLayout })
                         </div>
 
                         <!-- Author filter -------------------------------------------- -->
-                        <div class="grid gap-2 w-full">
+                        <div class="grid w-full gap-2">
                             <!--                            <Label for="query">Tag</Label>-->
                             <Select
                                 v-model="tag"
-                                class="w-full flex">
+                                class="flex w-full">
                                 <SelectTrigger class="w-full md:max-w-72">
                                     <SelectValue placeholder="Filter by tag" />
                                     <span class="sr-only">
@@ -359,10 +359,10 @@ defineOptions({ layout: AppLayout })
             </aside>
 
             <!-- Books list -------------------------------------------------- -->
-            <section class="mt-4 flex w-full md:w-auto flex-1 flex-col md:mt-0">
+            <section class="mt-4 flex w-full flex-1 flex-col md:mt-0 md:w-auto">
                 <div
                     v-if="!filteredBooks.length"
-                    class="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 md:py-16 text-center text-sm border-primary/10 text-muted-foreground">
+                    class="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 text-center text-sm border-primary/10 text-muted-foreground md:py-16">
                     <Icon
                         name="BookDashed"
                         class="size-8" />

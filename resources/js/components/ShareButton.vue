@@ -112,7 +112,7 @@ const slots = useSlots()
                     </DialogTitle>
                 </DialogHeader>
 
-                <div class="flex items-center justify-between flex-wrap">
+                <div class="flex flex-wrap items-center justify-between">
                     <ShareNetwork
                         v-for="network in shareNetworks"
                         v-slot="{ share }"
@@ -124,10 +124,10 @@ const slots = useSlots()
                     >
                         <button
                             :style="{ backgroundColor: network.color }"
-                            class="flex p-2 justify-center aspect-square items-center rounded-lg gap-1 cursor-pointer"
+                            class="flex aspect-square cursor-pointer items-center justify-center gap-1 rounded-lg p-2"
                             @click="share">
                             <div
-                                class="flex mx-auto w-6 text-white"
+                                class="mx-auto flex w-6 text-white"
                                 v-html="network.icon" />
                             <span class="sr-only">{{ network.name }}</span>
                         </button>

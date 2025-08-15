@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 // Compute whether we should show the avatar image
-const showAvatar = computed(() => props.user.avatar && props.user.avatar !== '')
+// const showAvatar = computed(() => props.user.avatar && props.user.avatar !== '')
 </script>
 
 <template>

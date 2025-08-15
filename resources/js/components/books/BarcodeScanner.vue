@@ -37,12 +37,6 @@ async function startScan () {
     book.value = null
     scanning.value = true
 
-    useRequest(useRoute('api.books.fetch_or_create', '9780307763051'), 'GET')
-        .then(response => {
-            book.value = response.book
-            result.value = '9780307763051'
-        })
-
     try {
         controls = await codeReader.decodeFromConstraints(
             {
@@ -98,15 +92,15 @@ function stopScan () {
     }
 }
 
-const emit = defineEmits(['close'])
+// const emit = defineEmits(['close'])
 
-function fake () {
-    useRequest(useRoute('api.books.fetch_or_create', '9780307763051'), 'GET')
-        .then(response => {
-            book.value = response.book
-            result.value = '9780307763051'
-        })
-}
+// function fake () {
+//     useRequest(useRoute('api.books.fetch_or_create', '9780307763051'), 'GET')
+//         .then(response => {
+//             book.value = response.book
+//             result.value = '9780307763051'
+//         })
+// }
 
 // cleanup if user navigates away --------------------------------------------
 onBeforeUnmount(stopScan)
@@ -121,10 +115,10 @@ onMounted(() => {
         <!-- mirrored only on front cam -->
         <div
             v-show="scanning && !result">
-            <div class="relative h-56 overflow-hidden shadow rounded">
+            <div class="relative h-56 overflow-hidden rounded shadow">
                 <video
                     ref="video"
-                    class="mx-auto bg-muted absolute top-1/2 -translate-y-1/2 left-0 size-full object-cover"
+                    class="absolute top-1/2 left-0 mx-auto -translate-y-1/2 object-cover bg-muted size-full"
                     autoplay
                     playsinline
                     muted
@@ -135,7 +129,7 @@ onMounted(() => {
 
         <div
             v-if="!scanning && !result"
-            class="flex mb-5 items-center justify-center">
+            class="mb-5 flex items-center justify-center">
             <Button
                 class="w-full"
                 variant="default"
@@ -149,11 +143,11 @@ onMounted(() => {
 
         <div
             v-if="result"
-            class="relative h-40 overflow-hidden bg-white shadow rounded">
+            class="relative h-40 overflow-hidden rounded bg-white shadow">
             <VueBarcode
                 tag="svg"
                 :value="result"
-                class="w-full absolute top-1/2 -translate-y-1/2 left-0" />
+                class="absolute top-1/2 left-0 w-full -translate-y-1/2" />
         </div>
 
         <HorizontalSkeleton
@@ -175,7 +169,7 @@ onMounted(() => {
         <!--            Fake-->
         <!--        </button>-->
 
-        <div class="w-full mt-8">
+        <div class="mt-8 w-full">
             <Button
                 v-if="result"
                 variant="default"

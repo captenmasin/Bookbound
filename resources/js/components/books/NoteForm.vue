@@ -47,17 +47,17 @@ const noteInput = ref<HTMLInputElement | null>(null)
                 class="min-h-24 md:min-h-18"
                 placeholder="Add a private note about this book..." />
             <InputError :message="noteForm.errors.content" />
-            <div class="flex mt-2 items-center justify-between">
+            <div class="mt-2 flex items-center justify-between">
                 <div>
                     <a
                         href="https://www.markdownguide.org/"
-                        class="text-secondary-foreground text-sm hover:underline"
+                        class="text-sm text-secondary-foreground hover:underline"
                         target="_blank"
                         rel="nofollow ">
                         Markdown syntax is supported.
                     </a>
                 </div>
-                <div class="flex items-center gap-4 ">
+                <div class="flex items-center gap-4">
                     <Button
                         v-if="noteForm.isDirty"
                         variant="secondary"
@@ -75,8 +75,8 @@ const noteInput = ref<HTMLInputElement | null>(null)
         </form>
         <div
             v-else
-            class="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground md:py-8">
-            <div class="text-secondary-foreground text-sm">
+            class="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 text-center text-sm border-primary/10 text-muted-foreground md:py-8">
+            <div class="text-sm text-secondary-foreground">
                 <p>
                     Pro users can add private notes to their books.
                 </p>

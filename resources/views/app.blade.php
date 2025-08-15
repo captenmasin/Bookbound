@@ -25,7 +25,11 @@
 >
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    @if($isPwa)
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    @else
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    @endif
 
     <title>{!! $pageTitle !!}</title>
 

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Icon from '@/components/Icon.vue'
 import Heading from '@/components/Heading.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { ref, watch } from 'vue'
@@ -9,7 +8,6 @@ import { useRoute } from '@/composables/useRoute'
 import { Link, router, usePage } from '@inertiajs/vue3'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { LockIcon, PaletteIcon, TriangleAlertIcon, UserIcon } from 'lucide-vue-next'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const sidebarNavItems: NavItem[] = [
     {
@@ -52,14 +50,14 @@ router.on('navigate', (event) => {
 
 <template>
     <AppLayout>
-        <div class="max-w-5xl ">
+        <div class="max-w-5xl">
             <Heading
                 title="Settings"
                 description="Manage your profile and account settings" />
 
-            <div class="flex flex-col space-y-6 md:space-y-0 lg:space-y-0 space-x-8 lg:space-x-12 md:flex-row">
+            <div class="flex flex-col space-y-6 space-x-8 md:space-y-0 md:flex-row lg:space-y-0 lg:space-x-12">
                 <aside class="w-full md:w-48">
-                    <div class="flex md:hidden -mt-4">
+                    <div class="-mt-4 flex md:hidden">
                         <Tabs
                             v-model="selectedSettingPage"
                             class="flex w-full flex-1"
@@ -69,12 +67,12 @@ router.on('navigate', (event) => {
                                     v-for="item in sidebarNavItems"
                                     :key="item.href"
                                     :value="item.href"
-                                    class="px-0 md:px-4 flex py-2 flex-col gap-0.5">
+                                    class="flex flex-col px-0 py-2 gap-0.5 md:px-4">
                                     <component
                                         :is="item.icon"
                                         v-if="item.icon"
                                         class="w-4" />
-                                    <span class="hidden xs:flex text-xs">
+                                    <span class="hidden text-xs xs:flex">
                                         {{ item.title }}
                                     </span>
                                 </TabsTrigger>
@@ -82,7 +80,7 @@ router.on('navigate', (event) => {
                         </Tabs>
                     </div>
 
-                    <nav class="flex-col space-y-1 hidden md:flex space-x-0">
+                    <nav class="hidden flex-col space-y-1 space-x-0 md:flex">
                         <Button
                             v-for="item in sidebarNavItems"
                             :key="item.href"

@@ -32,7 +32,7 @@ const props = defineProps({
 })
 
 const { updateSingleSetting, getSingleSetting } = useUserSettings()
-const { authed, authedUser } = useAuthedUser()
+const { authed } = useAuthedUser()
 
 const data = [
     {
@@ -85,23 +85,23 @@ defineOptions({
 
 <template>
     <div class="md:mt-4">
-        <div class="flex flex-col md:flex-row gap-4 md:gap-10">
-            <div class="flex w-full order-1 md:w-32 lg:w-44 xl:w-56 flex-col">
-                <div class="flex w-full flex-col md:sticky top-4">
+        <div class="flex flex-col gap-4 md:flex-row md:gap-10">
+            <div class="order-1 flex w-full flex-col md:w-32 lg:w-44 xl:w-56">
+                <div class="top-4 flex w-full flex-col md:sticky">
                     <div class="flex gap-4">
-                        <div class="w-28 sm:w-32 md:sticky top-4 md:w-full">
+                        <div class="top-4 w-28 sm:w-32 md:sticky md:w-full">
                             <UpdateBookCover :book>
-                                <div class="aspect-book overflow-hidden rounded-md">
+                                <div class="overflow-hidden rounded-md aspect-book">
                                     <Image
                                         width="250"
-                                        class="size-full object-cover"
+                                        class="object-cover size-full"
                                         :src="book.cover" />
                                 </div>
                             </UpdateBookCover>
                         </div>
-                        <div class="flex flex-1 justify-between w-full md:hidden">
-                            <div class="flex flex-col gap-1 flex-1">
-                                <h2 class="font-serif text-lg/5.5 text-pretty font-semibold">
+                        <div class="flex w-full flex-1 justify-between md:hidden">
+                            <div class="flex flex-1 flex-col gap-1">
+                                <h2 class="font-serif font-semibold text-lg/5.5 text-pretty">
                                     {{ book.title }}
                                 </h2>
                                 <p
@@ -132,8 +132,8 @@ defineOptions({
                     </div>
                 </div>
             </div>
-            <div class="flex w-full order-3 md:order-2 md:flex-1 flex-col">
-                <div class="hidden md:flex flex-col">
+            <div class="order-3 flex w-full flex-col md:order-2 md:flex-1">
+                <div class="hidden flex-col md:flex">
                     <h2 class="font-serif text-3xl font-semibold text-pretty">
                         {{ book.title }}
                     </h2>
@@ -164,12 +164,12 @@ defineOptions({
                 </ShareButton>
 
                 <div
-                    class="prose md:mt-4 dark:prose-invert prose-sm md:prose-base max-w-none font-serif"
+                    class="max-w-none font-serif prose prose-sm dark:prose-invert md:prose-base md:mt-4"
                     v-html="useMarkdown(book.description)" />
 
-                <div class="mt-8 border-t border-secondary pt-8">
-                    <div class="flex items-center w-full justify-between">
-                        <div class="flex mb-4 w-full md:w-auto">
+                <div class="mt-8 border-t pt-8 border-secondary">
+                    <div class="flex w-full items-center justify-between">
+                        <div class="mb-4 flex w-full md:w-auto">
                             <Tabs
                                 v-model="displayType"
                                 class="flex w-full flex-1 book-display-type"
@@ -200,7 +200,7 @@ defineOptions({
                     </div>
                 </div>
             </div>
-            <div class="flex w-full order-2 md:order-3 md:w-48 xl:w-64 flex-col">
+            <div class="order-2 flex w-full flex-col md:order-3 md:w-48 xl:w-64">
                 <div>
                     <BookActions
                         :book="book"
@@ -211,8 +211,8 @@ defineOptions({
 
                 <div
                     v-if="book.in_library"
-                    class="mt-2 md:mt-4 flex flex-col">
-                    <h3 class="text-xs md:text-sm font-semibold text-muted-foreground">
+                    class="mt-2 flex flex-col md:mt-4">
+                    <h3 class="text-xs font-semibold text-muted-foreground md:text-sm">
                         Your rating
                     </h3>
                     <RatingForm
@@ -226,30 +226,30 @@ defineOptions({
                         @updated="refreshRating" />
                 </div>
 
-                <div class="bg-secondary md:bg-transparent rounded-md mt-4">
+                <div class="mt-4 rounded-md bg-secondary md:bg-transparent">
                     <button
-                        class="text-left flex w-full py-2 px-4 md:p-0 items-center justify-between"
+                        class="flex w-full items-center justify-between px-4 py-2 text-left md:p-0"
                         @click="detailsOpen = !detailsOpen">
-                        <p class="md:text-lg font-semibold">
+                        <p class="font-semibold md:text-lg">
                             Details
                         </p>
                         <Icon
                             name="ChevronDown"
                             :class="detailsOpen ? 'rotate-180' : ''"
-                            class="transition-transform md:hidden duration-200" />
+                            class="transition-transform duration-200 md:hidden" />
                     </button>
                     <div
                         :class="detailsOpen ? 'h-[calc-size(auto,size)]' : 'h-0'"
-                        class="flex-col md:flex md:bg-transparent transition-[height] duration-300 overflow-hidden md:h-auto md:text-foreground bg-secondary text-secondary-foreground rounded-b-md">
-                        <dl class="py-2 md:py-0 px-4 md:px-0">
+                        class="flex-col overflow-hidden rounded-b-md duration-300 transition-[height] bg-secondary text-secondary-foreground md:text-foreground md:flex md:h-auto md:bg-transparent">
+                        <dl class="px-4 py-2 md:px-0 md:py-0">
                             <div
                                 v-for="item in data"
                                 :key="item.title"
-                                class="py-2 flex flex-col xl:flex-row xl:items-center justify-between">
-                                <dt class="text-sm/6 font-medium">
+                                class="flex flex-col justify-between py-2 xl:flex-row xl:items-center">
+                                <dt class="font-medium text-sm/6">
                                     {{ item.title }}
                                 </dt>
-                                <dd class="xl:text-right text-sm/6 text-muted-foreground sm:col-span-2 sm:mt-0">
+                                <dd class="text-sm/6 text-muted-foreground sm:col-span-2 sm:mt-0 xl:text-right">
                                     {{ item.value }}
                                 </dd>
                             </div>
@@ -257,8 +257,8 @@ defineOptions({
 
                         <div
                             v-if="book.tags && book.tags.length > 0"
-                            class="md:mt-2 pt-2 pb-4 md:py-0 px-4 md:px-0">
-                            <p class="text-sm/6 font-medium">
+                            class="px-4 pt-2 pb-4 md:mt-2 md:px-0 md:py-0">
+                            <p class="font-medium text-sm/6">
                                 Tags
                             </p>
                             <TagCloud :tags="book.tags" />
@@ -270,7 +270,7 @@ defineOptions({
                             <div
                                 v-if="related && related.length > 0"
                                 class="mt-4 hidden md:block">
-                                <p class="text-sm/6 font-medium">
+                                <p class="font-medium text-sm/6">
                                     Related
                                 </p>
                                 <div class="-mx-1 flex flex-wrap">

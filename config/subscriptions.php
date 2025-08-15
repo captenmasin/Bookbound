@@ -8,10 +8,15 @@ return [
             'key' => env('FREE_PLAN_KEY', 'free'),
             'price' => 0.00,
             'features' => [
-                'Up to 10 books',
+                'Up to 50 Books',
+                'Scan Barcodes',
+                'Search and Filter your Library',
+                'Preview Book Details',
+                'Track Book Status',
+                'Review and Rate Books',
             ],
             'limits' => [
-                'max_books' => 500,
+                'max_books' => 50,
                 'private_notes' => false,
                 'custom_covers' => false,
             ],
@@ -23,7 +28,13 @@ return [
             'price' => 10.00,
             'features' => [
                 'Unlimited books',
-                'Private notes',
+                'Scan Barcodes',
+                'Search and Filter your Library',
+                'Preview Book Details',
+                'Track Book Status',
+                'Review and Rate Books',
+                'Private Notes',
+                'Custom Book Covers',
             ],
             'limits' => [
                 'max_books' => null, // Unlimited

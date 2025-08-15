@@ -4,18 +4,16 @@ import PageTitle from '@/components/PageTitle.vue'
 import { usePage } from '@inertiajs/vue3'
 
 defineOptions({ layout: AppLayout })
-
-const page = usePage()
 </script>
 
 <template>
-    <div class="not-pwa:max-w-5xl mx-auto">
+    <div class="mx-auto not-pwa:max-w-5xl">
         <PageTitle>
             Privacy Policy
         </PageTitle>
-        <div class="prose prose-sm max-w-none mt-2 mb-24">
+        <div class="mt-2 mb-24 max-w-none prose prose-sm">
             <p class="text-sm text-muted-foreground">
-                Updated: August 5, 2025
+                Updated: August 15, 2025
             </p>
 
             <p>Your privacy is important to us. This policy explains what information we collect and how we use it in connection with the Personal Book Library App (“the App”). By using the App, you agree to the practices described below.</p>

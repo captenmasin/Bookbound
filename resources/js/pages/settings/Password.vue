@@ -89,7 +89,7 @@ defineOptions({
         <form
             class="space-y-6 md:space-y-8"
             @submit.prevent="updatePassword">
-            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+            <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
                 <Label
                     for="password"
                     class="grid gap-1">
@@ -98,7 +98,7 @@ defineOptions({
                         Enter a new password to update your account password.
                     </p>
                 </Label>
-                <div class="flex flex-col w-full">
+                <div class="flex w-full flex-col">
                     <Input
                         id="password"
                         v-model="form.password"
@@ -111,7 +111,7 @@ defineOptions({
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+            <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
                 <Label
                     for="password_confirmation"
                     class="grid gap-1">
@@ -120,7 +120,7 @@ defineOptions({
                         Please confirm your new password by entering it again.
                     </p>
                 </Label>
-                <div class="flex flex-col w-full">
+                <div class="flex w-full flex-col">
                     <Input
                         id="password_confirmation"
                         v-model="form.password_confirmation"
@@ -133,7 +133,7 @@ defineOptions({
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+            <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
                 <Label
                     for="current_password"
                     class="grid gap-1">
@@ -142,7 +142,7 @@ defineOptions({
                         Please enter your current password to confirm the change.
                     </p>
                 </Label>
-                <div class="flex flex-col w-full">
+                <div class="flex w-full flex-col">
                     <Input
                         id="current_password"
                         v-model="form.current_password"
@@ -177,11 +177,11 @@ defineOptions({
                 class="flex items-center justify-between">
                 <div class="flex flex-col gap-1">
                     <div class="flex">
-                        <p class="font-mono bg-muted flex text-xs text-muted-foreground px-2 py-0.5 rounded-full">
+                        <p class="flex rounded-full px-2 font-mono text-xs bg-muted text-muted-foreground py-0.5">
                             {{ passkey.name }}
                         </p>
                     </div>
-                    <p class="text-sm px-1">
+                    <p class="px-1 text-sm">
                         Last used at: {{ passkey.last_used_at || 'Never' }}
                     </p>
                 </div>

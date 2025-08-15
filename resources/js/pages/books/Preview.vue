@@ -21,7 +21,7 @@ defineOptions({
 
 <template>
     <div
-        class="mt-12 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 md:py-16 text-center text-sm text-muted-foreground border-primary/10">
+        class="mt-12 flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 text-center text-sm text-muted-foreground border-primary/10 md:py-16">
         <Icon
             name="BookDown"
             class="animate-bounce size-8" />

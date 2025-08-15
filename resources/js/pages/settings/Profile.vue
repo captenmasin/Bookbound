@@ -99,7 +99,7 @@ defineOptions({
         <form
             class="space-y-6 md:space-y-8"
             @submit.prevent="submit">
-            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+            <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
                 <Label
                     for="name"
                     class="grid gap-1">
@@ -108,7 +108,7 @@ defineOptions({
                         Your display name
                     </p>
                 </Label>
-                <div class="flex flex-col w-full">
+                <div class="flex w-full flex-col">
                     <Input
                         id="name"
                         v-model="form.name"
@@ -122,7 +122,7 @@ defineOptions({
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+            <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
                 <Label
                     for="username"
                     class="grid gap-1">
@@ -131,7 +131,7 @@ defineOptions({
                         A unique name for your profile
                     </p>
                 </Label>
-                <div class="flex flex-col w-full">
+                <div class="flex w-full flex-col">
                     <Input
                         id="username"
                         v-model="form.username"
@@ -145,7 +145,7 @@ defineOptions({
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+            <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
                 <Label
                     for="avatar"
                     class="grid gap-1">
@@ -166,12 +166,12 @@ defineOptions({
                                     :src="previewUrl"
                                     class="aspect-auto object-cover"
                                     :alt="authedUser?.name" />
-                                <AvatarFallback class="rounded-full bg-secondary font-semibold text-secondary-foreground">
+                                <AvatarFallback class="rounded-full font-semibold bg-secondary text-secondary-foreground">
                                     {{ getInitials(authedUser?.name) }}
                                 </AvatarFallback>
                             </Avatar>
                         </label>
-                        <div class="grid w-full items-start ">
+                        <div class="grid w-full items-start">
                             <div class="flex gap-2">
                                 <Input
                                     id="avatar"
@@ -207,7 +207,7 @@ defineOptions({
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+            <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
                 <Label
                     for="profile_colour"
                     class="grid gap-1">
@@ -219,7 +219,7 @@ defineOptions({
                     </p>
                 </Label>
 
-                <div class="flex flex-col w-full">
+                <div class="flex w-full flex-col">
                     <div>
                         <ColorPicker v-model="form.profile_colour" />
                     </div>
@@ -230,7 +230,7 @@ defineOptions({
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-1">
+            <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
                 <Label
                     for="email"
                     class="grid gap-1">
@@ -242,7 +242,7 @@ defineOptions({
                     </p>
                 </Label>
 
-                <div class="flex flex-col w-full">
+                <div class="flex w-full flex-col">
                     <Input
                         id="email"
                         v-model="form.email"

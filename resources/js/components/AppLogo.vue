@@ -27,11 +27,11 @@ defineProps({
             :class="logoSize">
             <AppLogoIcon
                 :class="logoBorderColor"
-                class="rounded-lg fill-current text-primary border size-full dark:text-white" />
+                class="rounded-lg border fill-current text-primary size-full dark:text-white" />
         </div>
-        <div class="ml-2 grid relative flex-1 flex-col gap-0 text-left text-sm text-primary">
+        <div class="relative ml-2 grid flex-1 flex-col gap-0 text-left text-sm text-primary">
             <span
-                class="truncate font-semibold leading-tight tracking-tight font-serif"
+                class="truncate font-serif font-semibold leading-tight tracking-tight"
                 :class="textSize">
                 {{ page.props.app.name }}
             </span>

@@ -17,7 +17,7 @@ defineProps<{
                 :href="useRoute('user.books.index')"
                 class="flex items-center gap-2 self-center font-medium">
                 <div class="flex h-9 w-9 items-center justify-center">
-                    <AppLogoIcon class="fill-current rounded-lg text-black size-9 dark:text-white" />
+                    <AppLogoIcon class="rounded-lg fill-current text-black size-9 dark:text-white" />
                 </div>
             </Link>
 

@@ -95,14 +95,14 @@ const clearCoverFileInput = () => {
     // displayUndo.value = false
 }
 
-const reset = () => {
-    coverPreview.value = null
-    clearCoverFileInput()
-    // displayUndo.value = false
-
-    canRemoveCover.value = props.book && props.book.has_custom_cover
-    key.value++
-}
+// const reset = () => {
+//     coverPreview.value = null
+//     clearCoverFileInput()
+//     // displayUndo.value = false
+//
+//     canRemoveCover.value = props.book && props.book.has_custom_cover
+//     key.value++
+// }
 </script>
 
 <template>
@@ -137,7 +137,7 @@ const reset = () => {
                     <Button
                         size="sm"
                         variant="white"
-                        class="cursor-pointer flex-1 text-xs py-0"
+                        class="flex-1 cursor-pointer py-0 text-xs"
                         @click="clickCoverInput"
                     >
                         <Icon

@@ -58,7 +58,7 @@ function deleteNote () {
                             <Button
                                 :id="`delete-note-` + note.id"
                                 variant="link"
-                                class="text-destructive py-0 h-auto text-xs">
+                                class="h-auto py-0 text-xs text-destructive">
                                 Delete
                             </Button>
                         </template>
@@ -73,7 +73,7 @@ function deleteNote () {
             </div>
         </div>
         <div
-            class="prose prose-sm mt-2 max-w-none dark:prose-invert"
+            class="mt-2 max-w-none prose prose-sm dark:prose-invert"
             v-html="useMarkdown(note.content)" />
     </div>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AppLogo from '@/components/AppLogo.vue'
 import useEmitter from '@/composables/useEmitter'
 import { onMounted, ref } from 'vue'
 import { usePage } from '@inertiajs/vue3'
@@ -7,8 +6,8 @@ import { useMediaQuery } from '@vueuse/core'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
 import { useForwardPropsEmits, type DialogRootEmits, type DialogRootProps } from 'reka-ui'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 
 const props = defineProps<DialogRootProps>()
 
@@ -37,7 +36,7 @@ onMounted(() => {
             class="sm:max-w-lg">
             <component
                 :is="isDesktop ? DialogHeader : DrawerHeader">
-                <!--                <AppLogo class="w-full flex mb-2" />-->
+                <!--                <AppLogo class="mb-2 flex w-full" />-->
                 <component
                     :is="isDesktop ? DialogTitle : DrawerTitle"
                     class="font-serif text-xl md:text-3xl">
@@ -45,11 +44,11 @@ onMounted(() => {
                 </component>
                 <component
                     :is="isDesktop ? DialogDescription : DrawerDescription"
-                    class="text-sm md:text-base overflow-auto text-secondary-foreground">
+                    class="overflow-auto text-sm text-secondary-foreground md:text-base">
                     <p>
                         Join {{ usePage().props.app.name }} Pro to unlock premium features.
                     </p>
-                    <ul class="list-disc pl-5 mt-2">
+                    <ul class="mt-2 list-disc pl-5">
                         <li>Unlimited books</li>
                         <li>Private notes</li>
                         <li>Custom book covers</li>

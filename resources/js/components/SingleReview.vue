@@ -76,7 +76,7 @@ const isUserReview = computed(() => {
                         <Button
                             :id="`delete-review-` + review.id"
                             variant="link"
-                            class="text-destructive py-0 h-auto text-xs">
+                            class="h-auto py-0 text-xs text-destructive">
                             Delete
                         </Button>
                     </template>
@@ -96,12 +96,12 @@ const isUserReview = computed(() => {
             :rating="review.rating.value"
             class="mt-px mb-2" />
         <div
-            class="prose prose-sm max-w-none dark:prose-invert"
+            class="max-w-none prose prose-sm dark:prose-invert"
             v-html="useMarkdown(review.content)" />
 
         <div
             v-if="review.user"
-            class="flex items-center gap-2.5 mt-4">
+            class="mt-4 flex items-center gap-2.5">
             <div>
                 <UserAvatar
                     :user="review.user"

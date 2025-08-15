@@ -20,11 +20,20 @@ class HomeController extends Controller
         $price = Number::currency($priceObject->unit_amount / 100);
 
         $freeLimits = config('subscriptions.plans.free.limits');
+        $freeFeatures = config('subscriptions.plans.free.features');
+        $proLimits = config('subscriptions.plans.pro.limits');
+        $proFeatures = config('subscriptions.plans.pro.features');
 
         return Inertia::render('Home', [
             'price' => $price,
             'interval' => $interval,
             'freeLimits' => $freeLimits,
-        ])->withMeta([]);
+            'freeFeatures' => $freeFeatures,
+            'proLimits' => $proLimits,
+            'proFeatures' => $proFeatures,
+        ])->withMeta([
+            'title' => 'Your Reading Life at a Glance - Track, Categorize & Review Your Books',
+            'description' => 'Manage your entire reading collection with ease—search by title, author, or tag; filter by reading status; and save personal notes and reviews.',
+        ]);
     }
 }
