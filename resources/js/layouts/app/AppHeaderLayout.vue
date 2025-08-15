@@ -11,7 +11,7 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import type { BreadcrumbItemType, NavItem } from '@/types'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
 import { useActiveElement, useMagicKeys, whenever } from '@vueuse/core'
-import { Home, LibraryBig, PlusSquareIcon, ScanBarcode } from 'lucide-vue-next'
+import { Home, LibraryBig, PlusSquareIcon, ScanBarcode, SearchIcon } from 'lucide-vue-next'
 
 const page = usePage()
 const breadcrumbs = ref(page.props.breadcrumbs as BreadcrumbItemType[] | undefined)
@@ -30,9 +30,9 @@ const mainNavItems = ref<NavItem[]>([
         isActive: false
     },
     {
-        title: 'Add Book',
+        title: 'Find Book',
         href: useRoute('books.search'),
-        icon: PlusSquareIcon,
+        icon: SearchIcon,
         isActive: false
     },
     {

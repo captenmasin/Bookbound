@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Enums\AnalyticsEvent;
 use App\Http\Resources\BookResource;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Resources\ReviewResource;
 use App\Actions\Books\FetchOrCreateBook;
 use App\Actions\Books\ImportBookFromData;
@@ -41,13 +42,19 @@ class BookController extends Controller
                     'updated_at' => now(),
                 ]
             );
+
+            Cache::forget('previous_searches_'.$request->user()->id);
         }
+
+        $previousSearches = Cache::remember('previous_searches_'.$request->user()->id, 60, function () use ($request) {
+            return $request->user()->previousSearches()->limit(5)->orderBy('updated_at', 'desc')->get();
+        });
 
         return Inertia::render('books/Search', [
             'initialQuery' => $originalQuery,
             'page' => $page,
             'perPage' => $perPage,
-            'previousSearches' => Inertia::defer(fn () => PreviousSearchResource::collection($request->user()->previousSearches()->limit(10)->orderBy('updated_at', 'desc')->get())),
+            'previousSearches' => PreviousSearchResource::collection($previousSearches),
             'results' => Inertia::defer(
                 fn () => SearchBooksFromApi::run(
                     query: $query,
@@ -59,10 +66,10 @@ class BookController extends Controller
             'breadcrumbs' => [
                 ['title' => 'Home', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
-                ['title' => 'Add Book', 'href' => route('books.search')],
+                ['title' => 'Find Book', 'href' => route('books.search')],
             ],
         ])->withMeta([
-            'title' => 'Add Book',
+            'title' => 'Find Book',
             'description' => 'Add a new book to your collection by searching for it online or scanning its barcode.',
         ]);
     }
@@ -76,7 +83,7 @@ class BookController extends Controller
                 ['title' => 'Scan Book', 'href' => route('books.scan')],
             ],
         ])->withMeta([
-            'title' => 'Add Book',
+            'title' => 'Find Book',
             'description' => 'Add a new book to your collection by searching for it online or scanning its barcode.',
         ]);
     }
