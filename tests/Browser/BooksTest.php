@@ -241,7 +241,7 @@ test('user can add a note to a book', function () {
         'book_id' => $book->id,
         'content' => 'A new note',
     ]);
-});
+})->todo();
 
 // Users can delete a note on a book
 

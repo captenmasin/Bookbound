@@ -53,7 +53,9 @@ return [
             'card' => 'summary_large_image',
             //            'site' => '@'.env('TWITTER_USERNAME'),
             'description' => env('APP_DESCRIPTION'),
-            'domain' => parse_url(env('APP_URL'))['host'] ?? env('APP_URL'),
+            'domain' => env('APP_ENV') === 'production' ?
+                parse_url(env('APP_URL'))['host'] ?? env('APP_URL') :
+                '',
         ],
     ],
     'json-ld' => [

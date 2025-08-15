@@ -39,10 +39,6 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $currentUser = Auth::check()
-            ? (new UserResource($request->user()->load('books')))->asUser()
-            : null;
-
         $backUrl = null;
         if ($request->filled('src') && Str::startsWith($request->get('src'), config('app.url'))) {
             $backUrl = $request->get('src');
@@ -61,7 +57,12 @@ class HandleInertiaRequests extends Middleware
             'currentUrl' => url()->full(),
             'currentPath' => request()->path(),
             'auth' => fn () => [
-                'user' => $currentUser,
+                'user' => Auth::check()
+                    ? (new UserResource(
+                        // Return a lean user; load books only when a page actually needs it
+                        $request->user()->withoutRelations()
+                    ))->asUser()
+                    : null,
                 'check' => Auth::check(),
             ],
 

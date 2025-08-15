@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
     {
         JsonResource::withoutWrapping();
 
-        Vite::prefetch(6);
+        Vite::prefetch(2);
 
         FilamentColor::register([
             'primary' => Color::Amber,
@@ -97,25 +97,28 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        Browser::macro('fullLogout', function () {
-            $this->visit('/test-logout')
-                ->waitForLocation('/login')
-                ->assertPathIs('/login');
+        if ($this->app->environment(['local', 'testing'])) {
 
-            return $this;
-        });
+            Browser::macro('fullLogout', function () {
+                $this->visit('/test-logout')
+                    ->waitForLocation('/login')
+                    ->assertPathIs('/login');
 
-        Browser::macro('disableClientSideValidation', function () {
-            $this->script('for(var f=document.forms,i=f.length;i--;)f[i].setAttribute("novalidate",i)');
+                return $this;
+            });
 
-            return $this;
-        });
+            Browser::macro('disableClientSideValidation', function () {
+                $this->script('for(var f=document.forms,i=f.length;i--;)f[i].setAttribute("novalidate",i)');
 
-        Browser::macro('loginFully', function (User $user) {
-            $this->loginAs($user)
-                ->visit('/sanctum/csrf-cookie');
+                return $this;
+            });
 
-            return $this;
-        });
+            Browser::macro('loginFully', function (User $user) {
+                $this->loginAs($user)
+                    ->visit('/sanctum/csrf-cookie');
+
+                return $this;
+            });
+        }
     }
 }

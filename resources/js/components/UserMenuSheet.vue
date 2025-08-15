@@ -14,8 +14,8 @@ interface Props {
     user: User;
     items: {
         title: string;
-        url: string;
-        icon: any;
+        url?: string;
+        icon?: any;
         if?: boolean,
         target?: string;
         tag?: string;

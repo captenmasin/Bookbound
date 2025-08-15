@@ -12,3 +12,12 @@ test('authenticated users can view their dashboard', function () {
     $response = $this->get('/dashboard');
     $response->assertStatus(200);
 });
+
+test('dashboard displays user information', function () {
+    $user = \App\Models\User::factory()->create();
+    $this->actingAs($user);
+
+    $response = $this->get('/dashboard');
+    $response->assertSee($user->name);
+    $response->assertSee($user->email);
+});

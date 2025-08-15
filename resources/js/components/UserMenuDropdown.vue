@@ -13,7 +13,7 @@ interface Props {
     items: {
         tag?: string;
         title: string;
-        url: string;
+        url?: string;
         icon: any;
         if?: boolean,
         target?: string;

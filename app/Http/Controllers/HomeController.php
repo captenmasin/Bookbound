@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Cache;
 use Number;
 use Stripe\Price;
 use Stripe\Stripe;
@@ -11,17 +12,22 @@ class HomeController extends Controller
 {
     public function __invoke()
     {
-        [$price, $interval] = \Cache::rememberForever('home.price', function () {
-            Stripe::setApiKey(config('cashier.secret'));
+        [$price, $interval] = Cache::rememberForever('home.price', function () {
+            try {
+                Stripe::setApiKey(config('cashier.secret'));
 
-            $priceObject = Price::retrieve(config('subscriptions.plans.pro.key'));
+                $priceObject = Price::retrieve(config('subscriptions.plans.pro.key'));
 
-            Number::useCurrency($priceObject->currency);
-            $price = Number::currency($priceObject->unit_amount / 100);
+                Number::useCurrency($priceObject->currency);
+                $price = Number::currency($priceObject->unit_amount / 100);
 
-            $interval = $priceObject->recurring?->interval;
+                $interval = $priceObject->recurring?->interval;
 
-            return [$price, $interval];
+                return [$price, $interval];
+            } catch (\Exception $e) {
+                // Handle the error gracefully, maybe log it or return a default value
+                return ['N/A', 'N/A'];
+            }
         });
 
         $freeLimits = config('subscriptions.plans.free.limits');

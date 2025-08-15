@@ -12,13 +12,37 @@ use function Pest\Laravel\actingAs;
 
 use Illuminate\Support\Facades\Storage;
 
+uses(\Tests\Concerns\GiveSubscription::class);
+
 beforeEach(function () {
     Storage::fake('public');
 });
 
-test('authenticated user can upload book cover', function () {
+test('authenticated non-subscribed user cannot upload book cover', function () {
     $user = User::factory()->create();
     $book = Book::factory()->create();
+
+    actingAs($user);
+    $file = UploadedFile::fake()->image('cover.jpg');
+
+    $response = post(route('cover.update', $book), [
+        'cover' => $file,
+    ]);
+
+    $response->assertRedirectBack();
+    $response->assertSessionHas('error', 'Your current plan does not allow adding custom covers.');
+    $this->assertDatabaseMissing('covers', [
+        'book_id' => $book->id,
+        'user_id' => $user->id,
+    ]);
+});
+
+test('authenticated subscribed user can upload book cover', function () {
+    $user = User::factory()->create();
+    $book = Book::factory()->create();
+
+    $this->giveActiveSubscription($user, config('subscriptions.plans.pro.key'));
+
     actingAs($user);
     $file = UploadedFile::fake()->image('cover.jpg');
 
@@ -32,7 +56,7 @@ test('authenticated user can upload book cover', function () {
         'book_id' => $book->id,
         'user_id' => $user->id,
     ]);
-})->todo('Fix for "Pro" version');
+});
 
 test('authenticated user can remove book cover', function () {
     $user = User::factory()->create();
@@ -69,6 +93,9 @@ test('guest cannot remove book cover', function () {
 test('invalid file type is rejected', function () {
     $user = User::factory()->create();
     $book = Book::factory()->create();
+
+    $this->giveActiveSubscription($user, config('subscriptions.plans.pro.key'));
+
     actingAs($user);
     $file = UploadedFile::fake()->create('cover.pdf', 100, 'application/pdf');
 
@@ -77,4 +104,4 @@ test('invalid file type is rejected', function () {
     ]);
 
     expect(session('errors')?->getBag('bookCoverBag')->has('cover'))->toBeTrue();
-})->todo('Fix for "Pro" version');
+});

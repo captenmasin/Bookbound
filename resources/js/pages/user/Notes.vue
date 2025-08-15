@@ -35,11 +35,11 @@ const props = defineProps({
             <h3 class="font-serif text-2xl font-semibold">
                 Nothing to see here
             </h3>
-            <p v-if="notes.data.length === 0">
-                There's no notes on this page
+            <p v-if="notes.meta.total === 0">
+                You haven't added any notes to books yet
             </p>
             <p v-else>
-                You haven't added any notes to books yet
+                There's no notes on this page
             </p>
         </div>
 
