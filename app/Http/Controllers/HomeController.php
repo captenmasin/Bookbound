@@ -11,13 +11,18 @@ class HomeController extends Controller
 {
     public function __invoke()
     {
-        Stripe::setApiKey(config('cashier.secret'));
-        $priceObject = Price::retrieve(config('subscriptions.plans.pro.key'));
-        $recurring = $priceObject->recurring;
-        $interval = $recurring->interval;
+        [$price, $interval] = \Cache::rememberForever('home.price', function () {
+            Stripe::setApiKey(config('cashier.secret'));
 
-        Number::useCurrency($priceObject->currency);
-        $price = Number::currency($priceObject->unit_amount / 100);
+            $priceObject = Price::retrieve(config('subscriptions.plans.pro.key'));
+
+            Number::useCurrency($priceObject->currency);
+            $price = Number::currency($priceObject->unit_amount / 100);
+
+            $interval = $priceObject->recurring?->interval;
+
+            return [$price, $interval];
+        });
 
         $freeLimits = config('subscriptions.plans.free.limits');
         $freeFeatures = config('subscriptions.plans.free.features');

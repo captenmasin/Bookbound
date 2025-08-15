@@ -6,7 +6,9 @@ use App\Models\User;
 use App\Enums\UserBookStatus;
 use Inertia\Testing\AssertableInertia;
 
-test('user cannot add a note to a book not in their library', function () {
+uses(Tests\Concerns\GiveSubscription::class);
+
+test('non-subscribed user cannot add a note to a book', function () {
     $user = User::factory()->create();
     $book = Book::factory()->create();
 
@@ -15,19 +17,42 @@ test('user cannot add a note to a book not in their library', function () {
             'content' => 'My personal note',
         ]);
 
-    $response->assertForbidden();
+    $response->assertRedirectBack();
+    $response->assertSessionHas('error', 'Your current plan does not allow adding notes.');
     $this->assertDatabaseMissing('notes', [
         'user_id' => $user->id,
         'book_id' => $book->id,
         'content' => 'My personal note',
     ]);
-})->todo('Fix for "Pro" version');
+});
 
-test('user can add a note to a book in their library', function () {
+test('subscribed user cannot add a note to a book not in their library', function () {
+    $user = User::factory()->create();
+    $book = Book::factory()->create();
+
+    $this->giveActiveSubscription($user, config('subscriptions.plans.pro.key'));
+
+    $response = $this->actingAs($user)
+        ->post(route('notes.store', $book->path), [
+            'content' => 'My personal note',
+        ]);
+
+    $response->assertRedirectBack();
+    $response->assertSessionHas('error', 'You can only add notes to books in your library.');
+    $this->assertDatabaseMissing('notes', [
+        'user_id' => $user->id,
+        'book_id' => $book->id,
+        'content' => 'My personal note',
+    ]);
+});
+
+test('subscribed user can add a note to a book in their library', function () {
     $user = User::factory()->create();
     $book = Book::factory()->create();
 
     $user->books()->attach($book->id, ['status' => UserBookStatus::Reading]);
+
+    $this->giveActiveSubscription($user, config('subscriptions.plans.pro.key'));
 
     $response = $this->actingAs($user)
         ->post(route('notes.store', $book->path), [
@@ -42,7 +67,7 @@ test('user can add a note to a book in their library', function () {
         'content' => 'My personal note',
         'book_status' => UserBookStatus::Reading,
     ]);
-})->todo('Fix for "Pro" version');
+});
 
 test('note content is required', function () {
     $user = User::factory()->create();
