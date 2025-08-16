@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Bus;
 use App\Transformers\BookTransformer;
+use Illuminate\Support\Facades\Cache;
 use App\Jobs\ImportBooksFromApiSearch;
 use Lorisleiva\Actions\Concerns\AsAction;
 use App\Contracts\BookApiServiceInterface;
@@ -27,6 +28,13 @@ class SearchBooksFromApi
 
         $total = $results['total'] ?? 0;
         $books = collect($results['items'] ?? [])->map(fn ($book) => BookTransformer::fromIsbn($book));
+
+        // Store in cache for 5 minutes for faster ImportBookFromData
+        $books->each(function ($data) {
+            Cache::remember('book:'.$data['identifier'], 60 * 5, function () use ($data) {
+                return $data;
+            });
+        });
 
         ImportBooksFromApiSearch::dispatch($books);
 

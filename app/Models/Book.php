@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Jobs\ImportBookCover;
 use Laravel\Scout\Searchable;
 use Spatie\Sluggable\HasSlug;
 use Spatie\MediaLibrary\HasMedia;
@@ -10,6 +9,7 @@ use Spatie\Sluggable\SlugOptions;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Facades\Cache;
+use App\Actions\Books\ImportBookCover;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Glorand\Model\Settings\Traits\HasSettingsField;

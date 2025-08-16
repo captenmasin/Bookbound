@@ -2,6 +2,7 @@
 
 namespace App\Actions\Books;
 
+use Cache;
 use App\Models\Tag;
 use App\Models\Book;
 use App\Models\Author;
@@ -24,7 +25,7 @@ class ImportBookFromData
     ): Book {
         if (is_string($data)) {
             $identifier = $data;
-            $data = null;
+            $data = Cache::pull('book:'.$identifier) ?? null;
         } else {
             $identifier = $data['identifier'] ?? $data['isbn13'] ?? $data['isbn'] ?? null;
         }
@@ -58,21 +59,8 @@ class ImportBookFromData
             'language' => $data['language'] ?? null,
         ]);
 
-        //         Add primary cover
-        $primaryCover = $book->covers()->create(['is_primary' => true]);
-
         if ($data['cover_large'] || $data['cover']) {
-            $data['cover'] = $data['cover_large'] ?? $data['cover'];
-            try {
-                $primaryCover->addMediaFromUrl($data['cover'])
-                    ->toMediaCollection('image');
-
-                $book->updateColour();
-            } catch (\Exception $e) {
-                \Log::error('Failed to fetch cover image for book: '.$identifier, [
-                    'error' => $e->getMessage(),
-                ]);
-            }
+            ImportBookCover::dispatch($book, $data['cover_large'] ?? $data['cover']);
         }
 
         // Authors
@@ -117,9 +105,6 @@ class ImportBookFromData
             }
         }
 
-        return $book->load(
-            'authors',
-            'tags',
-            'publisher');
+        return $book;
     }
 }
