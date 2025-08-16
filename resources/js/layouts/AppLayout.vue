@@ -59,14 +59,14 @@ watch(
             <p>&copy; {{ new Date().getFullYear() }} SpacemanCodes LTD. All rights reserved.</p>
             <div class="flex items-center gap-4">
                 <Link
-                    :href="useRoute('privacy-policy')"
-                    class="hover:text-primary hover:underline">
-                    Privacy Policy
-                </Link>
-                <Link
                     :href="useRoute('contact')"
                     class="hover:text-primary hover:underline">
                     Contact Us
+                </Link>
+                <Link
+                    :href="useRoute('privacy-policy')"
+                    class="hover:text-primary hover:underline">
+                    Privacy Policy
                 </Link>
             </div>
         </footer>

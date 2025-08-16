@@ -26,7 +26,6 @@ class AddBookToUser
 
         // Enforce subscription limit for maximum number of books
         if (! SubscriptionLimits::canAddBook($user)) {
-            $remaining = SubscriptionLimits::remainingBooks($user);
             $max = SubscriptionLimits::getLimit($user, 'max_books');
             $message = 'You have reached the maximum number of books allowed by your subscription.';
             if ($max !== null) {
