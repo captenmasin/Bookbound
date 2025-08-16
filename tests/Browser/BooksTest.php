@@ -288,7 +288,8 @@ test('user can add a review to a book', function () {
 
     $this->browse(function (Browser $browser) use ($user, $book) {
         $browser->loginAs($user)
-            ->visit(route('books.show', $book));
+            ->visit(route('books.show', $book))
+            ->waitFor('.book-display-type');
 
         $displayTabs = $browser->elements('.book-display-type [role="tab"]');
         $displayTabs[1]->click();
@@ -324,7 +325,8 @@ test('user can update a review on a book', function () {
 
     $this->browse(function (Browser $browser) use ($user, $book) {
         $browser->loginAs($user)
-            ->visit(route('books.show', $book));
+            ->visit(route('books.show', $book))
+            ->waitFor('.book-display-type');
 
         $displayTabs = $browser->elements('.book-display-type [role="tab"]');
         $displayTabs[1]->click();
@@ -359,7 +361,8 @@ test('user can delete a review on a book', function () {
 
     $this->browse(function (Browser $browser) use ($user, $book, $review) {
         $browser->loginAs($user)
-            ->visit(route('books.show', $book));
+            ->visit(route('books.show', $book))
+            ->waitFor('.book-display-type');
 
         $displayTabs = $browser->elements('.book-display-type [role="tab"]');
         $displayTabs[1]->click();
@@ -398,7 +401,8 @@ test('user cannot see delete button on other users reviews', function () {
 
     $this->browse(function (Browser $browser) use ($user, $book) {
         $browser->loginAs($user)
-            ->visit(route('books.show', $book));
+            ->visit(route('books.show', $book))
+            ->waitFor('.book-display-type');
 
         $displayTabs = $browser->elements('.book-display-type [role="tab"]');
         $displayTabs[1]->click();
