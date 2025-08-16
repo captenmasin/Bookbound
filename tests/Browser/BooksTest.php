@@ -2,6 +2,7 @@
 
 use App\Models\Book;
 use App\Models\User;
+use App\Models\Rating;
 use App\Models\Review;
 use Laravel\Dusk\Browser;
 
