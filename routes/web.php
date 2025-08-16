@@ -30,6 +30,14 @@ Route::get('privacy-policy', [GeneralPageController::class, 'privacy'])
     ->withoutMiddleware(['auth', 'verified'])
     ->name('privacy-policy');
 
+Route::get('contact', [GeneralPageController::class, 'contact'])
+    ->withoutMiddleware(['auth', 'verified'])
+    ->name('contact');
+
+Route::post('contact', [GeneralPageController::class, 'submitContact'])
+    ->withoutMiddleware(['auth', 'verified'])
+    ->name('contact.submit');
+
 Route::get('get/{type}/{data}', HandlePwaProtocol::class)
     ->where('data', '.*')
     ->name('protocol');

@@ -26,6 +26,11 @@ class GenerateSitemap extends Command
                     ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
                     ->setPriority(0.5)
             )->add(
+                Url::create(route('contact'))
+                    ->setLastModificationDate(now())
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
+                    ->setPriority(0.3)
+            )->add(
                 Url::create(route('user.books.index'))
                     ->setLastModificationDate(now())
                     ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
