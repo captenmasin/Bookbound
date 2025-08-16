@@ -57,11 +57,16 @@ watch(
             class="pointer-events-auto" />
         <footer class="mt-auto hidden justify-between border-t py-4 text-xs border-secondary text-muted-foreground lg:flex">
             <p>&copy; {{ new Date().getFullYear() }} SpacemanCodes LTD. All rights reserved.</p>
-            <div>
+            <div class="flex items-center gap-4">
                 <Link
                     :href="useRoute('privacy-policy')"
                     class="hover:text-primary hover:underline">
                     Privacy Policy
+                </Link>
+                <Link
+                    :href="useRoute('contact')"
+                    class="hover:text-primary hover:underline">
+                    Contact Us
                 </Link>
             </div>
         </footer>
