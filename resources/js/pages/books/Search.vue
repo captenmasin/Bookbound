@@ -8,6 +8,7 @@ import SearchTipPopup from '@/components/SearchTipPopup.vue'
 import HorizontalSkeleton from '@/components/books/HorizontalSkeleton.vue'
 import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
 import { BookApiResult } from '@/types/book'
+import { Badge } from '@/components/ui/badge'
 import { useRoute } from '@/composables/useRoute'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input/index.js'
@@ -38,13 +39,9 @@ const props = defineProps({
         default: ''
     },
     previousSearches: {
-        type: Array as PropType<{ id: number; search_term: string }[]>,
+        type: Array as PropType<{ id: number; search_term: string, search_term_normalised: string, type: string }[]>,
         default: () => []
     }
-    // initialAuthor: {
-    //     type: String,
-    //     default: ''
-    // }
 })
 
 const query = ref(props.initialQuery)
@@ -201,30 +198,31 @@ defineOptions({
                             </div>
                             <SearchTipPopup />
                         </div>
-                        <Deferred data="previousSearches">
-                            <template #fallback />
-
-                            <div
-                                v-if="previousSearches && previousSearches.length"
-                                class="hidden flex-col md:flex">
-                                <h2 class="font-serif text-xl font-semibold text-accent-foreground">
-                                    Previous searches...
-                                </h2>
-                                <ul class="divide-y divide-muted p-0">
-                                    <li
-                                        v-for="previousSearch in previousSearches"
-                                        :key="previousSearch.id"
-                                        class="flex items-center gap-2 py-2">
-                                        <Link
-                                            class="text-sm text-accent-foreground hover:text-primary"
-                                            :href="useRoute('books.search', { q: previousSearch.search_term })"
-                                        >
-                                            {{ previousSearch.search_term }}
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                        </Deferred>
+                        <div
+                            v-if="previousSearches && previousSearches.length"
+                            class="hidden flex-col md:flex">
+                            <h2 class="font-serif text-xl font-semibold text-accent-foreground">
+                                Previous searches
+                            </h2>
+                            <ul class="divide-y divide-muted p-0">
+                                <li
+                                    v-for="previousSearch in previousSearches"
+                                    :key="previousSearch.id"
+                                    class="flex items-center gap-2 py-2">
+                                    <Link
+                                        class="text-sm text-accent-foreground hover:text-primary"
+                                        :href="useRoute('books.search', { q: previousSearch.search_term })"
+                                    >
+                                        <Badge
+                                            v-if="previousSearch.type !== 'query'"
+                                            variant="secondary">
+                                            {{ previousSearch.type }}
+                                        </Badge>
+                                        {{ previousSearch.search_term_normalised }}
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
                     </form>
                     <!--                    <SearchTipPopup class="md:hidden" />-->
                 </aside>

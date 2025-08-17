@@ -57,7 +57,8 @@ class BookController extends Controller
         }
 
         $previousSearches = Cache::remember('previous_searches_'.$request->user()->id, 60, function () use ($request) {
-            return $request->user()->previousSearches()->limit(5)->orderBy('updated_at', 'desc')->get();
+            return $request->user()->previousSearches()
+                ->limit(8)->orderBy('updated_at', 'desc')->get();
         });
 
         return Inertia::render('books/Search', [

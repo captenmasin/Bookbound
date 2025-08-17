@@ -12,6 +12,17 @@ class PreviousSearchResource extends JsonResource
         return [
             'id' => $this->id,
             'search_term' => $this->search_term,
+            'search_term_normalised' => $this->normalise($this->search_term),
+            'type' => $this->type,
         ];
+    }
+
+    private function normalise(mixed $search_term)
+    {
+        $output = $search_term;
+        $output = str_replace('tag:', '', $output);
+        $output = str_replace('author:', '', $output);
+
+        return $output;
     }
 }
