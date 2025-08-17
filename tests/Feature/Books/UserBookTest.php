@@ -3,8 +3,9 @@
 use App\Models\Book;
 use App\Models\User;
 use App\Enums\UserBookStatus;
+use Tests\Concerns\GiveSubscription;
 
-uses(\Tests\Concerns\GiveSubscription::class);
+uses(GiveSubscription::class);
 
 test('book can be removed from library', function () {
     $user = User::factory()->create();
@@ -34,7 +35,26 @@ test('book can be added to library', function () {
             'status' => UserBookStatus::Reading->value,
         ]);
 
-    $response->assertRedirect();
+    $response->assertSessionHas('success', 'Book added to your library successfully.');
+
+    $this->assertDatabaseHas('book_user', [
+        'user_id' => $user->id,
+        'book_id' => $book->id,
+        'status' => UserBookStatus::Reading->value,
+    ]);
+});
+
+test('book can be added to library as JSON', function () {
+    $user = User::factory()->create();
+    $book = Book::factory()->create();
+
+    $response = $this->actingAs($user)
+        ->postJson(route('api.user.books.store'), [
+            'identifier' => $book->identifier,
+            'status' => UserBookStatus::Reading->value,
+        ]);
+
+    $response->assertJson(['success' => true, 'message' => 'Book added to your library successfully.']);
 
     $this->assertDatabaseHas('book_user', [
         'user_id' => $user->id,
@@ -133,10 +153,9 @@ test('status update fails when book is missing', function () {
     $user = User::factory()->create();
     $book = Book::factory()->create();
 
-    $response = $this->actingAs($user)
-        ->patch(route('api.user.books.update_status', $book), [
-            'status' => UserBookStatus::Completed->name,
-        ]);
+    $response = $this->actingAs($user)->patch(route('api.user.books.update_status', $book), [
+        'status' => UserBookStatus::Completed->name,
+    ]);
 
     $response->assertForbidden();
 });
@@ -147,14 +166,28 @@ test('duplicate book cannot be added', function () {
 
     $user->books()->attach($book, ['status' => UserBookStatus::PlanToRead->value]);
 
-    $response = $this->actingAs($user)
-        ->post(route('api.user.books.store'), [
-            'identifier' => $book->identifier,
-            'status' => UserBookStatus::Reading->name,
-        ]);
+    $response = $this->actingAs($user)->post(route('api.user.books.store'), [
+        'identifier' => $book->identifier,
+        'status' => UserBookStatus::Reading->name,
+    ]);
 
     $response->assertRedirect();
     $response->assertSessionHas('error');
 
     $this->assertDatabaseCount('book_user', 1);
+});
+
+test('API returns error json on exception', function () {
+    $user = User::factory()->create();
+    $book = Book::factory()->create();
+
+    $user->books()->attach($book);
+
+    $response = $this->actingAs($user)
+        ->postJson(route('api.user.books.store'), [
+            'identifier' => $book->identifier,
+            'status' => UserBookStatus::Reading->value,
+        ]);
+
+    $response->assertJson(['success' => false, 'message' => 'Book already exists in your library.']);
 });
