@@ -121,7 +121,7 @@ class UserBookController extends Controller
             })->unique('slug')->all())),
 
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('dashboard')],
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
             ],
         ])->withMeta([

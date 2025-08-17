@@ -398,7 +398,7 @@ defineOptions({ layout: AppLayout })
                             class="flex items-center gap-2 py-2">
                             <Link
                                 class="text-sm text-accent-foreground hover:text-primary"
-                                :href="useRoute('user.books.index', { author: author.slug })"
+                                :href="useRoute('books.search', { q: 'author: ' + author.name })"
                             >
                                 {{ author.name }}
                             </Link>

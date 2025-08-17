@@ -26,7 +26,7 @@ const tagsLimit = ref(props.limit)
             class="inline-block"
         >
             <Link
-                :href="useRoute('user.books.index', { tag: tag.slug })"
+                :href="useRoute('books.search', { q: 'tag: ' + tag.name })"
                 class="rounded-full px-2 text-xs py-0.5 bg-black/2 text-muted-foreground hover:bg-primary hover:text-primary-foreground dark:bg-primary/10 md:transition-colors dark:hover:text-primary">
                 {{ tag.name }}
             </Link>

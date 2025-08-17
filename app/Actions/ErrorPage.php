@@ -23,7 +23,7 @@ class ErrorPage
         return Inertia::render('Error', array_merge((new HandleInertiaRequests)->share(request()), [
             'status' => 404,
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('dashboard')],
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
                 ['title' => 'Page not found'],
             ],
         ]))->withMeta([

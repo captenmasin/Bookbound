@@ -4,6 +4,7 @@ import Loader from '@/components/Loader.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import PageTitle from '@/components/PageTitle.vue'
 import JoinProTrigger from '@/components/JoinProTrigger.vue'
+import SearchTipPopup from '@/components/SearchTipPopup.vue'
 import HorizontalSkeleton from '@/components/books/HorizontalSkeleton.vue'
 import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
 import { BookApiResult } from '@/types/book'
@@ -149,9 +150,7 @@ defineOptions({
                             </Button>
                         </div>
                     </div>
-                    <span class="flex pl-1 text-xs text-muted-foreground">
-                        Search by author using <code class="rounded-sm bg-muted px-1">author: name</code>
-                    </span>
+                    <SearchTipPopup />
                 </div>
             </form>
         </div>
@@ -200,9 +199,7 @@ defineOptions({
                                     </Button>
                                 </div>
                             </div>
-                            <span class="hidden pl-1 text-xs text-muted-foreground md:flex">
-                                Search by author using <code class="rounded-sm bg-muted px-1">author: name</code>
-                            </span>
+                            <SearchTipPopup />
                         </div>
                         <Deferred data="previousSearches">
                             <template #fallback />
@@ -229,9 +226,7 @@ defineOptions({
                             </div>
                         </Deferred>
                     </form>
-                    <span class="flex pt-1 pl-1 text-xs text-muted-foreground md:hidden">
-                        Search by author using <code class="rounded-sm bg-muted px-1">author: name</code>
-                    </span>
+                    <!--                    <SearchTipPopup class="md:hidden" />-->
                 </aside>
                 <section class="flex w-full flex-1 flex-col md:w-auto">
                     <div

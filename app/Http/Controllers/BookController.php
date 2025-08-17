@@ -26,19 +26,29 @@ class BookController extends Controller
         $perPage = 10;
 
         $originalQuery = $request->get('q');
-        if (! Str::contains($originalQuery, 'author:')) {
-            $query = $originalQuery;
-            $author = null;
-        } else {
+        $query = $originalQuery;
+        $author = null;
+        $tag = null;
+
+        if (Str::contains($originalQuery, 'author:')) {
             $author = Str::of($originalQuery)->after('author:')->trim()->value();
             $query = Str::of($originalQuery)->before('author:')->trim()->value();
         }
 
+        if (Str::contains($originalQuery, 'tag:')) {
+            $tag = Str::of($originalQuery)->after('tag:')->trim()->value();
+            $query = Str::of($originalQuery)->before('tag:')->trim()->value();
+        }
+
         if ($request->filled('q')) {
             $request->user()->previousSearches()->updateOrCreate(
-                ['search_term' => $originalQuery, 'user_id' => Auth::id()],
+                [
+                    'search_term' => $originalQuery, 'user_id' => Auth::id(),
+                    'type' => $tag ? 'tag' : ($author ? 'author' : 'query'),
+                ],
                 [
                     'search_term' => $originalQuery,
+                    'type' => $tag ? 'tag' : ($author ? 'author' : 'query'),
                     'updated_at' => now(),
                 ]
             );
@@ -59,12 +69,13 @@ class BookController extends Controller
                 fn () => SearchBooksFromApi::run(
                     query: $query,
                     author: $author,
+                    subject: $tag,
                     maxResults: $perPage,
                     page: $page,
                 )
             )->deepMerge()->matchOn(''),
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('dashboard')],
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
                 ['title' => 'Find Book', 'href' => route('books.search')],
             ],
@@ -78,7 +89,7 @@ class BookController extends Controller
     {
         return Inertia::render('books/Scan', [
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('dashboard')],
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
                 ['title' => 'Scan Book', 'href' => route('books.scan')],
             ],
@@ -123,7 +134,7 @@ class BookController extends Controller
                     ->reject(fn ($review) => Auth::check() ? $review->user_id === Auth::id() : false)
             )),
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('dashboard')],
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
                 ['title' => Str::limit($book->title, 52), 'href' => route('books.show', $book)],
             ],
@@ -152,7 +163,7 @@ class BookController extends Controller
         return Inertia::render('books/Preview', [
             'identifier' => $identifier,
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('dashboard')],
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
                 ['title' => 'Books', 'href' => route('user.books.index')],
                 ['title' => 'Importing Book'],
             ],

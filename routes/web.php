@@ -42,6 +42,10 @@ Route::get('get/{type}/{data}', HandlePwaProtocol::class)
     ->where('data', '.*')
     ->name('protocol');
 
+Route::get('books-by-subject/{subject}', function ($subject) {
+    dd($subject);
+});
+
 // Book routes
 Route::prefix('books')
     ->name('books.')
@@ -106,7 +110,7 @@ Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
             Route::get('appearance', function () {
                 return Inertia::render('settings/Appearance', [
                     'breadcrumbs' => [
-                        ['title' => 'Home', 'href' => route('dashboard')],
+                        ['title' => 'Dashboard', 'href' => route('dashboard')],
                         ['title' => 'Settings', 'href' => route('user.settings.profile.edit')],
                         ['title' => 'Appearance', 'href' => route('user.settings.appearance')],
                     ],

@@ -28,39 +28,43 @@ class ISBNdbService implements BookApiServiceInterface
     public static function search(
         ?string $query = null,
         ?string $author = null,
+        ?string $subject = null,
         int $maxResults = 30,
         $page = 1
     ): array {
-        if (! $query && ! $author) {
+        if (! $query && ! $author && ! $subject) {
             return [];
         }
 
         $sanitizedQuery = Str::slug($query);
         $sanitizedAuthor = Str::slug($author);
-        $hash = md5("$sanitizedQuery|$sanitizedAuthor|$maxResults|$page");
+        $sanitizedSubject = Str::slug($subject);
+        $hash = md5("$sanitizedQuery|$sanitizedAuthor|$sanitizedSubject|$maxResults|$page");
         $cacheKey = "books:search:$hash";
 
-        return Cache::remember($cacheKey, now()->addHour(), function () use ($query, $author, $maxResults, $page, $cacheKey) {
+        return Cache::remember($cacheKey, now()->addHour(), function () use ($query, $author, $subject, $maxResults, $page, $cacheKey) {
             $queryParts = collect([
                 'page' => $page,
                 'pageSize' => $maxResults,
                 'column' => '',
                 'shouldMatchAll' => 0,
             ])->when($author, function ($parts) use ($author, &$query) {
+                $parts->put('column', 'author');
+
                 $query .= ' '.$author;
 
                 return $parts->put('shouldMatchAll', 1);
+            })->when($subject, function ($parts) use ($subject, &$query) {
+                $query .= ' '.$subject;
+
+                return $parts->put('column', 'subjects');
             })->all();
 
-            if (Str::startsWith($query, 'subject:')) {
-                $query = Str::after($query, 'subject:');
-                $queryParts['column'] = 'subjects';
-                $queryParts['shouldMatchAll'] = 1;
-            }
-
             $url = Uri::of(self::$baseUrl)
-                ->withPath('books/'.urlencode($query))
+                ->withPath('books/'.urlencode(trim($query)))
                 ->withQuery($queryParts);
+
+            //            dd($query, $author, $url->__toString(), $queryParts);
 
             try {
                 $response = self::client()

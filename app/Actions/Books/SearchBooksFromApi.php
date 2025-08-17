@@ -21,10 +21,11 @@ class SearchBooksFromApi
     public function handle(
         ?string $query = null,
         ?string $author = null,
+        ?string $subject = null,
         int $maxResults = 30,
         int $page = 1): array
     {
-        $results = $this->booksApi->search(query: $query, author: $author, maxResults: $maxResults, page: $page);
+        $results = $this->booksApi->search(query: $query, author: $author, subject: $subject, maxResults: $maxResults, page: $page);
 
         $total = $results['total'] ?? 0;
         $books = collect($results['items'] ?? [])->map(fn ($book) => BookTransformer::fromIsbn($book));
@@ -41,7 +42,7 @@ class SearchBooksFromApi
 
             Bus::chain([
                 new ImportBooksFromApiSearch($books),
-                new ImportAdditionalBooksFromApiSearch(query: $query, author: $author),
+                new ImportAdditionalBooksFromApiSearch(query: $query, author: $author, subject: $subject),
             ])->onQueue('imports')->dispatch();
         }
 
@@ -56,6 +57,7 @@ class SearchBooksFromApi
         $results = $this->handle(
             $request->query('q'),
             $request->query('author'),
+            $request->query('subject'),
         );
 
         return response()->json($results);

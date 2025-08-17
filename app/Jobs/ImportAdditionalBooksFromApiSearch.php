@@ -18,7 +18,8 @@ class ImportAdditionalBooksFromApiSearch implements ShouldQueue
      */
     public function __construct(
         public ?string $query = null,
-        public ?string $author = null
+        public ?string $author = null,
+        public ?string $subject = null,
     ) {
         $this->booksApi = app(BookApiServiceInterface::class);
     }
@@ -28,7 +29,7 @@ class ImportAdditionalBooksFromApiSearch implements ShouldQueue
      */
     public function handle(): void
     {
-        $results = $this->booksApi->search(query: $this->query, author: $this->author, maxResults: 100);
+        $results = $this->booksApi->search(query: $this->query, author: $this->author, subject: $this->subject, maxResults: 100);
 
         $books = collect($results['items'] ?? [])->map(fn ($book) => BookTransformer::fromIsbn($book));
 

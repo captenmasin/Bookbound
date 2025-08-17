@@ -25,7 +25,7 @@ class ReviewController extends Controller
         return Inertia::render('user/Reviews', [
             'reviews' => ReviewResource::collection($reviews),
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('dashboard')],
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
                 ['title' => 'Reviews', 'href' => route('user.reviews.index')],
             ],
         ])->withMeta([

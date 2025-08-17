@@ -36,6 +36,7 @@ class GoogleBooksService implements BookApiServiceInterface
     public static function search(
         ?string $query = null,
         ?string $author = null,
+        ?string $subject = null,
         int $maxResults = 30,
         $page = 1): array
     {

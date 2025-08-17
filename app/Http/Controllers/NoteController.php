@@ -27,7 +27,7 @@ class NoteController extends Controller
         return Inertia::render('user/Notes', [
             'notes' => NoteResource::collection($notes),
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('dashboard')],
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
                 ['title' => 'Notes', 'href' => route('user.notes.index')],
             ],
         ])->withMeta([
