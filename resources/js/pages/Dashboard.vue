@@ -170,7 +170,7 @@ defineOptions({ layout: AppLayout })
                             class="text-primary"
                             as-child>
                             <a
-                                :href="useRoute('billing')">
+                                :href="useRoute('checkout')">
                                 Upgrade now
                             </a>
                         </Button>
@@ -213,7 +213,9 @@ defineOptions({ layout: AppLayout })
                 </div>
                 <DialogFooter class="mt-4">
                     <Button as-child>
-                        <a :href="useRoute('billing')">
+                        <a
+                            target="_blank"
+                            :href="useRoute('billing')">
                             Manage Billing
                         </a>
                     </Button>

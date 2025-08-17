@@ -70,6 +70,7 @@ const userMenuItems = ref([
         tag: 'a',
         title: 'Billing',
         url: useRoute('billing'),
+        target: '_blank',
         icon: Wallet,
         if: authedUser.value?.subscription.subscribed
     },
@@ -186,7 +187,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                     <div>
                         <div
                             v-if="authedUser.subscription.subscribed"
-                            class="rounded-full px-2 py-px font-serif font-semibold text-[10px] bg-primary text-primary-foreground">
+                            class="rounded-full cursor-default select-none px-2 py-px font-serif font-semibold text-[10px] bg-primary text-primary-foreground">
                             PRO
                         </div>
 
