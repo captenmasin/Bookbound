@@ -11,7 +11,7 @@ uses(RefreshDatabase::class);
 test('handle() returns total and transformed books, caches each, and dispatches jobs', function () {
     $mock = Mockery::mock(BookApiServiceInterface::class);
     $mock->shouldReceive('search')
-        ->with('foo', 'bar', 30, 1)
+        ->with('foo', 'bar', 'baz', 30, 1)
         ->andReturn([
             'total' => 2,
             'items' => [
@@ -44,7 +44,7 @@ test('handle() returns total and transformed books, caches each, and dispatches 
             };
         });
 
-    $result = SearchBooksFromApi::run('foo', 'bar', 30, 1);
+    $result = SearchBooksFromApi::run('foo', 'bar', 'baz', 30, 1);
 
     expect($result)
         ->toHaveKeys(['total', 'books'])
@@ -57,13 +57,14 @@ test('handle() returns total and transformed books, caches each, and dispatches 
 
     $second = $capturedChain[1];
     expect(property_exists($second, 'query') ? $second->query : null)->toBe('foo')
-        ->and(property_exists($second, 'author') ? $second->author : null)->toBe('bar');
+        ->and(property_exists($second, 'author') ? $second->author : null)->toBe('bar')
+        ->and(property_exists($second, 'subject') ? $second->subject : null)->toBe('baz');
 });
 
 test('does not chain when there are no results but still dispatches the import job', function () {
     $mock = Mockery::mock(BookApiServiceInterface::class);
     $mock->shouldReceive('search')
-        ->with('empty', null, 30, 1)
+        ->with('empty', null, null, 30, 1)
         ->andReturn(['total' => 0, 'items' => []]);
     $this->app->instance(BookApiServiceInterface::class, $mock);
 
@@ -77,7 +78,7 @@ test('does not chain when there are no results but still dispatches the import j
     // Chain should NOT be called
     Bus::shouldReceive('chain')->never();
 
-    $result = SearchBooksFromApi::run('empty', null, 30, 1);
+    $result = SearchBooksFromApi::run('empty', null, null, 30, 1);
 
     expect($result)
         ->toHaveKeys(['total', 'books'])
@@ -88,7 +89,7 @@ test('does not chain when there are no results but still dispatches the import j
 test('asController returns a JSON response with BookResource', function () {
     $mock = Mockery::mock(BookApiServiceInterface::class);
     $mock->shouldReceive('search')
-        ->with('foo', 'bar', 30, 1)
+        ->with('foo', 'bar', null, 30, 1)
         ->andReturn([
             'total' => 2,
             'items' => [
