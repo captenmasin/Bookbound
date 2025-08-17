@@ -18,7 +18,7 @@ const breadcrumbs = ref(page.props.breadcrumbs as BreadcrumbItemType[] | undefin
 
 const mainNavItems = ref<NavItem[]>([
     {
-        title: 'Home',
+        title: 'Dashboard',
         href: useRoute('dashboard'),
         icon: Home,
         isActive: false

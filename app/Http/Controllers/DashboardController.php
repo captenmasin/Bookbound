@@ -81,10 +81,10 @@ class DashboardController extends Controller
                 $authors
             ),
             'breadcrumbs' => [
-                ['title' => 'Home', 'href' => route('dashboard')],
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
             ],
         ])->withMeta([
-            'title' => 'Home',
+            'title' => 'Dashboard',
         ]);
     }
 }
