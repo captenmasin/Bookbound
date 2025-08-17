@@ -29,7 +29,7 @@ class BooksRelationManager extends RelationManager
                     ->color(fn (string $state): string => match ($state) {
                         UserBookStatus::PlanToRead->value => 'primary',
                         UserBookStatus::Reading->value => 'info',
-                        UserBookStatus::Completed->value => 'success',
+                        UserBookStatus::Read->value => 'success',
                         UserBookStatus::OnHold->value => 'gray',
                         UserBookStatus::Dropped->value => 'danger',
                         default => 'gray',

@@ -40,7 +40,7 @@ test('books page shows user books', function () {
     // Add books to user's library
     foreach ($books as $book) {
         $user->books()->attach($book, [
-            'status' => UserBookStatus::Completed->value,
+            'status' => UserBookStatus::Read->value,
         ]);
     }
 
@@ -62,7 +62,7 @@ test('books page can be filtered by status', function () {
     // Add books with different statuses
     foreach ($completedBooks as $book) {
         $user->books()->attach($book, [
-            'status' => UserBookStatus::Completed->value,
+            'status' => UserBookStatus::Read->value,
         ]);
     }
 
@@ -73,7 +73,7 @@ test('books page can be filtered by status', function () {
     }
 
     $response = $this->actingAs($user)
-        ->get(route('user.books.index', ['status' => UserBookStatus::Completed->value]));
+        ->get(route('user.books.index', ['status' => UserBookStatus::Read->value]));
 
     $response->assertStatus(200);
     $response->assertInertia(fn (AssertableInertia $page) => $page

@@ -137,7 +137,7 @@ test('book status can be updated', function () {
 
     $response = $this->actingAs($user)
         ->patch(route('api.user.books.update_status', $book), [
-            'status' => UserBookStatus::Completed->name,
+            'status' => UserBookStatus::Read->name,
         ]);
 
     $response->assertRedirect();
@@ -145,7 +145,7 @@ test('book status can be updated', function () {
     $this->assertDatabaseHas('book_user', [
         'user_id' => $user->id,
         'book_id' => $book->id,
-        'status' => UserBookStatus::Completed->name,
+        'status' => UserBookStatus::Read->name,
     ]);
 });
 
@@ -154,7 +154,7 @@ test('status update fails when book is missing', function () {
     $book = Book::factory()->create();
 
     $response = $this->actingAs($user)->patch(route('api.user.books.update_status', $book), [
-        'status' => UserBookStatus::Completed->name,
+        'status' => UserBookStatus::Read->name,
     ]);
 
     $response->assertForbidden();

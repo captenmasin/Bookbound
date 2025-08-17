@@ -165,3 +165,14 @@ Artisan::command('flood', function () {
         });
     });
 });
+
+Artisan::command('post:deploy', function () {
+    $userBooks = DB::table('book_user')->get();
+    foreach ($userBooks as $userBook) {
+        if ($userBook->status === 'Completed') {
+            DB::table('book_user')
+                ->where('id', $userBook->id)
+                ->update(['status' => UserBookStatus::Read]);
+        }
+    }
+});

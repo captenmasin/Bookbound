@@ -44,7 +44,7 @@ class DashboardController extends Controller
             ->join('author_book', 'authors.id', '=', 'author_book.author_id')
             ->join('book_user', 'author_book.book_id', '=', 'book_user.book_id')
             ->where('book_user.user_id', $request->user()->id)
-            ->where('book_user.status', UserBookStatus::Completed->value)
+            ->where('book_user.status', UserBookStatus::Read->value)
             ->groupBy('authors.id')
             ->orderByDesc('book_count')
             ->limit(5)
@@ -56,7 +56,7 @@ class DashboardController extends Controller
             //            ...$booksByStatus[UserBookStatus::Dropped->value] ?? [],
         ])->take(4);
 
-        $completedBooks = $booksByStatus[UserBookStatus::Completed->value] ?? collect();
+        $completedBooks = $booksByStatus[UserBookStatus::Read->value] ?? collect();
         $planToReadBooks = $booksByStatus[UserBookStatus::PlanToRead->value] ?? collect();
         $readingBooks = $booksByStatus[UserBookStatus::Reading->value] ?? collect();
 

@@ -2,7 +2,7 @@
 export enum UserBookStatus {
 PlanToRead = 'Plan to Read',
 Reading = 'Reading',
-Completed = 'Completed',
+Read = 'Read',
 OnHold = 'On Hold',
 Dropped = 'Dropped'
 }

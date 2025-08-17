@@ -218,7 +218,7 @@ test('user can change book status', function () {
     $this->assertDatabaseHas('book_user', [
         'user_id' => $user->id,
         'book_id' => $book->id,
-        'status' => 'Completed',
+        'status' => 'Read',
     ]);
 });
 

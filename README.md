@@ -15,7 +15,7 @@ A personal library tool built with Laravel, Inertia.js, and Vue 3 — designed t
 
 ### 🏠 Books Homepage
 - View all books in your collection
-- Filter by reading status (`plan_to_read`, `reading`, `completed`, `on_hold`, `dropped`)
+- Filter by reading status (`plan_to_read`, `reading`, `read`, `on_hold`, `dropped`)
 - Search and filter by title, author, category, or status
 - Add new books via:
     - Google Books API

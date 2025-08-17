@@ -6,7 +6,7 @@ enum UserBookStatus: string
 {
     case PlanToRead = 'Plan to Read';
     case Reading = 'Reading';
-    case Completed = 'Completed';
+    case Read = 'Read';
     case OnHold = 'On Hold';
     case Dropped = 'Dropped';
 

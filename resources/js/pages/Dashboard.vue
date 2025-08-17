@@ -92,9 +92,9 @@ const stats = [
         color: 'text-primary'
     },
     {
-        name: 'Completed',
+        name: 'Read',
         value: props.statValues.completedBooks,
-        link: useRoute('user.books.index', { 'status[]': UserBookStatus.Completed }),
+        link: useRoute('user.books.index', { 'status[]': UserBookStatus.Read }),
         icon: 'CircleCheck',
         color: 'text-green-500'
     },
