@@ -30,12 +30,16 @@ class BookController extends Controller
         $author = null;
         $tag = null;
 
-        if (Str::contains($originalQuery, 'author:')) {
+        if (Str::contains(strtolower($originalQuery), 'author:')) {
+            $originalQuery = str_ireplace('author:', 'author:', $originalQuery);
+
             $author = Str::of($originalQuery)->after('author:')->trim()->value();
             $query = Str::of($originalQuery)->before('author:')->trim()->value();
         }
 
-        if (Str::contains($originalQuery, 'tag:')) {
+        if (Str::contains(strtolower($originalQuery), 'tag:')) {
+            $originalQuery = str_ireplace('tag:', 'tag:', $originalQuery);
+
             $tag = Str::of($originalQuery)->after('tag:')->trim()->value();
             $query = Str::of($originalQuery)->before('tag:')->trim()->value();
         }
