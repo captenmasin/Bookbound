@@ -4,6 +4,7 @@ import AOS from 'aos'
 import Icon from '@/components/Icon.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import HomeHero from '@/components/marketing/HomeHero.vue'
+import FaqSection from '@/components/marketing/FaqSection.vue'
 import ScanScreenshot from '~/images/marketing/scan-screenshot.webp'
 import FilterScreenshot from '~/images/marketing/filter-screenshot.webp'
 import ScanScreenshotDark from '~/images/marketing/scan-screenshot-dark.webp'
@@ -26,7 +27,6 @@ import { useRoute } from '@/composables/useRoute.js'
 import { Button } from '@/components/ui/button/index.js'
 import { useAuthedUser } from '@/composables/useAuthedUser.js'
 import { computed, nextTick, onMounted, PropType, ref, watch } from 'vue'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card/index.js'
 
 const props = defineProps({
@@ -209,33 +209,6 @@ const nonProFeaturesDisplay = computed(() => {
         return item !== undefined
     })
 })
-
-const faqs = [
-    {
-        question: 'How do I add new books to my library',
-        answer: 'Books can be added by searching for them or by scanning their barcodes using your device’s camera.'
-    },
-    {
-        question: 'Can I track the status of my books?',
-        answer: 'Yes, you can mark books as read, currently reading, or want to read.'
-    },
-    {
-        question: 'Is there a limit to how many books I can add?',
-        answer: `The free plan allows you to add up to ${props.freeLimits?.max_books} books. Upgrade to Pro for unlimited books.`
-    },
-    {
-        question: 'Are reviews and ratings public?',
-        answer: 'Yes, your reviews will be displayed publicly, but Pro users can write private notes that only they can see.'
-    },
-    {
-        question: 'What if I forget my password?',
-        answer: 'You can reset your password using the “Forgot Password” link on the login page.'
-    },
-    {
-        question: 'Is my data secure?',
-        answer: 'Yes, we take data security seriously and use industry-standard encryption to protect your information.'
-    }
-]
 
 function moveSliderRight () {
     const slider = document.getElementById('product-screenshots')
@@ -719,40 +692,7 @@ watch(mobileMenuOpen, (newValue) => {
                     </div>
                 </div>
             </section>
-            <section
-                id="faq"
-                class="container mx-auto px-4 py-16 sm:py-20">
-                <div class="flex flex-col md:flex-row">
-                    <div class="mb-2 w-full sm:mb-10 md:w-1/2">
-                        <h2 class="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-                            Frequently asked questions
-                        </h2>
-                        <p class="mt-2 text-secondary-foreground">
-                            Answers to common questions.
-                        </p>
-                    </div>
-
-                    <div class="flex flex-1">
-                        <Accordion
-                            type="single"
-                            class="w-full"
-                            collapsible
-                            :default-value="'0'">
-                            <AccordionItem
-                                v-for="(item, index) in faqs"
-                                :key="index"
-                                :value="index.toString()">
-                                <AccordionTrigger class="cursor-pointer">
-                                    {{ item.question }}
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                    {{ item.answer }}
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </div>
-                </div>
-            </section>
+            <FaqSection id="faq" />
         </main>
         <footer class="mt-16 border-t pb-4 border-sidebar-border/80 bg-background">
             <div class="container mx-auto grid gap-10 px-4 py-10 md:grid-cols-2">

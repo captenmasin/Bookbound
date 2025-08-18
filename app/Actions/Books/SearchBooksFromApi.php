@@ -25,31 +25,42 @@ class SearchBooksFromApi
         int $maxResults = 30,
         int $page = 1): array
     {
-        $results = $this->booksApi->search(query: $query, author: $author, subject: $subject, maxResults: $maxResults, page: $page);
+        $hash = md5("$query|$author|$subject|$maxResults|$page");
+        $cacheKey = "books:search:$hash";
 
-        $total = $results['total'] ?? 0;
-        $books = collect($results['items'] ?? [])->map(fn ($book) => BookTransformer::fromIsbn($book));
+        $data = Cache::remember($cacheKey, now()->addHour(), function () use ($query, $author, $subject, $maxResults, $page) {
+            $results = $this->booksApi->search(query: $query, author: $author, subject: $subject, maxResults: $maxResults, page: $page);
 
-        // Store in cache for 5 minutes for faster ImportBookFromData
-        $books->each(function ($data) {
-            Cache::remember('book:'.$data['identifier'], 60 * 5, function () use ($data) {
-                return $data;
+            $total = $results['total'] ?? 0;
+            $books = collect($results['items'] ?? [])->map(fn ($book) => BookTransformer::handle($book));
+
+            // Store in cache for 5 minutes for faster ImportBookFromData
+            $books->each(function ($data) {
+                Cache::remember('book:'.$data['identifier'], now()->addMinutes(5), function () use ($data) {
+                    return $data;
+                });
             });
+
+            if (count($books) > 0) {
+                ImportBooksFromApiSearch::dispatch($books);
+
+                Bus::chain([
+                    new ImportBooksFromApiSearch($books),
+                    new ImportAdditionalBooksFromApiSearch(query: $query, author: $author, subject: $subject),
+                ])->onQueue('imports')->dispatch();
+            }
+
+            return [
+                'total' => $total,
+                'books' => $books,
+            ];
         });
 
-        if (count($books) > 0) {
-            ImportBooksFromApiSearch::dispatch($books);
-
-            Bus::chain([
-                new ImportBooksFromApiSearch($books),
-                new ImportAdditionalBooksFromApiSearch(query: $query, author: $author, subject: $subject),
-            ])->onQueue('imports')->dispatch();
+        if (! $data || $data['total'] === 0) {
+            Cache::forget($cacheKey);
         }
 
-        return [
-            'total' => $total,
-            'books' => $books,
-        ];
+        return $data;
     }
 
     public function asController(Request $request): JsonResponse

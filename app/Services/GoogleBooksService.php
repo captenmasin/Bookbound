@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 use App\Contracts\BookApiServiceInterface;
 
 class GoogleBooksService implements BookApiServiceInterface
@@ -41,6 +40,8 @@ class GoogleBooksService implements BookApiServiceInterface
         $page = 1): array
     {
         $query = $query.($author ? (' inauthor:"'.$author.'"') : '');
+        ray('Google books query: '.$query);
+
         $query = trim($query);
 
         $page = max(0, $page - 1);
@@ -52,6 +53,7 @@ class GoogleBooksService implements BookApiServiceInterface
             'langRestrict' => 'en',
             'printType' => 'books',
             'maxResults' => $maxResults,
+            'country' => 'US',
         ]);
 
         $items = $response->json('items') ?? [];
@@ -67,9 +69,7 @@ class GoogleBooksService implements BookApiServiceInterface
 
     public static function get(string $id): ?array
     {
-        return Cache::remember('books:id:'.$id, now()->addWeek(), function () use ($id) {
-            return self::transform(self::getFromApi($id));
-        });
+        return self::transform(self::getFromApi($id));
     }
 
     public static function getByCode(string $isbn): ?array

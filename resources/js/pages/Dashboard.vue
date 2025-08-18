@@ -155,19 +155,21 @@ defineOptions({ layout: AppLayout })
         <Transition>
             <Alert
                 v-show="displayProBanner"
-                class="relative mb-6 text-white bg-primary border-primary md:mb-0">
+                class="relative mb-6 text-white bg-primary border-primary pb-6 md:mb-0">
                 <Icon
                     name="Sparkles"
                     class="mt-1 size-6" />
                 <AlertTitle class="font-serif text-lg text-white md:text-xl">
                     Get more with Pro!
                 </AlertTitle>
-                <AlertDescription class="text-white">
-                    Upgrade to Pro for advanced features like unlimited books, private notes, and more.
+                <AlertDescription>
+                    <p class="text-white">
+                        Upgrade to Pro for advanced features like unlimited books, private notes, and more.
+                    </p>
                     <div class="mt-4 flex items-center gap-4">
                         <Button
                             variant="white"
-                            class="text-primary"
+                            class="text-primary hover:text-white"
                             as-child>
                             <a
                                 :href="useRoute('checkout')">

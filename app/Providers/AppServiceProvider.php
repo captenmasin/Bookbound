@@ -10,9 +10,11 @@ use Laravel\Cashier\Cashier;
 use App\Services\ISBNdbService;
 use Filament\Support\Colors\Color;
 use App\Services\GoogleBooksService;
+use App\Services\OpenLibraryService;
 use Illuminate\Support\Facades\Vite;
 use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\SEOMeta;
+use Illuminate\Support\Facades\Config;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Support\ServiceProvider;
 use App\Contracts\BookApiServiceInterface;
@@ -26,8 +28,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //        $this->app->bind(BookApiServiceInterface::class, GoogleBooksService::class);
-        $this->app->bind(BookApiServiceInterface::class, ISBNdbService::class);
+        // $this->app->bind(BookApiServiceInterface::class, GoogleBooksService::class);
+        // $this->app->bind(BookApiServiceInterface::class, OpenLibraryService::class);
+        //        $this->app->bind(BookApiServiceInterface::class, ISBNdbService::class);
+
+        $map = Config::get('books.providers', []);
+        $key = Config::get('books.provider', 'isbndb');
+
+        $class = $map[$key] ?? null;
+
+        if ($class) {
+            $this->app->bind(BookApiServiceInterface::class, $class);
+        } else {
+            $this->app->bind(BookApiServiceInterface::class, ISBNdbService::class);
+        }
     }
 
     /**

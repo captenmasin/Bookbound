@@ -39,7 +39,9 @@ class ImportBookFromData
         }
 
         if (empty($data)) {
-            $data = BookTransformer::fromIsbn($this->booksApi->get($identifier));
+            $data = Cache::remember("books:id:$identifier", now()->addWeek(), function () use ($identifier) {
+                return BookTransformer::fromIsbn($this->booksApi->get($identifier));
+            });
             if (empty($data)) {
                 throw new \Exception("No data found for identifier: $identifier");
             }

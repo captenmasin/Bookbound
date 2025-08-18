@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Uri;
 use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use App\Contracts\BookApiServiceInterface;
@@ -36,66 +35,56 @@ class ISBNdbService implements BookApiServiceInterface
             return [];
         }
 
-        $sanitizedQuery = Str::slug($query);
-        $sanitizedAuthor = Str::slug($author);
-        $sanitizedSubject = Str::slug($subject);
-        $hash = md5("$sanitizedQuery|$sanitizedAuthor|$sanitizedSubject|$maxResults|$page");
-        $cacheKey = "books:search:$hash";
+        ray('ISBNdb query: '.$query);
 
-        return Cache::remember($cacheKey, now()->addHour(), function () use ($query, $author, $subject, $maxResults, $page, $cacheKey) {
-            $queryParts = collect([
-                'page' => $page,
-                'pageSize' => $maxResults,
-                'column' => '',
-                'shouldMatchAll' => 0,
-            ])->when($author, function ($parts) use ($author, &$query) {
-                $parts->put('column', 'author');
+        $queryParts = collect([
+            'page' => $page,
+            'pageSize' => $maxResults,
+            'column' => '',
+            'shouldMatchAll' => 0,
+        ])->when($author, function ($parts) use ($author, &$query) {
+            $parts->put('column', 'author');
 
-                $query .= ' '.$author;
+            $query .= ' '.$author;
 
-                return $parts->put('shouldMatchAll', 1);
-            })->when($subject, function ($parts) use ($subject, &$query) {
-                $query .= ' '.$subject;
+            return $parts->put('shouldMatchAll', 1);
+        })->when($subject, function ($parts) use ($subject, &$query) {
+            $query .= ' '.$subject;
 
-                return $parts->put('column', 'subjects');
-            })->all();
+            return $parts->put('column', 'subjects');
+        })->all();
 
-            $url = Uri::of(self::$baseUrl)
-                ->withPath('books/'.urlencode(trim($query)))
-                ->withQuery($queryParts);
+        $url = Uri::of(self::$baseUrl)
+            ->withPath('books/'.urlencode(trim($query)))
+            ->withQuery($queryParts);
 
-            //            dd($query, $author, $url->__toString(), $queryParts);
+        //            dd($query, $author, $url->__toString(), $queryParts);
 
-            try {
-                $response = self::client()
-                    ->retry(3, 200)
-                    ->get($url);
-            } catch (Exception $e) {
-                Cache::forget($cacheKey);
+        try {
+            $response = self::client()
+                ->retry(3, 200)
+                ->get($url);
+        } catch (Exception $e) {
+            return [];
+        }
 
-                return [];
-            }
+        if (! $response->ok()) {
+            return [];
+        }
 
-            if (! $response->ok()) {
-                Cache::forget($cacheKey);
+        $items = $response->json('books') ?? [];
 
-                return [];
-            }
-
-            $items = $response->json('books') ?? [];
-
-            return [
-                'total' => $response->json('total') ?? 0,
-                'items' => $items,
-            ];
-        });
+        return [
+            'total' => $response->json('total') ?? 0,
+            'items' => $items,
+        ];
     }
 
     public static function get(string $id): ?array
     {
-        return Cache::remember("books:id:$id", now()->addWeek(), function () use ($id) {
-            return self::getFromApi($id);
-        });
+        //        return Cache::remember("books:id:$id", now()->addWeek(), function () use ($id) {
+        return self::getFromApi($id);
+        //        });
     }
 
     public static function getByCode(string $isbn): ?array
