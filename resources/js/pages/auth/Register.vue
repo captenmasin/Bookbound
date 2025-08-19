@@ -117,7 +117,7 @@ const submit = () => {
                     v-if="page.props.auth.turnstile.enabled"
                     class="flex flex-col -mt-4 items-center justify-center">
                     <Turnstile
-                        :sitekey="'3' + page.props.auth.turnstile.site_key"
+                        :sitekey="page.props.auth.turnstile.site_key"
                         @callback="verifyTurnstile" />
                     <InputError
                         v-if="page.props.errors.cf_response"
