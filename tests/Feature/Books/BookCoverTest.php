@@ -44,6 +44,7 @@ test('authenticated subscribed user can upload book cover', function () {
     $this->giveActiveSubscription($user, config('subscriptions.plans.pro.key'));
 
     actingAs($user);
+
     $file = UploadedFile::fake()->image('cover.jpg');
 
     $response = post(route('cover.update', $book), [
