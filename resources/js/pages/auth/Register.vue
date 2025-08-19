@@ -130,6 +130,7 @@ onMounted(() => {
 
                 <div
                     v-if="canRenderCaptcha && page.props.auth.turnstile.enabled && sitekey"
+                    :key="captchaRenderKey"
                     class="flex flex-col -mt-4 items-center justify-center">
                     <Turnstile
                         :sitekey="page.props.auth.turnstile.site_key"
