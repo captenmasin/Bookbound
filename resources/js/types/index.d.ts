@@ -24,7 +24,11 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
     name: string
     auth: {
         user: User | null
-        check: boolean
+        check: boolean,
+        turnstile: {
+            enabled: boolean,
+            site_key: string,
+        }
     }
     app: {
         name: string

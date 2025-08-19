@@ -118,7 +118,10 @@ const submit = () => {
                     class="flex flex-col -mt-4 items-center justify-center">
                     <Turnstile
                         :sitekey="page.props.auth.turnstile.site_key"
-                        @callback="verifyTurnstile" />
+                        @callback="verifyTurnstile"
+                        @error="(m) => { form.cf_response = null; console.warn('Turnstile error:', m) }"
+                        @expired="() => { form.cf_response = null }"
+                    />
                     <InputError
                         v-if="page.props.errors.cf_response"
                         :message="page.props.errors.cf_response" />
