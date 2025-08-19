@@ -24,6 +24,9 @@ const page = usePage()
 const sitekey = computed(() =>
     (page.props.auth.turnstile.site_key || '').toString().trim()
 )
+const turnstileEnabled = computed(() =>
+    page.props.auth.turnstile.enabled && sitekey.value !== ''
+)
 
 const captchaRef = ref<InstanceType<typeof Turnstile> | null>(null)
 
@@ -113,12 +116,16 @@ const submit = () => {
                         />
                     </div>
                 </div>
-                <div class="-mt-5">
+                <div
+                    v-if="form.errors.password || form.errors.password_confirmation"
+                    class="-mt-5 empty:hidden"
+                >
                     <InputError :message="form.errors.password" />
                     <InputError :message="form.errors.password_confirmation" />
                 </div>
 
-                <div v-if="page.props.auth.turnstile.enabled && sitekey">
+                <div
+                    v-if="turnstileEnabled && sitekey">
                     <Turnstile
                         ref="captchaRef"
                         v-model="form.cf_response"
@@ -132,9 +139,9 @@ const submit = () => {
 
                 <Button
                     type="submit"
-                    class="mt-2 w-full"
+                    class="w-full"
                     tabindex="5"
-                    :disabled="form.processing || !form.cf_response">
+                    :disabled="form.processing || (turnstileEnabled && !form.cf_response)">
                     <LoaderCircle
                         v-if="form.processing"
                         class="h-4 w-4 animate-spin" />
