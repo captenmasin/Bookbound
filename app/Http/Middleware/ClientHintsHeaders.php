@@ -10,7 +10,6 @@ class ClientHintsHeaders
 {
     public function handle(Request $request, Closure $next): Response
     {
-        /** @var \Symfony\Component\HttpFoundation\Response $response */
         $response = $next($request);
 
         // Only add on real HTML top-level navigations (avoid assets, JSON, etc.)

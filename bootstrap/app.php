@@ -23,9 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(
             append: [
-                //                TrackPageview::class,
+                // TrackPageview::class,
+                // ClientHintsHeaders::class,
                 HandleAppearance::class,
-                ClientHintsHeaders::class,
                 HandleInertiaRequests::class,
                 AddLinkHeadersForPreloadedAssets::class,
             ],
