@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Support\Turnstile;
 use App\Actions\TrackEvent;
 use Illuminate\Http\Request;
 use App\Enums\AnalyticsEvent;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
 {
@@ -37,6 +39,16 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if (config('services.turnstile.enabled')) {
+            $cfToken = $request->get('cf_response');
+            $turnstile = new Turnstile;
+            $response = $turnstile->validate($cfToken);
+
+            if ($response['status'] === 0) {
+                throw ValidationException::withMessages(['cf_response' => 'Captcha failed']);
+            }
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|alpha_dash|unique:'.User::class,

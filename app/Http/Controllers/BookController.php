@@ -129,7 +129,8 @@ class BookController extends Controller
             'book' => new BookResource($book),
             'averageRating' => number_format($book->ratings->avg('value') ?? 0, 1),
             'related' => Inertia::defer(function () use ($book) {
-                $relatedBooks = $book->relatedBooksByAuthorsAndTags(4);
+                //                $relatedBooks = $book->relatedBooksByAuthorsAndTags(4);
+                $relatedBooks = $book->relatedBooksBySearch(4);
                 $relatedBooks->map(fn ($related) => $related->load(['authors']));
 
                 return BookResource::collection($relatedBooks);

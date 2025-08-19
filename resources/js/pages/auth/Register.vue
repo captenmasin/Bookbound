@@ -1,21 +1,29 @@
 <script setup lang="ts">
+import Turnstile from 'cfturnstile-vue3'
 import AuthBase from '@/layouts/AuthLayout.vue'
 import TextLink from '@/components/TextLink.vue'
 import InputError from '@/components/InputError.vue'
-import { useForm } from '@inertiajs/vue3'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoaderCircle } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
+import { useForm, usePage } from '@inertiajs/vue3'
 
 const form = useForm({
     name: '',
     username: '',
     email: '',
     password: '',
-    password_confirmation: ''
+    password_confirmation: '',
+    cf_response: null
 })
+
+const page = usePage()
+
+function verifyTurnstile (token) {
+    form.cf_response = token
+}
 
 const submit = () => {
     form.post(useRoute('register'), {
@@ -85,7 +93,6 @@ const submit = () => {
                             autocomplete="new-password"
                             placeholder="Password"
                         />
-                        <InputError :message="form.errors.password" />
                     </div>
 
                     <div class="grid gap-2">
@@ -100,11 +107,21 @@ const submit = () => {
                             placeholder="Confirm password"
                         />
                     </div>
+                </div>
+                <div class="-mt-5">
+                    <InputError :message="form.errors.password" />
+                    <InputError :message="form.errors.password_confirmation" />
+                </div>
 
-                    <div class="-mt-3">
-                        <InputError :message="form.errors.password" />
-                        <InputError :message="form.errors.password_confirmation" />
-                    </div>
+                <div
+                    v-if="page.props.auth.turnstile.enabled"
+                    class="flex flex-col -mt-4 items-center justify-center">
+                    <Turnstile
+                        :sitekey="'3' + page.props.auth.turnstile.site_key"
+                        @callback="verifyTurnstile" />
+                    <InputError
+                        v-if="page.props.errors.cf_response"
+                        :message="page.props.errors.cf_response" />
                 </div>
 
                 <Button

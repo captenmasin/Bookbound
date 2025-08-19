@@ -56,4 +56,11 @@ return [
         'key' => env('ISBNDB_API_KEY'),
     ],
 
+    'turnstile' => [
+        'url' => env('TURNSTILE_API_URL', 'https://challenges.cloudflare.com/turnstile/v0/siteverify'),
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+        'enabled' => env('TURNSTILE_ENABLED', false),
+    ],
+
 ];

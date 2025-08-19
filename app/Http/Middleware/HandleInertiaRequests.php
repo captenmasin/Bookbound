@@ -64,6 +64,10 @@ class HandleInertiaRequests extends Middleware
                     ))->asUser()
                     : null,
                 'check' => Auth::check(),
+                'turnstile' => [
+                    'enabled' => config('services.turnstile.enabled'),
+                    'site_key' => config('services.turnstile.site_key'),
+                ],
             ],
 
             'backUrl' => $backUrl,
