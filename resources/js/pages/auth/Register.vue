@@ -6,6 +6,7 @@ import InputError from '@/components/InputError.vue'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoaderCircle } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
 import { useForm, usePage } from '@inertiajs/vue3'
@@ -27,9 +28,19 @@ function verifyTurnstile (token) {
 
 const submit = () => {
     form.post(useRoute('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation')
+        onFinish: () => {
+            form.reset('password', 'password_confirmation')
+            form.cf_response = null // token is single-use; clear it
+        }
     })
 }
+
+const canRenderCaptcha = ref(false)
+const sitekey = computed(() =>
+    (page.props.auth.turnstile.site_key || '').toString().trim()
+)
+
+onMounted(() => { canRenderCaptcha.value = true })
 </script>
 
 <template>
@@ -114,7 +125,7 @@ const submit = () => {
                 </div>
 
                 <div
-                    v-if="page.props.auth.turnstile.enabled"
+                    v-if="canRenderCaptcha && page.props.auth.turnstile.enabled && sitekey"
                     class="flex flex-col -mt-4 items-center justify-center">
                     <Turnstile
                         :sitekey="page.props.auth.turnstile.site_key"
