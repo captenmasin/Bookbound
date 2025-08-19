@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Turnstile from 'cfturnstile-vue3'
 import AuthBase from '@/layouts/AuthLayout.vue'
 import TextLink from '@/components/TextLink.vue'
+import Turnstile from '@/components/Turnstile.vue'
 import InputError from '@/components/InputError.vue'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,30 +21,20 @@ const form = useForm({
 })
 
 const page = usePage()
-
-function verifyTurnstile (token) {
-    form.cf_response = token
-}
-
-const canRenderCaptcha = ref(false)
-const captchaRenderKey = ref(0)
 const sitekey = computed(() =>
     (page.props.auth.turnstile.site_key || '').toString().trim()
 )
+
+const captchaRef = ref<InstanceType<typeof Turnstile> | null>(null)
 
 const submit = () => {
     form.post(useRoute('register'), {
         onFinish: () => {
             form.reset('password', 'password_confirmation')
-            form.cf_response = null
-            captchaRenderKey.value += 1
+            captchaRef.value?.reset()
         }
     })
 }
-
-onMounted(() => {
-    nextTick(() => canRenderCaptcha.value = true)
-})
 </script>
 
 <template>
@@ -128,15 +118,12 @@ onMounted(() => {
                     <InputError :message="form.errors.password_confirmation" />
                 </div>
 
-                <div
-                    v-if="canRenderCaptcha && page.props.auth.turnstile.enabled && sitekey"
-                    :key="captchaRenderKey"
-                    class="flex flex-col -mt-4 items-center justify-center">
+                <div v-if="page.props.auth.turnstile.enabled && sitekey">
                     <Turnstile
-                        :sitekey="page.props.auth.turnstile.site_key"
-                        @callback="verifyTurnstile"
-                        @error="(m) => { form.cf_response = null; console.warn('Turnstile error:', m) }"
-                        @expired="() => { form.cf_response = null }"
+                        ref="captchaRef"
+                        v-model="form.cf_response"
+                        :sitekey="sitekey"
+                        @error="(m) => console.warn('Turnstile error:', m)"
                     />
                     <InputError
                         v-if="page.props.errors.cf_response"

@@ -48,7 +48,6 @@
         "@vueuse/sound": "^2.1.3",
         "@zxing/browser": "^0.1.5",
         "aos": "^2.3.4",
-        "cfturnstile-vue3": "^2.0.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "concurrently": "^9.0.1",
