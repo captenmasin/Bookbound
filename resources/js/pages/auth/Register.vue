@@ -142,7 +142,7 @@ onMounted(() => { canRenderCaptcha.value = true })
                     type="submit"
                     class="mt-2 w-full"
                     tabindex="5"
-                    :disabled="form.processing">
+                    :disabled="form.processing || !form.cf_response">
                     <LoaderCircle
                         v-if="form.processing"
                         class="h-4 w-4 animate-spin" />
