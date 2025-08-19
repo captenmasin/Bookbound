@@ -26,19 +26,21 @@ function verifyTurnstile (token) {
     form.cf_response = token
 }
 
+const canRenderCaptcha = ref(false)
+const captchaRenderKey = ref(0)
+const sitekey = computed(() =>
+    (page.props.auth.turnstile.site_key || '').toString().trim()
+)
+
 const submit = () => {
     form.post(useRoute('register'), {
         onFinish: () => {
             form.reset('password', 'password_confirmation')
-            form.cf_response = null // token is single-use; clear it
+            form.cf_response = null
+            captchaRenderKey.value += 1
         }
     })
 }
-
-const canRenderCaptcha = ref(false)
-const sitekey = computed(() =>
-    (page.props.auth.turnstile.site_key || '').toString().trim()
-)
 
 onMounted(() => {
     nextTick(() => canRenderCaptcha.value = true)
@@ -126,7 +128,6 @@ onMounted(() => {
                     <InputError :message="form.errors.password_confirmation" />
                 </div>
 
-                {{ canRenderCaptcha }} - {{ sitekey }}
                 <div
                     v-if="canRenderCaptcha && page.props.auth.turnstile.enabled && sitekey"
                     class="flex flex-col -mt-4 items-center justify-center">
