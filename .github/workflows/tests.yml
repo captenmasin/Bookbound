@@ -51,5 +51,8 @@ jobs:
       - name: Build Assets
         run: npm run build
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
       - name: Tests
         run: ./vendor/bin/pest --parallel --coverage

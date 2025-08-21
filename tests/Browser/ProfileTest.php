@@ -50,7 +50,6 @@ test('avatar must be an image', function () {
     visit('/settings/profile')
         ->assertSee('Avatar')
         ->attach('#avatar', __DIR__.'/fixtures/text-file.txt')
-        ->wait(2)
         ->press('Save')
         ->assertSee('The avatar field must be an image');
 })->todo('fix this test');
