@@ -155,7 +155,7 @@ defineOptions({ layout: AppLayout })
         <Transition>
             <Alert
                 v-show="displayProBanner"
-                class="relative mb-6 text-white bg-primary border-primary pb-6 md:mb-0">
+                class="relative mb-6 text-white bg-primary dark:bg-neutral-950 dark:border-neutral-900 border-primary p-6 pb-6 md:mb-0">
                 <Icon
                     name="Sparkles"
                     class="mt-1 size-6" />
