@@ -33,7 +33,7 @@ const sidebarNavItems: NavItem[] = [
 ]
 
 const page = usePage()
-const currentPath = ref(page.props.currentUrl)
+const currentPath = ref(page.props.currentPath)
 
 const selectedSettingPage = ref(sidebarNavItems.find(item => item.href === currentPath.value)?.href)
 
@@ -44,7 +44,7 @@ watch(selectedSettingPage, (newValue) => {
 }, { immediate: false })
 
 router.on('navigate', (event) => {
-    currentPath.value = event.detail.page.props.currentUrl
+    currentPath.value = event.detail.page.props.currentPath
 })
 </script>
 
