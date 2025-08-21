@@ -21,7 +21,13 @@ use App\Http\Controllers\Settings\PasswordController;
 
 Horizon::auth(fn ($request) => Gate::check('viewHorizon', [$request->user()]));
 
-Route::get('/', HomeController::class)->withoutMiddleware(['auth', 'verified'])->name('home');
+Route::get('/', HomeController::class)
+    ->withoutMiddleware(['auth', 'verified'])
+    ->middleware('guest')
+    ->name('home');
+Route::get('home', HomeController::class)
+    ->withoutMiddleware(['auth', 'verified'])
+    ->name('home');
 
 Route::get('dashboard', DashboardController::class)
     ->middleware(['auth', 'verified', PwaDevice::class])->name('dashboard');
