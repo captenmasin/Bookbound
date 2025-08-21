@@ -11,6 +11,7 @@ import { BookApiResult } from '@/types/book'
 import { Badge } from '@/components/ui/badge'
 import { useRoute } from '@/composables/useRoute'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input/index.js'
 import { computed, nextTick, PropType, ref } from 'vue'
 import { Button } from '@/components/ui/button/index.js'
@@ -151,6 +152,22 @@ defineOptions({
                     <SearchTipPopup />
                 </div>
             </form>
+            <div class="flex flex-col mt-0 gap-6 w-full md:hidden">
+                <div
+                    class="my-0 flex items-center">
+                    <Separator class="flex flex-1" />
+                    <span class="flex px-4 text-sm text-muted-foreground">or</span>
+                    <Separator class="flex flex-1" />
+                </div>
+                <Button
+                    as-child
+                    class="w-full">
+                    <Link :href="useRoute('books.scan')">
+                        <Icon name="ScanBarcode" />
+                        Scan Barcode
+                    </Link>
+                </Button>
+            </div>
         </div>
 
         <div
