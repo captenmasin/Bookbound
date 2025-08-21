@@ -25,9 +25,10 @@ Route::get('/', HomeController::class)
     ->withoutMiddleware(['auth', 'verified'])
     ->middleware('guest')
     ->name('home');
+
 Route::get('home', HomeController::class)
     ->withoutMiddleware(['auth', 'verified'])
-    ->name('home');
+    ->name('home.authed');
 
 Route::get('dashboard', DashboardController::class)
     ->middleware(['auth', 'verified', PwaDevice::class])->name('dashboard');
