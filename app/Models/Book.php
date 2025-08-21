@@ -79,11 +79,13 @@ class Book extends Model implements HasMedia
 
     public function primaryCover()
     {
-        return $this->covers()
-            ->where('is_primary', true)
-            ->with('media')
-            ->limit(1)
-            ->first();
+        $exists = $this->covers()->where('is_primary', true)->exists();
+
+        if ($exists) {
+            return $this->covers()->where('is_primary', true)->first();
+        }
+
+        return $this->covers()->create(['is_primary' => true]);
     }
 
     public function updateColour(): void
@@ -207,7 +209,7 @@ class Book extends Model implements HasMedia
             $url = $this->original_cover ??
                 Vite::asset('resources/images/default-cover.svg');
 
-            ImportBookCover::dispatchAfterResponse($this, $url);
+            ImportBookCover::dispatch($this, $url);
 
             return $url;
         }

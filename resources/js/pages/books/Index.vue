@@ -55,7 +55,7 @@ const order = ref<'asc' | 'desc'>(props.selectedOrder as 'asc' | 'desc')
 
 /** View preferences ----------------------------------------------------- */
 const page = usePage()
-const view = ref<string>(page.props.auth.user.settings?.library.view ?? 'list')
+const view = ref<string>(page.props.auth.user?.settings?.library.view ?? 'list')
 const { updateSingleSetting } = useUserSettings()
 
 /** Options -------------------------------------------------------------- */

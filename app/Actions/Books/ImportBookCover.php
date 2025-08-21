@@ -9,12 +9,10 @@ class ImportBookCover
 {
     use AsAction;
 
-    public function handle(Book $book, ?string $coverUrl = null)
+    public function handle(Book $book, ?string $coverUrl = null): void
     {
         try {
-            $primaryCover = $book->covers()->create(['is_primary' => true]);
-
-            $primaryCover->addMediaFromUrl($coverUrl)
+            $book->primaryCover()->addMediaFromUrl($coverUrl)
                 ->toMediaCollection('image');
 
             $book->updateColour();

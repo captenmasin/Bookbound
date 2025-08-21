@@ -9,19 +9,18 @@ use Illuminate\Http\Request;
 use App\Enums\AnalyticsEvent;
 use Illuminate\Routing\Controller;
 use App\Support\SubscriptionLimits;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\UpdateBookCoverRequest;
 
 class BookCoverController extends Controller
 {
-    public function update(Request $request, Book $book)
+    public function update(UpdateBookCoverRequest $request, Book $book)
     {
         if (! SubscriptionLimits::allowCustomCovers($request->user())) {
             return back()->with('error', 'Your current plan does not allow adding custom covers.');
         }
 
-        Validator::make($request->all(), [
-            'cover' => ['nullable', 'mimes:jpg,jpeg,png,webp,gif', 'max:20480'],
-        ])->validateWithBag('bookCoverBag');
+        // Validate via dedicated Form Request (sends errors to 'bookCoverBag')
+        $request->validated();
 
         if ($request->file('cover')) {
             $newCover = $book->covers()->create([

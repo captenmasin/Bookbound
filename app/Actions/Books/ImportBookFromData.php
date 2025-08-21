@@ -50,7 +50,7 @@ class ImportBookFromData
         $book = Book::create([
             'identifier' => $identifier,
             'codes' => $data['codes'],
-            'edition' => $data['edition'],
+            'edition' => $data['edition'] ?? null,
             'page_count' => $data['pageCount'] ?? null,
             'title' => $data['title'],
             'published_date' => $data['published_date'],
@@ -61,7 +61,7 @@ class ImportBookFromData
             'language' => $data['language'] ?? null,
         ]);
 
-        if ($data['cover_large'] || $data['cover']) {
+        if (isset($data['cover_large']) || isset($data['cover'])) {
             ImportBookCover::dispatch($book, $data['cover_large'] ?? $data['cover']);
         }
 

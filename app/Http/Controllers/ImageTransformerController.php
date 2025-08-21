@@ -32,6 +32,9 @@ class ImageTransformerController extends \Illuminate\Routing\Controller
 
         abort_unless($publicPath, 404);
 
+        // Check if the file exists
+        abort_unless(File::exists($publicPath), 404);
+
         abort_unless(Str::startsWith($publicPath, public_path($pathPrefix)), 404);
 
         abort_unless(in_array(File::mimeType($publicPath), AllowedMimeTypes::all(), true), 404);
