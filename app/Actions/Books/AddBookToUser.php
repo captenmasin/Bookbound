@@ -57,8 +57,12 @@ class AddBookToUser
     public function asController(StoreBookUserRequest $request): JsonResponse|RedirectResponse
     {
         try {
-            $book = Book::where('identifier', $request->get('identifier'))->firstOr(fn () => null);
-            $status = $request->enum('status', UserBookStatus::class);
+            $book = Book::where('identifier', $request->get('identifier'))->first();
+
+            if (! $book) {
+                throw new \Exception('Book not found.');
+            }
+
             $this->handle(
                 $book,
                 $request->user(),

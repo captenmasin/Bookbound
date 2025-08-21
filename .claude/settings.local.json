@@ -5,7 +5,8 @@
       "Bash(php artisan test:*)",
       "Bash(php artisan make:factory:*)",
       "mcp__laravel-boost__database-schema",
-      "mcp__laravel-boost__list-routes"
+      "mcp__laravel-boost__list-routes",
+      "mcp__laravel-boost__get-config"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -42,9 +42,9 @@ Route::get('get/{type}/{data}', HandlePwaProtocol::class)
     ->where('data', '.*')
     ->name('protocol');
 
-Route::get('books-by-subject/{subject}', function ($subject) {
-    dd($subject);
-});
+// Route::get('books-by-subject/{subject}', function ($subject) {
+//    dd($subject);
+// });
 
 // Book routes
 Route::prefix('books')

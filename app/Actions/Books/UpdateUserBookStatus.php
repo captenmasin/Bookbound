@@ -19,7 +19,7 @@ class UpdateUserBookStatus
 {
     use AsAction;
 
-    public function handle(User $user, Book $book, UserBookStatus $status): int
+    public function handle(User $user, Book $book, UserBookStatus $status): bool
     {
         $updated = $user->books()
             ->updateExistingPivot($book->id, ['status' => $status]);
@@ -43,7 +43,7 @@ class UpdateUserBookStatus
             'status' => $status,
         ]);
 
-        return $updated;
+        return (bool) $updated;
     }
 
     public function asController(UpdateBookUserRequest $request, Book $book): JsonResponse|RedirectResponse

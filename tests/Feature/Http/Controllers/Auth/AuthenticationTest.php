@@ -8,66 +8,68 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertGuest;
 use function Pest\Laravel\assertAuthenticated;
 
-test('login screen can be rendered', function () {
-    $response = get('/login');
+describe('AuthenticationTest', function () {
+    test('login screen can be rendered', function () {
+        $response = get('/login');
 
-    $response->assertStatus(200);
-});
+        $response->assertStatus(200);
+    });
 
-test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+    test('users can authenticate using the login screen', function () {
+        $user = User::factory()->create();
 
-    $response = post('/login', [
-        'login' => $user->email,
-        'password' => 'password',
-    ]);
+        $response = post('/login', [
+            'login' => $user->email,
+            'password' => 'password',
+        ]);
 
-    assertAuthenticated();
+        assertAuthenticated();
 
-    $response->assertRedirect(route('dashboard', absolute: false));
-});
+        $response->assertRedirect(route('dashboard', absolute: false));
+    });
 
-test('users can authenticate using their username', function () {
-    $user = User::factory()->create();
+    test('users can authenticate using their username', function () {
+        $user = User::factory()->create();
 
-    $response = post('/login', [
-        'login' => $user->username,
-        'password' => 'password',
-    ]);
+        $response = post('/login', [
+            'login' => $user->username,
+            'password' => 'password',
+        ]);
 
-    assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
-});
+        assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+    });
 
-test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+    test('users can not authenticate with invalid password', function () {
+        $user = User::factory()->create();
 
-    post('/login', [
-        'login' => $user->email,
-        'password' => 'wrong-password',
-    ]);
+        post('/login', [
+            'login' => $user->email,
+            'password' => 'wrong-password',
+        ]);
 
-    assertGuest();
-});
+        assertGuest();
+    });
 
-test('users can not authenticate with invalid username', function () {
-    User::factory()->create([
-        'username' => 'testuser',
-    ]);
+    test('users can not authenticate with invalid username', function () {
+        User::factory()->create([
+            'username' => 'testuser',
+        ]);
 
-    post('/login', [
-        'login' => 'wrongusername',
-        'password' => 'password',
-    ]);
+        post('/login', [
+            'login' => 'wrongusername',
+            'password' => 'password',
+        ]);
 
-    assertGuest();
-});
+        assertGuest();
+    });
 
-test('users can logout', function () {
-    $user = User::factory()->create();
+    test('users can logout', function () {
+        $user = User::factory()->create();
 
-    $response = actingAs($user)->post('/logout');
+        $response = actingAs($user)->post('/logout');
 
-    assertGuest();
-    $response->assertRedirect('/');
+        assertGuest();
+        $response->assertRedirect('/');
+    });
 });

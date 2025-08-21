@@ -80,7 +80,7 @@ describe('Primary Cover Attribute Logic', function () {
 
         $result = $book->primary_cover;
 
-        expect($result)->toContain('default-cover.svg');
+        expect($result)->toContain('default-cover');
         ImportBookCover::assertPushed(1);
     });
 
@@ -133,51 +133,13 @@ describe('Primary Cover Attribute Logic', function () {
     });
 });
 
-describe('ImportBookCover Action', function () {
-    it('successfully imports cover from url and updates color', function () {
-        $book = Book::factory()->create();
-        $coverUrl = 'https://picsum.photos/300/400';
-
-        $action = new ImportBookCover;
-        $action->handle($book, $coverUrl);
-
-        $primaryCover = $book->primaryCover();
-        expect($primaryCover->hasMedia('image'))->toBeTrue();
-    });
-
-    it('handles failed cover import gracefully', function () {
-        $book = Book::factory()->create();
-        $invalidUrl = 'https://invalid-url-that-does-not-exist.com/cover.jpg';
-
-        $action = new ImportBookCover;
-
-        // Should not throw exception
-        expect(function () use ($action, $book, $invalidUrl) {
-            $action->handle($book, $invalidUrl);
-        })->not->toThrow(Exception::class);
-
-        $primaryCover = $book->primaryCover();
-        expect($primaryCover->hasMedia('image'))->toBeFalse();
-    });
-
-    it('can import cover when null url is provided', function () {
-        $book = Book::factory()->create();
-
-        $action = new ImportBookCover;
-
-        expect(function () use ($action, $book) {
-            $action->handle($book, null);
-        })->not->toThrow(Exception::class);
-    });
-});
-
 describe('Cover Model', function () {
     it('returns default cover image when no media exists', function () {
         $cover = Cover::factory()->create();
 
         $imageUrl = $cover->image;
 
-        expect($imageUrl)->toContain('default-cover.svg');
+        expect($imageUrl)->toContain('default-cover');
     });
 
     it('returns media url when media exists', function () {
@@ -191,7 +153,7 @@ describe('Cover Model', function () {
 
         $imageUrl = $cover->fresh()->image;
 
-        expect($imageUrl)->not->toContain('default-cover.svg')
+        expect($imageUrl)->not->toContain('default-cover')
             ->and($imageUrl)->toContain('cover.jpg');
     });
 

@@ -1,7 +1,7 @@
 <?php
 
-pest()->extend(Tests\DuskTestCase::class)
-    ->in('Browser');
+// pest()->extend(Tests\DuskTestCase::class)
+//    ->in('Browser');
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +17,10 @@ pest()->extend(Tests\DuskTestCase::class)
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
+
+pest()->extend(Tests\TestCase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->in('Browser');
 
 // Bind Laravel TestCase (and RefreshDatabase) for unit tests that rely on the app / database
 pest()->extend(Tests\TestCase::class)

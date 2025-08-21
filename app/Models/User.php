@@ -44,6 +44,7 @@ class User extends Authenticatable implements FilamentUser, HasMedia, HasPasskey
         'remember_token',
         'email_verified_at',
         'password',
+        'settings',
     ];
 
     protected $appends = [

@@ -5,119 +5,121 @@ use App\Models\User;
 use App\Models\Review;
 use Inertia\Testing\AssertableInertia;
 
-test('user can create book review', function () {
-    $user = User::factory()->create();
-    $book = Book::factory()->create();
+describe('ReviewController', function () {
+    test('user can create book review', function () {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
-    $reviewData = [
-        'content' => 'This is a great book that I highly recommend.',
-        'title' => 'Great Read',
-    ];
+        $reviewData = [
+            'content' => 'This is a great book that I highly recommend.',
+            'title' => 'Great Read',
+        ];
 
-    $response = $this->actingAs($user)
-        ->post(route('reviews.store', $book), $reviewData);
+        $response = $this->actingAs($user)
+            ->post(route('reviews.store', $book), $reviewData);
 
-    $response->assertRedirect();
+        $response->assertRedirect();
 
-    $this->assertDatabaseHas('reviews', [
-        'user_id' => $user->id,
-        'book_id' => $book->id,
-        'content' => 'This is a great book that I highly recommend.',
-        'title' => 'Great Read',
-    ]);
-});
+        $this->assertDatabaseHas('reviews', [
+            'user_id' => $user->id,
+            'book_id' => $book->id,
+            'content' => 'This is a great book that I highly recommend.',
+            'title' => 'Great Read',
+        ]);
+    });
 
-test('user can review same book again but it will just update', function () {
-    $user = User::factory()->create();
-    $book = Book::factory()->create();
+    test('user can review same book again but it will just update', function () {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
-    // Create initial review
-    Review::factory()->create([
-        'user_id' => $user->id,
-        'book_id' => $book->id,
-        'content' => 'Initial review',
-        'title' => 'First Review',
-    ]);
+        // Create initial review
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'book_id' => $book->id,
+            'content' => 'Initial review',
+            'title' => 'First Review',
+        ]);
 
-    // Try to create another review
-    $this->actingAs($user)
-        ->post(route('reviews.store', $book), [
+        // Try to create another review
+        $this->actingAs($user)
+            ->post(route('reviews.store', $book), [
+                'content' => 'Second attempt at reviewing',
+                'title' => 'Second Review',
+            ]);
+
+        // Verify only one review exists
+        $this->assertDatabaseCount('reviews', 1);
+
+        // Verify the review was updated
+        $this->assertDatabaseHas('reviews', [
+            'user_id' => $user->id,
+            'book_id' => $book->id,
             'content' => 'Second attempt at reviewing',
             'title' => 'Second Review',
         ]);
+    });
 
-    // Verify only one review exists
-    $this->assertDatabaseCount('reviews', 1);
+    test('user can delete their review', function () {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
-    // Verify the review was updated
-    $this->assertDatabaseHas('reviews', [
-        'user_id' => $user->id,
-        'book_id' => $book->id,
-        'content' => 'Second attempt at reviewing',
-        'title' => 'Second Review',
-    ]);
-});
+        $review = Review::factory()->create([
+            'user_id' => $user->id,
+            'book_id' => $book->id,
+        ]);
 
-test('user can delete their review', function () {
-    $user = User::factory()->create();
-    $book = Book::factory()->create();
+        $response = $this->actingAs($user)
+            ->delete(route('reviews.destroy', ['book' => $book, 'review' => $review]));
 
-    $review = Review::factory()->create([
-        'user_id' => $user->id,
-        'book_id' => $book->id,
-    ]);
+        $response->assertRedirect();
+        $this->assertDatabaseMissing('reviews', ['id' => $review->id]);
+    });
 
-    $response = $this->actingAs($user)
-        ->delete(route('reviews.destroy', ['book' => $book, 'review' => $review]));
+    test('user cannot delete others review', function () {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $book = Book::factory()->create();
 
-    $response->assertRedirect();
-    $this->assertDatabaseMissing('reviews', ['id' => $review->id]);
-});
+        $review = Review::factory()->create([
+            'user_id' => $otherUser->id,
+            'book_id' => $book->id,
+        ]);
 
-test('user cannot delete others review', function () {
-    $user = User::factory()->create();
-    $otherUser = User::factory()->create();
-    $book = Book::factory()->create();
+        $response = $this->actingAs($user)
+            ->delete(route('reviews.destroy', ['book' => $book, 'review' => $review]));
 
-    $review = Review::factory()->create([
-        'user_id' => $otherUser->id,
-        'book_id' => $book->id,
-    ]);
+        $response->assertForbidden();
+        $this->assertDatabaseHas('reviews', ['id' => $review->id]);
+    });
 
-    $response = $this->actingAs($user)
-        ->delete(route('reviews.destroy', ['book' => $book, 'review' => $review]));
+    test('user can view their reviews', function () {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
-    $response->assertForbidden();
-    $this->assertDatabaseHas('reviews', ['id' => $review->id]);
-});
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'book_id' => $book->id,
+            'title' => 'My Review',
+            'content' => 'My review',
+        ]);
 
-test('user can view their reviews', function () {
-    $user = User::factory()->create();
-    $book = Book::factory()->create();
+        $this->actingAs($user)
+            ->get(route('user.reviews.index'))
+            ->assertStatus(200)
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('user/Reviews')
+                ->has('reviews')
+                ->has('reviews.meta'));
+    });
 
-    Review::factory()->create([
-        'user_id' => $user->id,
-        'book_id' => $book->id,
-        'title' => 'My Review',
-        'content' => 'My review',
-    ]);
+    test('reviews require authentication', function () {
+        $book = Book::factory()->create();
 
-    $this->actingAs($user)
-        ->get(route('user.reviews.index'))
-        ->assertStatus(200)
-        ->assertInertia(fn (AssertableInertia $page) => $page
-            ->component('user/Reviews')
-            ->has('reviews')
-            ->has('reviews.meta'));
-});
+        $response = $this->post(route('reviews.store', $book), [
+            'content' => 'Test review',
+            'title' => 'Test',
+        ]);
 
-test('reviews require authentication', function () {
-    $book = Book::factory()->create();
-
-    $response = $this->post(route('reviews.store', $book), [
-        'content' => 'Test review',
-        'title' => 'Test',
-    ]);
-
-    $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('login'));
+    });
 });
