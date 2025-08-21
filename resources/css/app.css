@@ -157,18 +157,14 @@
         padding-left: env(safe-area-inset-left, 0px);
     }
 
-    html.pwa.pwa-ios { --safe-top: env(safe-area-inset-top); }
-
-    .safe-pt { padding-top: var(--safe-top); }
-    .safe-top { top: var(--safe-top); }
+    .safe-pt { padding-top: env(safe-area-inset-top); }
+    .safe-top { top: env(safe-area-inset-top); }
     .safe-h-14 {
-        height: calc(var(--spacing) * 14 + var(--safe-top));
+        height: calc((var(--spacing) * 14) + env(safe-area-inset-top));
     }
 }
 
 :root {
-    --safe-top: 0px;
-
     --background: hsl(40, 50%, 98%); /* warm ivory */
     --foreground: hsl(20, 10%, 10%); /* very dark brown-black */
 
