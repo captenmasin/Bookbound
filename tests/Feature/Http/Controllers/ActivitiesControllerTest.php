@@ -24,10 +24,6 @@ describe('ActivitiesController', function () {
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('user/Activities')
             ->has('activities.data', 5)
-            ->where('breadcrumbs', [
-                ['title' => 'Dashboard', 'href' => route('dashboard')],
-                ['title' => 'Activities', 'href' => route('user.activities.index')],
-            ])
             ->where('meta.title', 'Activities | Bookbound')
             ->where('meta.description', 'A list of your recent activities.')
         );

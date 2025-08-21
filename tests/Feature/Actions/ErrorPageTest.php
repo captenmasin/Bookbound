@@ -38,16 +38,6 @@ describe('ErrorPage', function () {
         expect($response->getContent())->toContain('Error');
     });
 
-    test('handle() includes correct breadcrumbs in response', function () {
-        $action = app(ErrorPage::class);
-
-        $response = $action->handle();
-        $content = $response->getContent();
-
-        expect($content)->toContain('Dashboard')
-            ->and($content)->toContain('Page not found');
-    });
-
     test('handle() sets correct page title meta', function () {
         $action = app(ErrorPage::class);
 

@@ -115,9 +115,6 @@ class BookController extends Controller
         return redirect()->back();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function show(Request $request, Book $book)
     {
         $book->load(['authors', 'reviews', 'ratings', 'publisher', 'tags',

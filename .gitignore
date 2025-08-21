@@ -27,6 +27,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/.claude
 
 ./resources/js/routes.js
 
