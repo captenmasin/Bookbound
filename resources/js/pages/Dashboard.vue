@@ -178,7 +178,7 @@ defineOptions({ layout: AppLayout })
                         </Button>
                         <a
                             target="_blank"
-                            :href="useRoute('home') + '#pricing'"
+                            :href="useRoute('home.authed') + '#pricing'"
                             class="text-white underline hover:text-white/80">
                             See features
                         </a>

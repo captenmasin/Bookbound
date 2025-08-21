@@ -101,7 +101,7 @@ router.on('navigate', (event) => {
 
                     <div class="mt-auto">
                         <div
-                            v-if="!isPwa"
+                            v-if="isPwa"
                             class="block text-sm font-medium text-foreground/20">
                             <span v-if="isAndroid">
                                 Android
