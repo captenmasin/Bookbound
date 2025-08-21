@@ -5,6 +5,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import type { User } from '@/types/user'
 import { LogOut } from 'lucide-vue-next'
 import { nextTick, ref, watch } from 'vue'
+import { usePwa } from '@/composables/usePwa'
 import { Link, router } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
@@ -26,6 +27,7 @@ interface Props {
 }
 
 const { logout } = useAuthedUser()
+const { isPwa, isAndroid, isIos, isMacos } = usePwa()
 
 const userMobileMenuOpen = ref(false)
 
@@ -97,22 +99,37 @@ router.on('navigate', (event) => {
                         </div>
                     </template>
 
-                    <Separator class="mt-auto" />
-                    <Link
-                        class="flex w-full items-center gap-4 py-2 text-lg font-medium text-foreground"
-                        :href="useRoute('contact')">
-                        <Icon
-                            name="mail"
-                            class="size-4.5" />
-                        Contact us
-                    </Link>
-                    <button
-                        tabindex="-1"
-                        class="flex w-full items-center gap-4 py-2 text-lg font-medium"
-                        @click="logout">
-                        <LogOut class="size-4.5" />
-                        Log out
-                    </button>
+                    <div class="mt-auto">
+                        <div
+                            v-if="!isPwa"
+                            class="block text-sm font-medium text-foreground/20">
+                            <span v-if="isAndroid">
+                                Android
+                            </span>
+                            <span v-if="isIos">
+                                iOS
+                            </span>
+                            <span v-if="isMacos">
+                                macOS
+                            </span>
+                        </div>
+                        <Separator class="mt-auto my-2" />
+                        <Link
+                            class="flex w-full items-center gap-4 py-2 text-lg font-medium text-foreground"
+                            :href="useRoute('contact')">
+                            <Icon
+                                name="mail"
+                                class="size-4.5" />
+                            Contact us
+                        </Link>
+                        <button
+                            tabindex="-1"
+                            class="flex w-full items-center gap-4 py-2 text-lg font-medium"
+                            @click="logout">
+                            <LogOut class="size-4.5" />
+                            Log out
+                        </button>
+                    </div>
                 </div>
             </SheetContent>
         </Sheet>
