@@ -122,7 +122,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 
 <template>
     <div
-        class="sticky safe-h-14 z-50 md:h-16 safe-pt border-b border-sidebar-border/80 transition-all duration-300 ease-in-out backdrop-blur-sm bg-background/75 md:bg-background md:backdrop-blur-none md:static md:translate-y-0"
+        class="sticky safe-h-14 z-50 md:h-16 safe-pt top-0 border-b border-sidebar-border/80 transition-all duration-300 ease-in-out backdrop-blur-sm bg-background/75 md:bg-background md:backdrop-blur-none md:static md:translate-y-0"
         :class="{ '-translate-y-full': !isVisible }">
         <div class="mx-auto flex items-center h-full px-4 pwa:md:max-w-none md:max-w-7xl">
             <div
