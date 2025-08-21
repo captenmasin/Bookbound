@@ -26,6 +26,8 @@ class BookController extends Controller
         $perPage = 10;
 
         $originalQuery = $request->get('q');
+        $originalQuery = is_array($originalQuery) ? implode(' ', $originalQuery) : $originalQuery;
+
         $query = $originalQuery;
         $author = null;
         $tag = null;

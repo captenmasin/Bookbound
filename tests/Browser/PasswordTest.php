@@ -1,22 +1,22 @@
 <?php
 
 use App\Models\User;
-use Laravel\Dusk\Browser;
+
+use function Pest\Laravel\actingAs;
 
 test('user can change their password', function () {
     $user = User::factory()->create([
         'password' => bcrypt('old-password'),
     ]);
 
-    $this->browse(function (Browser $browser) use ($user) {
-        $browser->loginAs($user)
-            ->visit('/settings/password')
-            ->type('#password', 'new-secure-password')
-            ->type('#password_confirmation', 'new-secure-password')
-            ->type('#current_password', 'old-password')
-            ->press('Save password')
-            ->waitForText('Password updated successfully');
-    });
+    actingAs($user);
+
+    visit('/settings/password')
+        ->type('#password', 'new-secure-password')
+        ->type('#password_confirmation', 'new-secure-password')
+        ->type('#current_password', 'old-password')
+        ->press('Save password')
+        ->assertSee('Password updated successfully');
 
     $this->assertTrue(auth()->attempt([
         'email' => $user->email,
@@ -29,16 +29,14 @@ test('password confirmation must match', function () {
         'password' => bcrypt('secret'),
     ]);
 
-    $this->browse(function (Browser $browser) use ($user) {
-        $browser->loginAs($user)
-            ->visit('/settings/password')
-            ->type('#password', 'newpass123')
-            ->type('#password_confirmation', 'differentpass123')
-            ->type('#current_password', 'secret')
-            ->press('Save password')
-            ->waitForText('The password field confirmation does not match')
-            ->assertSee('The password field confirmation does not match');
-    });
+    actingAs($user);
+
+    visit('/settings/password')
+        ->type('#password', 'newpass123')
+        ->type('#password_confirmation', 'differentpass123')
+        ->type('#current_password', 'secret')
+        ->press('Save password')
+        ->assertSee('The password field confirmation does not match');
 });
 
 test('current password must be correct', function () {
@@ -46,16 +44,14 @@ test('current password must be correct', function () {
         'password' => bcrypt('secret'),
     ]);
 
-    $this->browse(function (Browser $browser) use ($user) {
-        $browser->loginAs($user)
-            ->visit('/settings/password')
-            ->type('#password', 'newpass123')
-            ->type('#password_confirmation', 'newpass123')
-            ->type('#current_password', 'wrongpassword')
-            ->press('Save password')
-            ->waitForText('The password is incorrect')
-            ->assertSee('The password is incorrect');
-    });
+    actingAs($user);
+
+    visit('/settings/password')
+        ->type('#password', 'newpass123')
+        ->type('#password_confirmation', 'newpass123')
+        ->type('#current_password', 'wrongpassword')
+        ->press('Save password')
+        ->assertSee('The password is incorrect');
 });
 
 test('password must meet validation rules', function () {
@@ -63,16 +59,14 @@ test('password must meet validation rules', function () {
         'password' => bcrypt('secret'),
     ]);
 
-    $this->browse(function (Browser $browser) use ($user) {
-        $browser->loginAs($user)
-            ->visit('/settings/password')
-            ->type('#password', 'short')
-            ->type('#password_confirmation', 'short')
-            ->type('#current_password', 'secret')
-            ->press('Save password')
-            ->waitForText('The password field must be at least 8 characters.')
-            ->assertSee('The password field must be at least 8 characters.');
-    });
+    actingAs($user);
+
+    visit('/settings/password')
+        ->type('#password', 'short')
+        ->type('#password_confirmation', 'short')
+        ->type('#current_password', 'secret')
+        ->press('Save password')
+        ->assertSee('The password field must be at least 8 characters.');
 });
 
 test('form resets after successful password change', function () {
@@ -80,16 +74,15 @@ test('form resets after successful password change', function () {
         'password' => bcrypt('oldpass'),
     ]);
 
-    $this->browse(function (Browser $browser) use ($user) {
-        $browser->loginAs($user)
-            ->visit('/settings/password')
-            ->type('#password', 'newpass123')
-            ->type('#password_confirmation', 'newpass123')
-            ->type('#current_password', 'oldpass')
-            ->press('Save password')
-            ->waitForText('Password updated successfully')
-            ->assertInputValue('#password', '')
-            ->assertInputValue('#password_confirmation', '')
-            ->assertInputValue('#current_password', '');
-    });
+    actingAs($user);
+
+    visit('/settings/password')
+        ->type('#password', 'newpass123')
+        ->type('#password_confirmation', 'newpass123')
+        ->type('#current_password', 'oldpass')
+        ->press('Save password')
+        ->assertSee('Password updated successfully')
+        ->assertValue('#password', '')
+        ->assertValue('#password_confirmation', '')
+        ->assertValue('#current_password', '');
 });

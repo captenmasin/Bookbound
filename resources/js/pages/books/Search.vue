@@ -136,6 +136,7 @@ defineOptions({
                             placeholder="Search..." />
                         <div class="absolute inset-y-0 right-0 my-2 flex items-center pr-3">
                             <Button
+                                id="searchSubmit"
                                 type="submit"
                                 variant="link"
                                 class="cursor-pointer"
@@ -187,6 +188,7 @@ defineOptions({
                                     </Button>
 
                                     <Button
+                                        id="searchSubmit"
                                         type="submit"
                                         variant="link"
                                         class="cursor-pointer"

@@ -1,22 +1,17 @@
 <?php
 
 use App\Models\User;
-use Laravel\Dusk\Browser;
+
+use function Pest\Laravel\actingAs;
 
 test('user must be logged in to view dashboard', function () {
-    $this->browse(function (Browser $browser) {
-        $browser->visit('/books')
-            ->assertPathIs('/login');
-    });
+    visit('/books')->assertPathIs('/login');
 });
 
 test('user can see dashboard', function () {
     $user = User::factory()->create();
 
-    $this->browse(function (Browser $browser) use ($user) {
-        $browser->loginAs($user->id);
+    actingAs($user);
 
-        $browser->visit('/books')
-            ->assertSee('Your Library');
-    });
+    visit('/books')->assertSee('Your Library');
 });

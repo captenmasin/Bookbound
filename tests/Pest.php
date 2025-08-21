@@ -1,8 +1,5 @@
 <?php
 
-// pest()->extend(Tests\DuskTestCase::class)
-//    ->in('Browser');
-
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -13,7 +10,6 @@
 | need to change it using the "pest()" function to bind a different classes or traits.
 |
 */
-
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
@@ -22,7 +18,6 @@ pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Browser');
 
-// Bind Laravel TestCase (and RefreshDatabase) for unit tests that rely on the app / database
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Unit');

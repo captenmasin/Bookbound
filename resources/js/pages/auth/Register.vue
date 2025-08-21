@@ -3,13 +3,13 @@ import AuthBase from '@/layouts/AuthLayout.vue'
 import TextLink from '@/components/TextLink.vue'
 import Turnstile from '@/components/Turnstile.vue'
 import InputError from '@/components/InputError.vue'
+import { computed, ref } from 'vue'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LoaderCircle } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
 import { useForm, usePage } from '@inertiajs/vue3'
-import { computed, nextTick, onMounted, ref } from 'vue'
 
 const form = useForm({
     name: '',
@@ -68,7 +68,6 @@ const submit = () => {
                         id="username"
                         v-model="form.username"
                         type="text"
-                        required
                         autofocus
                         :tabindex="1"
                         autocomplete="username"

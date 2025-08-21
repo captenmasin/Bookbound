@@ -60,7 +60,9 @@ defineOptions({
             </div>
             <Dialog>
                 <DialogTrigger as-child>
-                    <Button variant="destructive">
+                    <Button
+                        id="delete-account-trigger"
+                        variant="destructive">
                         Delete account
                     </Button>
                 </DialogTrigger>

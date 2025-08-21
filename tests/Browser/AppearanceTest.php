@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use Laravel\Dusk\Browser;
 
 use function Pest\Laravel\actingAs;
 
@@ -19,7 +18,8 @@ test('user can toggle book tilting setting', function () {
         ->assertAriaAttribute('#library-tilt', 'checked', 'false') // off by default
         ->press('#library-tilt') // toggle on
         ->assertAriaAttribute('#library-tilt', 'checked', 'true')
-        ->press('#library-tilt');
+        ->press('#library-tilt')
+        ->wait(1);
 
     $user->refresh();
 
@@ -27,24 +27,17 @@ test('user can toggle book tilting setting', function () {
 
     expect(data_get($userSettings, 'library.tilt_books'))->toBeFalse();
 });
-//
-// test('user can switch between light, dark, and system themes', function () {
-//    $user = User::factory()->create();
-//
-//    $this->browse(function (Browser $browser) use ($user) {
-//        $browser->loginAs($user)
-//            ->visit('/settings/appearance')
-//            ->pause(500)
-//            ->press('Dark')
-//            ->assertPlainCookieValue('appearance', 'dark')
-//            ->pause(300)
-//            ->press('Light')
-//            ->assertPlainCookieValue('appearance', 'light')
-//            ->pause(300)
-//            ->press('System')
-//            ->assertPlainCookieValue('appearance', 'system')
-//            ->pause(300);
-//        //            ->refresh()
-//        //            ->assertAttributeContains('@html', 'class', 'dark');
-//    });
-// });
+
+test('user can switch between light, dark, and system themes', function () {
+    $user = User::factory()->create();
+
+    actingAs($user);
+
+    visit('/settings/appearance')
+        ->press('Dark')
+        ->assertScript("document.cookie.includes('appearance=dark')")
+        ->press('Light')
+        ->assertScript("document.cookie.includes('appearance=light')")
+        ->press('System')
+        ->assertScript("document.cookie.includes('appearance=system')");
+});

@@ -4,17 +4,16 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\Rating;
 use App\Models\Review;
-use Laravel\Dusk\Browser;
+
+use function Pest\Laravel\actingAs;
 
 // Guest should be able to view a single book page
 
 test('guest can view book details', function () {
     $book = Book::factory()->create(['title' => 'Guest Accessible Book']);
 
-    $this->browse(function (Browser $browser) use ($book) {
-        $browser->visit(route('books.show', $book))
-            ->assertSee('Guest Accessible Book');
-    });
+    visit(route('books.show', $book))
+        ->assertSee('Guest Accessible Book');
 });
 
 // Logged in user should see their library books on the books page
@@ -23,17 +22,12 @@ test('user views books in grid by default', function () {
     $books = Book::factory()->count(2)->create();
     $user->books()->attach($books);
 
-    $this->browse(function (Browser $browser) use ($user, $books) {
-        $browser->loginAs($user)
-            ->visit('/books')
-            ->assertSee('Your Library');
+    actingAs($user);
 
-        $tabButtons = $browser->elements('.desktop-book-view-tabs [role="tab"]');
-        $this->assertTrue($tabButtons[0]->getAttribute('aria-selected') === 'true');
-
-        $bookCardElements = $browser->elements('.book-card');
-        $this->assertCount(count($books), $bookCardElements);
-    });
+    visit('/books')
+        ->assertSee('Your Library')
+        ->assertAriaAttribute('.desktop-book-view-tabs [role="tab"]:nth-of-type(1)', 'selected', 'true')
+        ->assertCount('.book-card', $books->count());
 });
 
 test('user books view is based on settings', function () {
@@ -43,17 +37,12 @@ test('user books view is based on settings', function () {
 
     $user->settings()->set('library.view', 'list');
 
-    $this->browse(function (Browser $browser) use ($user, $books) {
-        $browser->loginAs($user)
-            ->visit('/books')
-            ->assertSee('Your Library');
+    actingAs($user);
 
-        $tabButtons = $browser->elements('.desktop-book-view-tabs [role="tab"]');
-        $this->assertTrue($tabButtons[1]->getAttribute('aria-selected') === 'true');
-
-        $bookCardElements = $browser->elements('.book-card-horizontal');
-        $this->assertCount(count($books), $bookCardElements);
-    });
+    visit('/books')
+        ->assertSee('Your Library')
+        ->assertAriaAttribute('.desktop-book-view-tabs [role="tab"]:nth-of-type(2)', 'selected', 'true')
+        ->assertCount('.book-card-horizontal', $books->count());
 });
 
 test('user grid view renders correctly', function () {
@@ -61,37 +50,16 @@ test('user grid view renders correctly', function () {
     $books = Book::factory()->count(2)->create();
     $user->books()->attach($books);
 
-    $this->browse(function (Browser $browser) use ($user, $books) {
-        $browser->loginAs($user)
-            ->visit('/books')
-            ->waitFor('.desktop-book-view-tabs')
-            ->assertSee('Your Library');
+    actingAs($user);
 
-        // Get ShadCN tab buttons (via role="tab")
-        $tabButtons = $browser->elements('.desktop-book-view-tabs [role="tab"]');
-
-        // Click first tab (grid view)
-        $tabButtons[0]->click();
-
-        // Wait for DOM to update
-        $browser->pause(250)
-            ->waitUntilMissing('.book-card-horizontal')
-            ->waitUntilMissing('.book-card-shelf-item')
-            ->waitFor('.book-card');
-
-        // Assert correct cards visible
-        $this->assertCount(2, $browser->elements('.book-card'));
-        $this->assertCount(0, $browser->elements('.book-card-horizontal'));
-        $this->assertCount(0, $browser->elements('.book-card-shelf-item'));
-
-        $bookCardElements = $browser->elements('.book-card');
-
-        foreach ($bookCardElements as $index => $element) {
-            $browser->mouseover('#'.$element->getAttribute('id'))
-                ->waitForText($books[$index]->title)
-                ->assertSee($books[$index]->title);
-        }
-    });
+    visit('/books')
+        ->assertSee('Your Library')
+        ->click('.desktop-book-view-tabs [role="tab"]:nth-of-type(1)')
+        ->assertCount('.book-card', 2)
+        ->assertCount('.book-card-horizontal', 0)
+        ->assertCount('.book-card-shelf-item', 0)
+        ->assertSee($books[0]->title)
+        ->assertSee($books[1]->title);
 });
 
 test('user list view renders correctly', function () {
@@ -99,35 +67,16 @@ test('user list view renders correctly', function () {
     $books = Book::factory()->count(2)->create();
     $user->books()->attach($books);
 
-    $this->browse(function (Browser $browser) use ($user, $books) {
-        $browser->loginAs($user)
-            ->visit('/books')
-            ->waitFor('.desktop-book-view-tabs')
-            ->assertSee('Your Library');
+    actingAs($user);
 
-        // Get ShadCN tab buttons (via role="tab")
-        $tabButtons = $browser->elements('.desktop-book-view-tabs [role="tab"]');
-
-        // Click second tab (grid view)
-        $tabButtons[1]->click();
-
-        // Wait for DOM to update
-        $browser->pause(250)
-            ->waitUntilMissing('.book-card')
-            ->waitUntilMissing('.book-card-shelf-item')
-            ->waitFor('.book-card-horizontal');
-
-        // Assert correct cards visible
-        $this->assertCount(0, $browser->elements('.book-card'));
-        $this->assertCount(2, $browser->elements('.book-card-horizontal'));
-        $this->assertCount(0, $browser->elements('.book-card-shelf-item'));
-
-        $bookCardElements = $browser->elements('.book-card-horizontal');
-
-        foreach ($bookCardElements as $index => $element) {
-            $browser->assertSee($books[$index]->title);
-        }
-    });
+    visit('/books')
+        ->assertSee('Your Library')
+        ->click('.desktop-book-view-tabs [role="tab"]:nth-of-type(2)')
+        ->assertCount('.book-card', 0)
+        ->assertCount('.book-card-horizontal', 2)
+        ->assertCount('.book-card-shelf-item', 0)
+        ->assertSee($books[0]->title)
+        ->assertSee($books[1]->title);
 });
 
 test('user shelf view renders correctly', function () {
@@ -135,49 +84,34 @@ test('user shelf view renders correctly', function () {
     $books = Book::factory()->count(2)->create();
     $user->books()->attach($books);
 
-    $this->browse(function (Browser $browser) use ($user, $books) {
-        $browser->loginAs($user)
-            ->visit('/books')
-            ->waitFor('.desktop-book-view-tabs')
-            ->assertSee('Your Library');
+    actingAs($user);
 
-        // Get ShadCN tab buttons (via role="tab")
-        $tabButtons = $browser->elements('.desktop-book-view-tabs [role="tab"]');
-
-        // Click first tab (list view)
-        $tabButtons[2]->click();
-
-        // Wait for DOM to update
-        $browser->pause(250)
-            ->waitUntilMissing('.book-card')
-            ->waitUntilMissing('.book-card-horizontal')
-            ->waitFor('.book-card-shelf-item');
-
-        // Assert correct cards visible
-        $this->assertCount(0, $browser->elements('.book-card'));
-        $this->assertCount(0, $browser->elements('.book-card-horizontal'));
-        $this->assertCount(2, $browser->elements('.book-card-shelf-item'));
-
-        $bookCardElements = $browser->elements('.book-card-shelf-item');
-
-        foreach ($bookCardElements as $index => $element) {
-            $browser->assertSee($books[$index]->title);
-        }
-    });
+    visit('/books')
+        ->assertSee('Your Library')
+        ->click('.desktop-book-view-tabs [role="tab"]:nth-of-type(3)')
+        ->assertCount('.book-card', 0)
+        ->assertCount('.book-card-horizontal', 0)
+        ->assertCount('.book-card-shelf-item', 2)
+        ->assertSee($books[0]->title)
+        ->assertSee($books[1]->title);
 });
 
 // Logged in user can search
 test('user can search for a book', function () {
     $user = User::factory()->create();
 
-    $this->browse(function (Browser $browser) use ($user) {
-        $browser->loginAs($user)
-            ->visit('/books/search')
-            ->type('#query', 'harry potter')
-            ->press('Search')
-            ->waitForText('Searching')
-            ->assertSee('Searching');
-    });
+    actingAs($user);
+
+    visit('/books/search')
+        ->type('#query', 'harry potter')
+        ->click('#searchSubmit')
+        ->assertSee('No books found');
+
+    $book = Book::factory()->create(['title' => 'Harry Potter']);
+    visit('/books/search')
+        ->type('#query', 'harry potter')
+        ->click('#searchSubmit')
+        ->assertSee('Harry Potter');
 });
 
 // Users can add a book to their library
@@ -185,13 +119,12 @@ test('user can add a book to their library', function () {
     $user = User::factory()->create();
     $book = Book::factory()->create();
 
-    $this->browse(function (Browser $browser) use ($user, $book) {
-        $browser->loginAs($user)
-            ->visit(route('books.show', $book))
-            ->click('[data-slot="select-trigger"]')
-            ->click('[data-slot="select-item"]:first-of-type')
-            ->pause(500);
-    });
+    actingAs($user);
+
+    visit(route('books.show', $book))
+        ->click('[data-slot="select-trigger"]')
+        ->click('[data-slot="select-item"]:first-of-type')
+        ->assertSee('Added to your library');
 
     $this->assertDatabaseHas('book_user', [
         'user_id' => $user->id,
@@ -207,13 +140,12 @@ test('user can change book status', function () {
 
     $user->books()->attach($book, ['status' => 'Plan to Read']);
 
-    $this->browse(function (Browser $browser) use ($user, $book) {
-        $browser->loginAs($user)
-            ->visit(route('books.show', $book))
-            ->click('[data-slot="select-trigger"]')
-            ->click('[data-slot="select-item"]:nth-of-type(3)')
-            ->pause(500);
-    });
+    actingAs($user);
+
+    visit(route('books.show', $book))
+        ->click('[data-slot="select-trigger"]')
+        ->click('[data-slot="select-item"]:nth-of-type(3)')
+        ->assertSee('Book status updated successfully');
 
     $this->assertDatabaseHas('book_user', [
         'user_id' => $user->id,
@@ -229,20 +161,19 @@ test('user can add a note to a book', function () {
 
     $user->books()->attach($book);
 
-    $this->browse(function (Browser $browser) use ($user, $book) {
-        $browser->loginAs($user)
-            ->visit(route('books.show', $book))
-            ->type('#noteInput', 'A new note')
-            ->press('Save')
-            ->waitForText('A new note', 5);
-    });
+    actingAs($user);
+
+    visit(route('books.show', $book))
+        ->type('#noteInput', 'A new note')
+        ->press('Save')
+        ->assertSee('A new note');
 
     $this->assertDatabaseHas('notes', [
         'user_id' => $user->id,
         'book_id' => $book->id,
         'content' => 'A new note',
     ]);
-})->todo();
+})->todo('fix this test');
 
 // Users can delete a note on a book
 
@@ -258,22 +189,15 @@ test('user can delete a note on a book', function () {
         'content' => 'Delete me',
     ]);
 
-    $this->browse(function (Browser $browser) use ($user, $book, $note) {
-        $browser->loginAs($user)
-            ->visit(route('books.show', $book))
-            ->waitFor('.book-display-type');
+    actingAs($user);
 
-        $displayTabs = $browser->elements('.book-display-type [role="tab"]');
-        $displayTabs[0]->click();
-
-        $browser->waitFor('.notes-section')
-            ->assertSee('Delete me')
-            ->pressAndWaitFor('#delete-note-'.$note->id)
-            ->waitForText('Are you sure you want to delete this note?')
-            ->press('Confirm')
-            ->pause(500)
-            ->assertDontSee('Delete me');
-    });
+    visit(route('books.show', $book))
+        ->click('.book-display-type [role="tab"]:nth-of-type(1)')
+        ->assertSee('Delete me')
+        ->press('#delete-note-'.$note->id)
+        ->assertSee('Are you sure you want to delete this note?')
+        ->press('Confirm')
+        ->assertDontSee('Delete me');
 
     $this->assertDatabaseMissing('notes', [
         'id' => $note->id,
@@ -287,20 +211,15 @@ test('user can add a review to a book', function () {
 
     $user->books()->attach($book);
 
-    $this->browse(function (Browser $browser) use ($user, $book) {
-        $browser->loginAs($user)
-            ->visit(route('books.show', $book))
-            ->waitFor('.book-display-type');
+    actingAs($user);
 
-        $displayTabs = $browser->elements('.book-display-type [role="tab"]');
-        $displayTabs[1]->click();
-
-        $browser->press('Write a review')
-            ->type('#reviewTitle', 'A new review')
-            ->type('#reviewContent', 'Content here')
-            ->press('Submit Review')
-            ->waitForText('A new review', 5);
-    });
+    visit(route('books.show', $book))
+        ->click('.book-display-type [role="tab"]:nth-of-type(2)')
+        ->press('Write a review')
+        ->type('#reviewTitle', 'A new review')
+        ->type('#reviewContent', 'Content here')
+        ->press('Submit Review')
+        ->assertSee('A new review');
 
     $this->assertDatabaseHas('reviews', [
         'user_id' => $user->id,
@@ -324,20 +243,15 @@ test('user can update a review on a book', function () {
 
     $user->books()->attach($book);
 
-    $this->browse(function (Browser $browser) use ($user, $book) {
-        $browser->loginAs($user)
-            ->visit(route('books.show', $book))
-            ->waitFor('.book-display-type');
+    actingAs($user);
 
-        $displayTabs = $browser->elements('.book-display-type [role="tab"]');
-        $displayTabs[1]->click();
-
-        $browser->press('Edit review')
-            ->type('#reviewTitle', 'Updated Title')
-            ->type('#reviewContent', 'Updated content')
-            ->press('Update Review')
-            ->waitForText('Updated Title', 5);
-    });
+    visit(route('books.show', $book))
+        ->click('.book-display-type [role="tab"]:nth-of-type(2)')
+        ->press('Edit review')
+        ->type('#reviewTitle', 'Updated Title')
+        ->type('#reviewContent', 'Updated content')
+        ->press('Update Review')
+        ->assertSee('Updated Title');
 
     $this->assertDatabaseHas('reviews', [
         'user_id' => $user->id,
@@ -360,20 +274,13 @@ test('user can delete a review on a book', function () {
         'title' => 'Delete Review',
     ]);
 
-    $this->browse(function (Browser $browser) use ($user, $book, $review) {
-        $browser->loginAs($user)
-            ->visit(route('books.show', $book))
-            ->waitFor('.book-display-type');
+    actingAs($user);
 
-        $displayTabs = $browser->elements('.book-display-type [role="tab"]');
-        $displayTabs[1]->click();
-
-        $browser
-            ->click('#delete-review-'.$review->id)
-            ->waitForText('Are you sure you want to delete this review?')
-            ->press('Confirm')
-            ->pause(500);
-    });
+    visit(route('books.show', $book))
+        ->click('.book-display-type [role="tab"]:nth-of-type(2)')
+        ->click('#delete-review-'.$review->id)
+        ->assertSee('Are you sure you want to delete this review?')
+        ->press('Confirm');
 
     $this->assertDatabaseMissing('reviews', [
         'id' => $review->id,
@@ -400,36 +307,28 @@ test('user cannot see delete button on other users reviews', function () {
         'title' => 'Delete Review',
     ]);
 
-    $this->browse(function (Browser $browser) use ($user, $book) {
-        $browser->loginAs($user)
-            ->visit(route('books.show', $book))
-            ->waitFor('.book-display-type');
+    actingAs($user);
 
-        $displayTabs = $browser->elements('.book-display-type [role="tab"]');
-        $displayTabs[1]->click();
-
-        $browser->waitFor('.reviews-section')
-            ->assertMissing('#delete-review-2')
-            ->assertPresent('#delete-review-1');
-    });
+    visit(route('books.show', $book))
+        ->click('.book-display-type [role="tab"]:nth-of-type(2)')
+        ->assertMissing('#delete-review-2')
+        ->assertPresent('#delete-review-1');
 });
 
 // Users can update their rating of a book
-
 test('user can update book rating', function () {
     $user = User::factory()->create();
     $book = Book::factory()->create();
 
     $user->books()->attach($book);
 
-    $this->browse(function (Browser $browser) use ($user, $book) {
-        $browser->loginAs($user)
-            ->visit(route('books.show', $book))
-            ->click('button[aria-label="Rate 4 star"]')
-            ->pause(500)
-            ->click('button[aria-label="Rate 2 star"]')
-            ->pause(500);
-    });
+    actingAs($user);
+
+    visit(route('books.show', $book))
+        ->assertSee('Your rating')
+        ->click('[aria-label="Rate 4 star"]')
+        ->click('[aria-label="Rate 2 star"]')
+        ->assertSee('Rating updated successfully');
 
     $this->assertDatabaseHas('ratings', [
         'user_id' => $user->id,
