@@ -317,6 +317,9 @@ test('user cannot see delete button on other users reviews', function () {
 
 // Users can update their rating of a book
 test('user can update book rating', function () {
+    // Force clear the database
+    Rating::truncate();
+
     $user = User::factory()->create();
     $book = Book::factory()->create();
 
