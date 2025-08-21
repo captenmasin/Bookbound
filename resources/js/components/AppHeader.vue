@@ -122,115 +122,113 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 
 <template>
     <div
-        class="sticky top-0 z-50 transition-all duration-300 ease-in-out bg-background md:static md:translate-y-0"
+        class="sticky safe-top safe-h-14 z-50 md:h-16  border-b border-sidebar-border/80 transition-all duration-300 ease-in-out bg-background md:static md:translate-y-0"
         :class="{ '-NOT-translate-y-full': !isVisible }">
-        <div class="border-b border-sidebar-border/80">
-            <div class="mx-auto flex h-14 items-center px-4 pwa:md:max-w-none md:h-16 md:max-w-7xl">
-                <div
-                    v-if="authed"
-                    :class="$page.props.backUrl ? 'ml-0 opacity-100' : '-ml-8 opacity-0'"
-                    class="mr-2 transition-all duration-300 lg:hidden">
-                    <Link
-                        tabindex="-1"
-                        class="-ml-4 flex pl-2 text-primary"
-                        :href="$page.props.backUrl ?? useRoute('dashboard')">
-                        <Icon
-                            name="ChevronLeft"
-                            class="size-8 stroke-[1.5px]" />
-                    </Link>
-                </div>
-
+        <div class="mx-auto flex items-center h-full px-4 pwa:md:max-w-none md:max-w-7xl">
+            <div
+                v-if="authed"
+                :class="$page.props.backUrl ? 'ml-0 opacity-100' : '-ml-8 opacity-0'"
+                class="mr-2 transition-all duration-300 lg:hidden">
                 <Link
-                    :href="useRoute('dashboard')"
-                    prefetch
-                    class="flex items-center gap-x-2">
-                    <span class="sr-only">
-                        Go to Home
-                    </span>
-                    <AppLogo class="flex items-center" />
+                    tabindex="-1"
+                    class="-ml-4 flex pl-2 text-primary"
+                    :href="$page.props.backUrl ?? useRoute('dashboard')">
+                    <Icon
+                        name="ChevronLeft"
+                        class="size-8 stroke-[1.5px]" />
                 </Link>
+            </div>
 
-                <!-- Desktop Menu -->
-                <div class="hidden h-full lg:flex lg:flex-1">
-                    <NavigationMenu
-                        v-if="authed"
-                        class="ml-10 flex h-full items-stretch">
-                        <NavigationMenuList class="flex h-full items-stretch space-x-2">
-                            <NavigationMenuItem
-                                v-for="(item, index) in navItems"
-                                :key="index"
-                                :class="item.mobileOnly ? 'flex lg:hidden' : 'flex lg:flex-1'"
-                                class="relative flex h-full items-center">
-                                <Link
-                                    prefetch
-                                    :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'h-9 cursor-pointer px-3']"
-                                    :href="item.href"
-                                >
-                                    <component
-                                        :is="item.icon"
-                                        v-if="item.icon"
-                                        class="mr-2 h-4 w-4" />
-                                    {{ item.title }}
-                                </Link>
-                                <div
-                                    v-if="useIsCurrentUrl(item.href)"
-                                    class="absolute bottom-0 left-0 w-full translate-y-px bg-primary h-0.5 dark:bg-white"
-                                />
-                            </NavigationMenuItem>
-                        </NavigationMenuList>
-                    </NavigationMenu>
-                </div>
+            <Link
+                :href="useRoute('dashboard')"
+                prefetch
+                class="flex items-center gap-x-2">
+                <span class="sr-only">
+                    Go to Home
+                </span>
+                <AppLogo class="flex items-center" />
+            </Link>
 
-                <div
-                    v-if="authed && authedUser"
-                    class="ml-auto flex items-center space-x-2">
-                    <div>
-                        <div
-                            v-if="authedUser.subscription.subscribed"
-                            class="rounded-full cursor-default select-none px-2 py-px font-serif font-semibold text-[10px] bg-primary text-primary-foreground">
-                            PRO
-                        </div>
+            <!-- Desktop Menu -->
+            <div class="hidden h-full lg:flex lg:flex-1">
+                <NavigationMenu
+                    v-if="authed"
+                    class="ml-10 flex h-full items-stretch">
+                    <NavigationMenuList class="flex h-full items-stretch space-x-2">
+                        <NavigationMenuItem
+                            v-for="(item, index) in navItems"
+                            :key="index"
+                            :class="item.mobileOnly ? 'flex lg:hidden' : 'flex lg:flex-1'"
+                            class="relative flex h-full items-center">
+                            <Link
+                                prefetch
+                                :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'h-9 cursor-pointer px-3']"
+                                :href="item.href"
+                            >
+                                <component
+                                    :is="item.icon"
+                                    v-if="item.icon"
+                                    class="mr-2 h-4 w-4" />
+                                {{ item.title }}
+                            </Link>
+                            <div
+                                v-if="useIsCurrentUrl(item.href)"
+                                class="absolute bottom-0 left-0 w-full translate-y-px bg-primary h-0.5 dark:bg-white"
+                            />
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
+            </div>
 
-                        <JoinProTrigger v-else>
-                            <button class="mr-2 hidden cursor-pointer items-center gap-1 text-xs font-medium mt-1.5 text-primary xs:flex">
-                                <Icon
-                                    name="Sparkles"
-                                    class="size-4" />
-                                Upgrade to Pro
-                            </button>
-                        </JoinProTrigger>
+            <div
+                v-if="authed && authedUser"
+                class="ml-auto flex items-center space-x-2">
+                <div>
+                    <div
+                        v-if="authedUser.subscription.subscribed"
+                        class="rounded-full cursor-default select-none px-2 py-px font-serif font-semibold text-[10px] bg-primary text-primary-foreground">
+                        PRO
                     </div>
 
-                    <UserMenuDropdown
-                        v-if="isDesktop"
-                        :user="authedUser"
-                        :items="userMenuItems" />
+                    <JoinProTrigger v-else>
+                        <button class="mr-2 hidden cursor-pointer items-center gap-1 text-xs font-medium mt-1.5 text-primary xs:flex">
+                            <Icon
+                                name="Sparkles"
+                                class="size-4" />
+                            Upgrade to Pro
+                        </button>
+                    </JoinProTrigger>
+                </div>
 
-                    <UserMenuSheet
-                        v-else
-                        :user="authedUser"
-                        :items="userMenuItems"
-                    />
-                </div>
-                <div
+                <UserMenuDropdown
+                    v-if="isDesktop"
+                    :user="authedUser"
+                    :items="userMenuItems" />
+
+                <UserMenuSheet
                     v-else
-                    class="ml-auto flex gap-2 md:gap-4">
-                    <Button
-                        variant="secondary"
-                        class="sm"
-                        as-child>
-                        <Link :href="useRoute('login')">
-                            Login
-                        </Link>
-                    </Button>
-                    <Button
-                        class="sm"
-                        as-child>
-                        <Link :href="useRoute('register')">
-                            Register
-                        </Link>
-                    </Button>
-                </div>
+                    :user="authedUser"
+                    :items="userMenuItems"
+                />
+            </div>
+            <div
+                v-else
+                class="ml-auto flex gap-2 md:gap-4">
+                <Button
+                    variant="secondary"
+                    class="sm"
+                    as-child>
+                    <Link :href="useRoute('login')">
+                        Login
+                    </Link>
+                </Button>
+                <Button
+                    class="sm"
+                    as-child>
+                    <Link :href="useRoute('register')">
+                        Register
+                    </Link>
+                </Button>
             </div>
         </div>
 
