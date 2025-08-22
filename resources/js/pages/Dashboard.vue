@@ -176,12 +176,6 @@ defineOptions({ layout: AppLayout })
                                 Upgrade now
                             </a>
                         </Button>
-                        <a
-                            target="_blank"
-                            :href="useRoute('home.authed') + '#pricing'"
-                            class="text-white underline hover:text-white/80">
-                            See features
-                        </a>
                     </div>
                 </AlertDescription>
                 <button

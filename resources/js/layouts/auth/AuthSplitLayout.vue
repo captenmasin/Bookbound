@@ -4,6 +4,7 @@ import AppLogo from '@/components/AppLogo.vue'
 import AppLogoIcon from '@/components/AppLogoIcon.vue'
 import BookPileSmall from '~/images/book-pile-small.webp'
 import ProgressiveImage from '@/components/ProgressiveImage.vue'
+import { usePwa } from '@/composables/usePwa'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute'
 
@@ -14,6 +15,8 @@ defineProps<{
     title?: string;
     description?: string;
 }>()
+
+const { isPwa } = usePwa()
 
 const points = [
     {
@@ -58,7 +61,7 @@ const points = [
                 </div>
             </div>
             <Link
-                :href="useRoute('home')"
+                :href="isPwa ? null : useRoute('home')"
                 class="relative z-20 flex items-center font-serif text-2xl font-semibold tracking-tight text-white">
                 <AppLogoIcon class="mr-2 rounded-lg fill-current size-8" />
                 <div class="relative flex flex-col">
