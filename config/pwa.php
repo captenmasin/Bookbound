@@ -9,7 +9,7 @@ return [
         //        'start_url' => env('APP_URL').'?utm_source=pwa&pwa-mode=true',
         'start_url' => env('APP_URL').'/login?utm_source=pwa&pwa-mode=true',
         'display' => 'standalone',
-        'categories' => [''],
+        'categories' => ['utilities', 'books', 'education', 'entertainment', 'magazines'],
         'description' => env('APP_DESCRIPTION'),
         'primary_color' => '#913608',
         'background_color' => '#fcfbf8',
@@ -251,5 +251,13 @@ return [
         'launch_handler' => [
             'client_mode' => ['navigate-existing', 'auto'],
         ],
+    ],
+    'iarc_rating_id' => 'c644067a-1843-48e2-bf2c-7d1ff5d1bbec',
+    'android_package_name' => '',
+    'prefer_related_applications' => true,
+    'related_applications' => [
+        'platform' => 'play',
+        'id' => 'app.bookbound.twa',
+        'url' => 'https://play.google.com/store/apps/details?id=app.bookbound.twa',
     ],
 ];
