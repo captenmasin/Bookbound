@@ -47,11 +47,6 @@ const url = computed(() => {
                 :href="url"
                 prefetch>
                 <div class="relative w-full overflow-hidden aspect-book group">
-                    <span
-                        v-if="book.binding"
-                        class="absolute top-2 right-2 rounded-full bg-white/75 py-px text-xs capitalize text-zinc-900 opacity-0 transition-all delay-100 px-1.5 group-hover:opacity-100">
-                        {{ book.binding }}
-                    </span>
                     <Image
                         v-if="book.cover"
                         :src="book.cover"

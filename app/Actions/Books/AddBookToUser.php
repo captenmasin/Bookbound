@@ -45,6 +45,7 @@ class AddBookToUser
 
         $user->books()->attach($book, [
             'status' => $status->value ?? UserBookStatus::PlanToRead,
+            'book_type' => 'test',
         ]);
 
         $user->logActivity(ActivityType::BookAdded, $book, [

@@ -68,11 +68,11 @@ const { userRating } = useBook(props.book)
                 :target="target"
                 prefetch>
                 <div class="relative w-20 shrink-0 overflow-hidden rounded-sm shadow-sm aspect-book md:w-22">
-                    <span
-                        v-if="book.binding"
-                        class="absolute top-1 right-1 rounded-full bg-white/75 py-px text-zinc-900 opacity-0 transition-all text-[10px] px-1.5 group-hover:opacity-100">
-                        {{ book.binding }}
-                    </span>
+                    <!--                    <span-->
+                    <!--                        v-if="book.binding"-->
+                    <!--                        class="absolute top-1 right-1 rounded-full bg-white/75 py-px text-zinc-900 opacity-0 transition-all text-[10px] px-1.5 group-hover:opacity-100">-->
+                    <!--                        {{ book.binding }}-->
+                    <!--                    </span>-->
                     <img
                         :src="book.cover ?? DefaultCover"
                         :alt="`Book cover image for ${book.title}`"
