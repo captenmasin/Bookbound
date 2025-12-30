@@ -47,7 +47,6 @@ class BookFactory extends Factory
             'original_cover' => 'https://placehold.co/500x800/'.$mainColour.'/'.str_replace('#', '', $this->faker->hexColor).'?text='.urlencode($coverTitle),
             'edition' => ['Illustrated', 'Paperback', 'Hardcover', 'Audiobook', 'Ebook', ''][rand(0, 5)],
             'binding' => ['Print', 'Paperback', 'Audiobook', 'Ebook', ''][rand(0, 4)],
-            'type' => ['Physical', 'Digital', 'Audio'][rand(0, 2)],
             'language' => $this->faker->languageCode,
         ];
     }
