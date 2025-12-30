@@ -3,9 +3,11 @@
 namespace App\Transformers;
 
 use App\Models\Book;
+use App\Enums\BookType;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use App\Services\ISBNdbService;
+use App\Http\Resources\BookResource;
 use App\Services\GoogleBooksService;
 use App\Services\OpenLibraryService;
 
@@ -80,6 +82,7 @@ class BookTransformer
             'authors' => $authors,
             'edition' => $data['edition'] ?? null,
             'binding' => $data['binding'] ?? null,
+            'type' => self::normaliseType($data['binding'] ?? ''),
             'language' => $data['language'] ?? null,
             'published_date' => $data['date_published'] ?? null,
             'cover' => $data['image'] ?? null,
@@ -132,6 +135,7 @@ class BookTransformer
             'authors' => $authors,
             'edition' => $data['edition'] ?? null,
             'binding' => $data['binding'] ?? null,
+            'type' => self::normaliseType($data['binding'] ?? ''),
             'language' => $data['language'] ?? null,
             'published_date' => $data['date_published'] ?? null,
             'cover' => $cover,
@@ -263,6 +267,7 @@ class BookTransformer
             'authors' => $authors,
             'edition' => $data['edition'] ?? null,
             'binding' => $data['physical_format'] ?? $data['binding'] ?? null,
+            'type' => self::normaliseType($data['binding'] ?? ''),
             'language' => $language,
             'published_date' => $publishedDate,
             'cover' => $cover,
@@ -327,6 +332,11 @@ class BookTransformer
             ->toString();
 
         return ['raw' => $raw, 'clean' => $clean];
+    }
+
+    private static function normaliseType(string $type): BookType
+    {
+        return BookResource::getType($type);
     }
 
     private static function pickIdentifierFromCodes(array $codes, ?string $fallback = null): ?string

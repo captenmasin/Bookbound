@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\PwaDevice;
 use App\Http\Middleware\StripCookies;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\HandleAppearance;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 HandleAppearance::class,
                 HandleInertiaRequests::class,
                 AddLinkHeadersForPreloadedAssets::class,
+                PwaDevice::class,
             ],
             prepend: [
                 StripCookies::class,

@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Str;
 use App\Models\User;
+use App\Enums\BookType;
 use Illuminate\Http\Request;
 use App\Support\SubscriptionLimits;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -46,7 +47,8 @@ class BookResource extends JsonResource
             'user_tags' => $user ? $this->getUserTags($user) : [],
 
             'edition' => $this->edition,
-            'binding' => $this->normalizeBinding($this->binding),
+            'binding' => self::normalizeBinding($this->binding),
+            'type' => self::getType($this->binding),
             'language' => $this->language,
 
             'colour' => $this->settings()->get('colour', '#000000'),
@@ -148,15 +150,16 @@ class BookResource extends JsonResource
         return $notes ? NoteResource::collection($notes) : null;
     }
 
-    private function normalizeBinding(mixed $binding): string
+    public static function normalizeBinding(mixed $binding): string
     {
-        if (Str::contains($binding, 'unknown')) {
+        if (Str::contains($binding, 'unknown', true)) {
             return '';
         }
 
-        $binding = Str::replace('Mass Market', '', $binding);
-        $binding = Str::replace('School & Library Binding', 'Paperback', $binding);
-        $binding = Str::replace('Edition', '', $binding);
+        $binding = Str::replace('Mass Market', '', $binding, false);
+        $binding = Str::replace('School & Library Binding', 'Paperback', $binding, false);
+        $binding = Str::replace('Edition', '', $binding, false);
+        $binding = Str::replace('Perfect', '', $binding, false);
 
         if ($binding === 'electronic resource') {
             return 'eBook';
@@ -166,6 +169,26 @@ class BookResource extends JsonResource
             return 'Paperback';
         }
 
+        if (Str::contains($binding, 'leather', true)) {
+            return 'Leatherbound';
+        }
+
         return ucfirst(strtolower($binding));
+    }
+
+    public static function getType(mixed $binding): BookType
+    {
+        $binding = self::normalizeBinding($binding);
+        $normalised = Str::replace([' ', '-', '_'], '', strtolower($binding));
+
+        if (Str::contains($normalised, ['audio', 'cd', 'cassette'])) {
+            return BookType::Audio;
+        }
+
+        if (Str::contains($normalised, ['ebook', 'e-book', 'kindle', 'digital', 'epub'])) {
+            return BookType::Digital;
+        }
+
+        return BookType::Physical;
     }
 }

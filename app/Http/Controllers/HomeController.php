@@ -12,6 +12,10 @@ class HomeController extends Controller
 {
     public function __invoke()
     {
+        if (request()->boolean('pwa-mode') || \Illuminate\Support\Facades\Cookie::get('pwa-mode') === 'true') {
+            return redirect()->route('login');
+        }
+
         [$price, $interval] = Cache::rememberForever('home.price', function () {
             try {
                 Stripe::setApiKey(config('cashier.secret'));

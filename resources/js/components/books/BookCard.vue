@@ -33,24 +33,23 @@ const url = computed(() => {
 <template>
     <article
         :id="`book-card-${book.id}`"
-        class="flex gap-4 transition-all book-card active:scale-102">
+        class="book-card flex gap-4 transition-all active:scale-102">
         <div
-            class="flex w-full flex-col overflow-hidden rounded-md shadow-sm group"
+            class="group flex w-full flex-col overflow-hidden rounded-md shadow-sm"
             :style="{
                 backgroundColor: book.colour,
             }"
-            :class="[
-                useContrast(book.colour, 'text-zinc-900', 'text-white'),
-            ]"
+            :class="[useContrast(book.colour, 'text-zinc-900', 'text-white')]"
         >
             <Link
                 :href="url"
                 prefetch>
-                <div class="relative w-full overflow-hidden aspect-book group">
+                <div class="group relative aspect-book w-full overflow-hidden">
                     <span
-                        v-if="book.binding"
-                        class="absolute top-2 right-2 rounded-full bg-white/75 py-px text-xs capitalize text-zinc-900 opacity-0 transition-all delay-100 px-1.5 group-hover:opacity-100">
-                        {{ book.binding }}
+                        v-if="book.type"
+                        class="absolute top-2 right-2 rounded-full bg-white/75 px-1.5 py-px text-xs text-zinc-900 capitalize opacity-0 transition-all delay-100 group-hover:opacity-100"
+                    >
+                        {{ book.type }}
                     </span>
                     <Image
                         v-if="book.cover"
@@ -61,15 +60,20 @@ const url = computed(() => {
                     <div
                         v-if="hover"
                         class="absolute bottom-0 left-0 flex h-full w-full items-end p-4 opacity-0 transition-all duration-300 group-hover:opacity-100"
-                        :style="{backgroundImage: `linear-gradient(to top, ${changeColourOpacity(book.colour, 1)}, ${changeColourOpacity(book.colour, 0.75)}, rgba(0, 0, 0, 0))`}">
-                        <div class="flex w-full translate-y-4 flex-col opacity-0 transition-all duration-300 gap-1.5 group-hover:translate-y-0 group-hover:opacity-100">
-                            <h2 class="font-serif text-base font-semibold leading-5 line-clamp-4 md:text-lg">
+                        :style="{
+                            backgroundImage: `linear-gradient(to top, ${changeColourOpacity(book.colour, 1)}, ${changeColourOpacity(book.colour, 0.75)}, rgba(0, 0, 0, 0))`,
+                        }"
+                    >
+                        <div
+                            class="flex w-full translate-y-4 flex-col gap-1.5 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+                        >
+                            <h2 class="line-clamp-4 font-serif text-base leading-5 font-semibold md:text-lg">
                                 {{ book.title }}
                             </h2>
                             <p
                                 v-if="book.authors"
-                                class="text-xs line-clamp-2">
-                                {{ book.authors.map(a => a.name).join(', ') }}
+                                class="line-clamp-2 text-xs">
+                                {{ book.authors.map((a) => a.name).join(', ') }}
                             </p>
                             <StarRatingDisplay
                                 v-if="userRating"

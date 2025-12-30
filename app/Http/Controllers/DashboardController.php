@@ -25,6 +25,10 @@ class DashboardController extends Controller
             ->withPivot('status')
             ->get();
 
+        //        dd(BookResource::collection(
+        //            $books
+        //        )->toArray($request));
+
         $books = $books->sortByDesc(fn ($book) => $book->pivot->created_at)
             ->values();
 
