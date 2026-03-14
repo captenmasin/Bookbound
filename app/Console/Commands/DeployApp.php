@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use Laravel\Octane\Octane;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Cache\Console\ClearCommand;
@@ -10,6 +9,8 @@ use Laravel\Horizon\Console\TerminateCommand;
 
 class DeployApp extends Command
 {
+    protected const NPM_COMMAND_TIMEOUT_SECONDS = 900;
+
     protected $signature = 'app:deploy {--ssr : Enable server-side rendering}';
 
     public function handle(): int
@@ -82,10 +83,10 @@ class DeployApp extends Command
         return self::SUCCESS;
     }
 
-    protected function runShell(string $command): void
+    protected function runShell(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void
     {
         $this->info("⚙️  Running: {$command}");
-        $result = Process::run($command);
+        $result = Process::timeout($timeout)->run($command);
 
         if (! $result->successful()) {
             $this->error("❌ Failed: {$command}");
