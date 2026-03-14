@@ -88,6 +88,21 @@ describe('BookController', function () {
         );
     });
 
+    it('stores previous searches with their type', function () {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->get(route('books.search', ['q' => 'harry potter']));
+
+        $response->assertSuccessful();
+
+        $this->assertDatabaseHas('previous_searches', [
+            'user_id' => $user->id,
+            'search_term' => 'harry potter',
+            'type' => 'query',
+        ]);
+    });
+
     it('redirects guests to login for search page', function () {
         $response = $this->get(route('books.search'));
 

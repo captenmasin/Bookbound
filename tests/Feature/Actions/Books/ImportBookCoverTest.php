@@ -17,7 +17,7 @@ describe('ImportBookCover', function () {
 
     it('handles failed cover import gracefully', function () {
         $book = Book::factory()->create();
-        $invalidUrl = 'https://invalid-url-that-does-not-exist.com/cover.jpg';
+        $invalidUrl = 'https://invalid-url-that-definitely-does-not-exist.com/cover.jpg';
 
         $action = new ImportBookCover;
 
@@ -27,6 +27,7 @@ describe('ImportBookCover', function () {
         })->not->toThrow(Exception::class);
 
         $primaryCover = $book->primaryCover();
+
         expect($primaryCover->hasMedia('image'))->toBeFalse();
     });
 

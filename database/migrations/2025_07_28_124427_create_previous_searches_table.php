@@ -17,6 +17,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->onDelete('cascade');
             $table->string('search_term');
+            $table->string('type')->default('query');
             $table->timestamps();
         });
     }

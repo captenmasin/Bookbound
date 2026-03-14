@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Book;
+use App\Models\Note;
 use App\Models\User;
 use App\Models\Rating;
 use App\Models\Review;
@@ -105,13 +106,8 @@ test('user can search for a book', function () {
     visit('/books/search')
         ->type('#query', 'harry potter')
         ->click('#searchSubmit')
-        ->assertSee('No books found');
-
-    $book = Book::factory()->create(['title' => 'Harry Potter']);
-    visit('/books/search')
-        ->type('#query', 'harry potter')
-        ->click('#searchSubmit')
-        ->assertSee('Harry Potter');
+        ->assertSee('Harry Potter')
+        ->assertSee('By J. K. Rowling');
 });
 
 // Users can add a book to their library
@@ -183,7 +179,7 @@ test('user can delete a note on a book', function () {
 
     $user->books()->attach($book);
 
-    $note = \App\Models\Note::factory()->create([
+    $note = Note::factory()->create([
         'user_id' => $user->id,
         'book_id' => $book->id,
         'content' => 'Delete me',

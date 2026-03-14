@@ -1,46 +1,34 @@
 <script setup lang="ts">
-import Icon from '@/components/Icon.vue'
-import { ref } from 'vue'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-const view = ref<'list' | 'grid' | 'shelf'>('list')
+import Icon from '@/components/Icon.vue';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-defineModel('view', {
-    type: String,
-    default: 'list'
-})
+const view = defineModel<'list' | 'grid' | 'shelf'>({
+    default: 'grid',
+});
 
 const views = [
     {
         value: 'grid',
         label: 'Grid',
-        icon: 'LayoutGrid'
+        icon: 'LayoutGrid',
     },
     {
         value: 'list',
         label: 'List',
-        icon: 'LayoutList'
+        icon: 'LayoutList',
     },
     {
         value: 'shelf',
         label: 'Shelf',
-        icon: 'LibraryBig'
-    }
-]
+        icon: 'LibraryBig',
+    },
+];
 </script>
 <template>
-    <Tabs
-        v-model="view"
-        class="flex w-full flex-1"
-        :default-value="view">
+    <Tabs v-model="view" class="flex w-full flex-1" :default-value="view">
         <TabsList class="w-full">
-            <TabsTrigger
-                v-for="item in views"
-                :key="item.value"
-                :value="item.value"
-                class="px-0 md:px-4">
-                <Icon
-                    :name="item.icon"
-                    class="w-4" />
+            <TabsTrigger v-for="item in views" :key="item.value" :value="item.value" class="px-0 md:px-4">
+                <Icon :name="item.icon" class="w-4" />
                 <span class="hidden md:flex">
                     {{ item.label }}
                 </span>
