@@ -19,8 +19,6 @@ class AuthenticatedSessionController extends Controller
     public function create(Request $request): Response
     {
         $redirectUrl = $request->input('redirect', null);
-        $pwaMode = $request->boolean('pwa-mode');
-        $pwaDevice = $request->input('pwa-device', null);
 
         return Inertia::render('auth/Login', [
             'canResetPassword' => Route::has('password.request'),

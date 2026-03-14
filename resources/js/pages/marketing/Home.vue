@@ -23,11 +23,11 @@ import SliderLibraryShelfScreenshotDark from '~/images/marketing/slider-library-
 import SliderLibraryFilteredScreenshotDark from '~/images/marketing/slider-library-filtered-screenshot-dark.webp'
 import { useMediaQuery } from '@vueuse/core'
 import { Link, usePage } from '@inertiajs/vue3'
+import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute.js'
-import { Button } from '@/components/ui/button/index.js'
 import { useAuthedUser } from '@/composables/useAuthedUser.js'
 import { computed, nextTick, onMounted, PropType, ref, watch } from 'vue'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card/index.js'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
 const props = defineProps({
     price: {
