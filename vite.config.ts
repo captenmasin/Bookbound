@@ -5,15 +5,18 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import run from 'vite-plugin-run'
 import { defineConfig } from 'vite'
+import { nativephpHotFile, nativephpMobile } from './vendor/nativephp/mobile/resources/js/vite-plugin.js'
 
 export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/js/app.ts'],
             ssr: 'resources/js/ssr.ts',
-            refresh: true
+            refresh: true,
+            hotFile: nativephpHotFile()
         }),
         tailwindcss(),
+        nativephpMobile(),
         run([
             {
                 name: 'generate routes',
@@ -38,7 +41,8 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
-            '~': path.resolve('./resources')
+            '~': path.resolve('./resources'),
+            '@nativephp/mobile': path.resolve(__dirname, './vendor/nativephp/mobile/resources/dist/native.js')
         }
     },
     build: {

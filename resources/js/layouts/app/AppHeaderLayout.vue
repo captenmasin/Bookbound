@@ -5,16 +5,18 @@ import AppContent from '@/components/AppContent.vue'
 import JoinProDialog from '@/components/JoinProDialog.vue'
 import { logicAnd } from '@vueuse/math'
 import { Label } from '@/components/ui/label'
+import { usePwa } from '@/composables/usePwa'
 import { useRoute } from '@/composables/useRoute'
 import { Link, router, usePage } from '@inertiajs/vue3'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import type { BreadcrumbItemType, NavItem } from '@/types'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
 import { useActiveElement, useMagicKeys, whenever } from '@vueuse/core'
-import { Home, LibraryBig, PlusSquareIcon, ScanBarcode, SearchIcon } from 'lucide-vue-next'
+import { Home, LibraryBig, ScanBarcode, SearchIcon } from 'lucide-vue-next'
 
 const page = usePage()
 const breadcrumbs = ref(page.props.breadcrumbs as BreadcrumbItemType[] | undefined)
+const { isNative } = usePwa()
 
 const mainNavItems = ref<NavItem[]>([
     {
@@ -47,33 +49,29 @@ const mainNavItems = ref<NavItem[]>([
 const { h, b, s } = useMagicKeys()
 
 const activeElement = useActiveElement()
-const notUsingInput = computed(() =>
-    activeElement.value?.tagName !== 'INPUT' &&
-    activeElement.value?.tagName !== 'TEXTAREA')
+const notUsingInput = computed(() => activeElement.value?.tagName !== 'INPUT' && activeElement.value?.tagName !== 'TEXTAREA')
 
 whenever(logicAnd(h, notUsingInput), () => router.get(useRoute('dashboard')))
 whenever(logicAnd(b, notUsingInput), () => router.get(useRoute('user.books.index')))
 whenever(logicAnd(s, notUsingInput), () => router.get(useRoute('books.search')))
 
-const activeItemStyles = computed(
-    () => (item: NavItem) => (item.isActive ? 'text-primary' : '')
-)
+const activeItemStyles = computed(() => (item: NavItem) => (item.isActive ? 'text-primary' : ''))
 
 function setActiveItems () {
-    mainNavItems.value.forEach(item => {
+    mainNavItems.value.forEach((item) => {
         item.isActive = useIsCurrentUrl(item.href)
     })
 }
 
 function handleClick (item: NavItem) {
-    mainNavItems.value.forEach(navItem => {
-        navItem.isActive = (navItem.href === item.href)
+    mainNavItems.value.forEach((navItem) => {
+        navItem.isActive = navItem.href === item.href
     })
 }
 
 onMounted(() => nextTick(() => setActiveItems()))
 
-router.on('navigate', (event) => {
+router.on('navigate', () => {
     // const newBreadcrumbs = event.detail.page.props.breadcrumbs as BreadcrumbItemType[] | undefined
     // if (newBreadcrumbs) {
     //     breadcrumbs.value = newBreadcrumbs
@@ -88,15 +86,17 @@ router.on('navigate', (event) => {
 <template>
     <AppShell class="flex-col">
         <AppHeader
+            v-if="!isNative"
             :nav-items="mainNavItems"
             :breadcrumbs="breadcrumbs" />
-        <AppContent
-            class="mt-4">
+        <AppContent class="mt-4">
             <slot />
         </AppContent>
         <div
+            v-if="!isNative"
             style="padding-bottom: env(safe-area-inset-bottom)"
-            class="sticky right-0 bottom-0 left-0 z-50 border-t backdrop-blur-sm bg-background/75 border-background-foreground lg:hidden">
+            class="border-background-foreground sticky right-0 bottom-0 left-0 z-50 border-t bg-background/75 backdrop-blur-sm lg:hidden"
+        >
             <ul class="mx-auto flex w-full max-w-xl items-center pb-2">
                 <li
                     v-for="item in mainNavItems"
@@ -107,10 +107,12 @@ router.on('navigate', (event) => {
                         prefetch
                         :class="[activeItemStyles(item)]"
                         class="relative flex w-full flex-col items-center justify-center gap-1 py-2 text-sm text-foreground hover:text-primary sm:flex-row sm:gap-2"
-                        @click="handleClick(item)">
+                        @click="handleClick(item)"
+                    >
                         <div
                             :class="[item.isActive ? 'bg-primary/10' : 'bg-transparent']"
-                            class="rounded-full px-5 transition-all py-1.5 sm:px-4 sm:py-1">
+                            class="rounded-full px-5 py-1.5 transition-all sm:px-4 sm:py-1"
+                        >
                             <component
                                 :is="item.icon"
                                 class="size-5" />

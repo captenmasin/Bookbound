@@ -2,8 +2,8 @@
 import Icon from '@/components/Icon.vue'
 import VueBarcode from '@chenfengyuan/vue-barcode'
 import BarcodeScanned from '~/audio/barcode-scanned.mp3'
-import HorizontalSkeleton from '@/components/books/HorizontalSkeleton.vue'
 import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
+import HorizontalSkeleton from '@/components/books/HorizontalSkeleton.vue'
 import { toast } from 'vue-sonner'
 import { useSound } from '@vueuse/sound'
 import { useVibrate } from '@vueuse/core'
@@ -11,6 +11,7 @@ import { useRoute } from '@/composables/useRoute'
 import { useRequest } from '@/composables/useRequest'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button/index.js'
+import { useNativeApp } from '@/composables/useNativeApp'
 import { BrowserMultiFormatReader } from '@zxing/browser'
 
 // refs for UI state
@@ -19,14 +20,40 @@ const scanning = ref(false)
 const result = ref(null)
 const book = ref(null)
 const loading = ref(false)
+const nativeScannerPermissionIssue = ref(false)
 
 let controls = null
 
+const { isNative, scanBarcode, vibrate: vibrateNative, openAppSettings, storeSecureValue } = useNativeApp()
 const { play } = useSound(BarcodeScanned)
 const { vibrate } = useVibrate({ pattern: [300, 100] })
 
 // single shared reader instance
 const codeReader = new BrowserMultiFormatReader()
+
+async function fetchBookByIdentifier (identifier) {
+    loading.value = true
+
+    try {
+        const response = await useRequest(useRoute('api.books.fetch_or_create', identifier), 'GET')
+
+        if (response.book) {
+            book.value = response.book
+            await storeSecureValue('last_scanned_identifier', identifier)
+        } else {
+            console.error('No book found for identifier:', identifier)
+            result.value = null
+            book.value = null
+        }
+    } catch (error) {
+        console.error('Error fetching book:', error)
+        toast.error('Error fetching book details')
+        result.value = null
+        book.value = null
+    } finally {
+        loading.value = false
+    }
+}
 
 // start scanning ------------------------------------------------------------
 async function startScan () {
@@ -35,9 +62,27 @@ async function startScan () {
     // reset UI
     result.value = null
     book.value = null
+    nativeScannerPermissionIssue.value = false
     scanning.value = true
 
     try {
+        if (isNative) {
+            const identifier = await scanBarcode()
+
+            scanning.value = false
+
+            if (!identifier) {
+                return
+            }
+
+            result.value = identifier
+            await fetchBookByIdentifier(identifier)
+            play()
+            await vibrateNative()
+
+            return
+        }
+
         controls = await codeReader.decodeFromConstraints(
             {
                 video: { facingMode: { ideal: 'environment' } }
@@ -50,37 +95,20 @@ async function startScan () {
                 const identifier = output.getText()
                 result.value = identifier
                 stopScan()
-
-                // hit your API
-                loading.value = true
-                useRequest(useRoute('api.books.fetch_or_create', identifier), 'GET')
-                    .then(response => {
-                        if (response.book) {
-                            book.value = response.book
-                            loading.value = false
-                        } else {
-                            console.error('No book found for identifier:', identifier)
-                            result.value = null
-                            book.value = null
-                            loading.value = false
-                        }
-                    }).catch(error => {
-                        console.error('Error fetching book:', error)
-                        toast.error('Error fetching book details')
-                        loading.value = false
-                        result.value = null
-                        book.value = null
-                    })
+                await fetchBookByIdentifier(identifier)
 
                 play()
                 vibrate()
-
-                // stopScan()
             }
         )
     } catch (err) {
         console.error('Barcode scanning error:', err)
         scanning.value = false
+
+        if (isNative) {
+            toast.error('Native scanner unavailable')
+            nativeScannerPermissionIssue.value = true
+        }
     }
 }
 
@@ -113,17 +141,16 @@ onMounted(() => {
 <template>
     <div class="relative">
         <!-- mirrored only on front cam -->
-        <div
-            v-show="scanning && !result">
+        <div v-show="scanning && !result">
             <div class="relative h-56 overflow-hidden rounded shadow">
                 <video
                     ref="video"
-                    class="absolute top-1/2 left-0 mx-auto -translate-y-1/2 object-cover bg-muted size-full"
+                    class="absolute top-1/2 left-0 mx-auto size-full -translate-y-1/2 bg-muted object-cover"
                     autoplay
                     playsinline
                     muted
                 />
-                <div class="absolute top-1/2 left-0 w-full bg-red-500 opacity-75 shadow-xl shadow-red-500 h-[2px] animate-scan" />
+                <div class="absolute top-1/2 left-0 h-[2px] w-full animate-scan bg-red-500 opacity-75 shadow-xl shadow-red-500" />
             </div>
         </div>
 
@@ -142,6 +169,23 @@ onMounted(() => {
         </div>
 
         <div
+            v-if="nativeScannerPermissionIssue"
+            class="mb-5 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+            <p class="font-medium">
+                Bookbound could not access the native scanner.
+            </p>
+            <p class="mt-1 text-destructive/80">
+                Review Android camera and scanner permissions in app settings, then try again.
+            </p>
+            <Button
+                variant="secondary"
+                class="mt-4 w-full"
+                @click="void openAppSettings()">
+                Open app settings
+            </Button>
+        </div>
+
+        <div
             v-if="result"
             class="relative h-40 overflow-hidden rounded bg-white shadow">
             <VueBarcode
@@ -153,8 +197,7 @@ onMounted(() => {
         <HorizontalSkeleton
             v-if="loading"
             class="mt-4"
-            :with-actions="false"
-        />
+            :with-actions="false" />
 
         <div
             v-if="book && !loading"

@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use Inertia\Middleware;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Support\NativeRuntime;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -44,8 +45,14 @@ class HandleInertiaRequests extends Middleware
             $backUrl = $request->get('src');
         }
 
+        $nativePlatform = NativeRuntime::nativePlatform();
+        $pwaPlatform = NativeRuntime::pwaPlatform($request);
+        $isPwa = NativeRuntime::isPwa($request);
+        $isNative = NativeRuntime::isNative();
+
         return [
             ...parent::share($request),
+            'csrf_token' => csrf_token(),
             'name' => config('app.name'),
             'app' => [
                 'name' => config('app.name'),
@@ -53,6 +60,12 @@ class HandleInertiaRequests extends Middleware
                 'domain' => parse_url(config('app.url'), PHP_URL_HOST),
                 'route' => $request->route()?->getName(),
                 'storage_url' => config('filesystems.disks.public.url'),
+                'is_pwa' => $isPwa,
+                'pwa_platform' => $pwaPlatform,
+                'is_native' => $isNative,
+                'native_platform' => $nativePlatform,
+                'native_capabilities' => NativeRuntime::capabilities(),
+                'is_mobile_shell' => $isPwa || $isNative,
             ],
             'currentUrl' => url()->full(),
             'currentPath' => '/'.request()->path(),

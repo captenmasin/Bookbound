@@ -36,9 +36,23 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
         route: string
         domain: string
         storage_url: string
+        is_pwa: boolean
+        pwa_platform: string | null
+        is_native: boolean
+        native_platform: string | null
+        native_capabilities: {
+            scanner: boolean
+            share: boolean
+            device: boolean
+            system: boolean
+            secure_storage: boolean
+            push_notifications: boolean
+        }
+        is_mobile_shell: boolean
     }
     currentUrl: string
     currentPath: string
+    csrf_token: string
     flash: {
         success?: string
         error?: string

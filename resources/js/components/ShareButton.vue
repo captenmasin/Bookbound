@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
-import ThreadsIcon from '~/images/icons/threads.svg?raw'
 import BlueskyIcon from '~/images/icons/bluesky.svg?raw'
+import ThreadsIcon from '~/images/icons/threads.svg?raw'
 import FacebookIcon from '~/images/icons/facebook.svg?raw'
 import LinkedInIcon from '~/images/icons/linkedin.svg?raw'
 import WhatsappIcon from '~/images/icons/whatsapp.svg?raw'
@@ -9,6 +9,7 @@ import XTwitterIcon from '~/images/icons/x-twitter.svg?raw'
 import { ref, useSlots } from 'vue'
 import { Button } from '@/components/ui/button'
 import { ShareNetwork } from 'vue3-social-sharing'
+import { useNativeApp } from '@/composables/useNativeApp'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 const props = defineProps({
@@ -35,20 +36,27 @@ const props = defineProps({
 })
 
 const shareModalOpen = ref(false)
+const { shareUrl } = useNativeApp()
 
 function showModal () {
     shareModalOpen.value = true
 }
 
-function handleClick () {
+async function handleClick () {
+    if (await shareUrl(props.title, props.text, props.url)) {
+        return
+    }
+
     if (navigator.share) {
-        navigator.share({
-            title: props.title,
-            text: props.text,
-            url: props.url
-        }).catch((error) => {
-            console.error('Error sharing:', error)
-        })
+        navigator
+            .share({
+                title: props.title,
+                text: props.text,
+                url: props.url
+            })
+            .catch((error) => {
+                console.error('Error sharing:', error)
+            })
     } else {
         console.warn('Web Share API is not supported in this browser.')
         // show modal
@@ -99,7 +107,7 @@ const slots = useSlots()
             class="cursor-pointer"
             :class="buttonClass"
             :size="slots.default ? 'sm' : 'icon'"
-            @click="handleClick">
+            @click="void handleClick()">
             <Icon name="share" />
             <slot />
         </Button>
@@ -125,7 +133,8 @@ const slots = useSlots()
                         <button
                             :style="{ backgroundColor: network.color }"
                             class="flex aspect-square cursor-pointer items-center justify-center gap-1 rounded-lg p-2"
-                            @click="share">
+                            @click="share"
+                        >
                             <div
                                 class="mx-auto flex w-6 text-white"
                                 v-html="network.icon" />

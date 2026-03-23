@@ -168,4 +168,12 @@ describe('HomeController', function () {
         expect($cachedValue)->toBeArray()
             ->and($cachedValue)->toHaveLength(2);
     });
+
+    it('redirects the home route to login inside the native shell', function () {
+        config()->set('nativephp-internal.running', true);
+        config()->set('nativephp-internal.platform', 'android');
+
+        get('/')
+            ->assertRedirect(route('login'));
+    });
 });

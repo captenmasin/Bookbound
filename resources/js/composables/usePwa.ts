@@ -1,11 +1,17 @@
+import type { AppPageProps } from '@/types'
+import { usePage } from '@inertiajs/vue3'
+
 export function usePwa () {
-    const pwaMode = document.cookie.split('; ').find(row => row.startsWith('pwa-mode='))
-    const pwaDevice = document.cookie.split('; ').find(row => row.startsWith('pwa-device='))
+    const page = usePage<AppPageProps>()
+    const app = page.props.app
+    const platform = app.native_platform || app.pwa_platform
 
-    const isPwa = pwaMode ? pwaMode.split('=')[1] === 'true' : false
-    const isAndroid = pwaDevice ? pwaDevice.split('=')[1] === 'android' : false
-    const isIos = pwaDevice ? pwaDevice.split('=')[1] === 'ios' : false
-    const isMacos = pwaDevice ? pwaDevice.split('=')[1] === 'macos' : false
+    const isPwa = app.is_mobile_shell
+    const isNative = app.is_native
+    const isAndroid = platform === 'android'
+    const isIos = platform === 'ios'
+    const isMacos = platform === 'macos'
+    const capabilities = app.native_capabilities
 
-    return { isPwa, isAndroid, isIos, isMacos }
+    return { isPwa, isNative, isAndroid, isIos, isMacos, capabilities }
 }

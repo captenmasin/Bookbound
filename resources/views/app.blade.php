@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 @php
+    use App\Support\NativeRuntime;
+
     $seoMeta = new \Artesaos\SEOTools\Facades\SEOMeta;
 
     $pageTitle = isset($exception)
@@ -10,22 +12,30 @@
 
     $appearance = $appearance ?? 'system';
 
-    $isPwa = request()->boolean('pwa-mode') || \Illuminate\Support\Facades\Cookie::get('pwa-mode') === 'true';
-    $isPwaIos = $isPwa && (request('pwa-device') === 'ios' || \Illuminate\Support\Facades\Cookie::get('pwa-device') === 'ios');
-    $isPwaAndroid = $isPwa && (request('pwa-device') === 'android' || \Illuminate\Support\Facades\Cookie::get('pwa-device') === 'android');
+    $isNative = NativeRuntime::isNative();
+    $nativePlatform = NativeRuntime::nativePlatform();
+    $isPwa = NativeRuntime::isPwa(request());
+    $pwaPlatform = NativeRuntime::pwaPlatform(request());
+    $isStandaloneShell = NativeRuntime::isStandalone(request());
+    $isPwaIos = $isPwa && $pwaPlatform === 'ios';
+    $isPwaAndroid = $isPwa && $pwaPlatform === 'android';
+    $routeName = request()->route()?->getName();
 @endphp
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     @class([
     'transition-colors duration-300 ease-in-out' => true,
-    'dark' => $isPwa ? 'system' : (($appearance ?? 'system') == 'dark'),
+    'dark' => $isStandaloneShell ? 'system' : (($appearance ?? 'system') == 'dark'),
     'pwa' => $isPwa,
     'pwa-ios' => $isPwaIos,
     'pwa-android' => $isPwaAndroid,
+    'native' => $isNative,
+    'native-android' => $isNative && $nativePlatform === 'android',
     ])
 >
 <head>
     <meta charset="utf-8">
-    @if($isPwa)
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if($isStandaloneShell)
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     @else
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -84,7 +94,11 @@
     @vite(['resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
     @inertiaHead
 </head>
-<body class="font-sans antialiased bg-background">
+<body @class([
+    'font-sans antialiased bg-background',
+    'nativephp-safe-area' => $isNative,
+])>
+
 @inertia
 </body>
 </html>

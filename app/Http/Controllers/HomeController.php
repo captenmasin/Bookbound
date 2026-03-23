@@ -7,12 +7,13 @@ use Number;
 use Stripe\Price;
 use Stripe\Stripe;
 use Inertia\Inertia;
+use App\Support\NativeRuntime;
 
 class HomeController extends Controller
 {
     public function __invoke()
     {
-        if (request()->boolean('pwa-mode') || \Illuminate\Support\Facades\Cookie::get('pwa-mode') === 'true') {
+        if (NativeRuntime::isStandalone(request())) {
             return redirect()->route('login');
         }
 
