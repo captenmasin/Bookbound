@@ -53,7 +53,7 @@ defineOptions({ layout: AppLayout })
 
 <template>
     <div class="mt-4 md:mt-12">
-        <div class="flex w-full not-pwa:max-w-5xl mx-auto flex-col justify-between gap-4 md:gap-10 lg:flex-row lg:gap-20">
+        <div class="flex w-full not-pwa:max-w-5xl not-native:max-w-5xl mx-auto flex-col justify-between gap-4 md:gap-10 lg:flex-row lg:gap-20">
             <div class="flex flex-col md:max-w-lg gap-6 justify-between md:gap-2">
                 <div class="flex flex-col gap-2">
                     <PageTitle class="md:text-5xl">

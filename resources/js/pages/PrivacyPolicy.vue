@@ -7,7 +7,7 @@ defineOptions({ layout: AppLayout })
 </script>
 
 <template>
-    <div class="mx-auto not-pwa:max-w-5xl">
+    <div class="mx-auto not-pwa:max-w-5xl not-native:max-w-5xl">
         <PageTitle>
             Privacy Policy
         </PageTitle>

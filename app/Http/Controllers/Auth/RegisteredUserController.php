@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Enums\UserRole;
 use App\Support\Turnstile;
 use App\Actions\TrackEvent;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class RegisteredUserController extends Controller
     /**
      * Handle an incoming registration request.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
@@ -63,13 +64,17 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        if ((bool) config('nativephp-internal.running')) {
+            $user->updateQuietly(['email_verified_at' => now()]);
+        }
+
         event(new Registered($user));
 
         TrackEvent::dispatchAfterResponse(AnalyticsEvent::UserAccountCreated, [
             'user_id' => $user->id,
         ]);
 
-        $user->assignRole(Role::where('name', \App\Enums\UserRole::User->value)->first());
+        $user->assignRole(Role::where('name', UserRole::User->value)->first());
 
         Auth::login($user);
 

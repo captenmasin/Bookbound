@@ -38,6 +38,25 @@ describe('Native runtime shared props', function () {
             );
     });
 
+    it('resolves pwa state and device separately from native runtime', function () {
+        config()->set('nativephp-internal.running', false);
+        config()->set('nativephp-internal.platform', null);
+
+        $response = get(route('login'), [
+            'X-PWA-Mode' => 'true',
+            'X-PWA-Device' => 'ios',
+        ]);
+
+        $response->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('app.is_pwa', true)
+                ->where('app.pwa_platform', 'ios')
+                ->where('app.is_native', false)
+                ->where('app.native_platform', null)
+                ->where('app.is_mobile_shell', true)
+            );
+    });
+
     it('uses the expected Bookbound deep link configuration', function () {
         expect(config('nativephp.app_id'))->toBe('com.bookbound.mobile')
             ->and(config('nativephp.deeplink_scheme'))->toBe('bookbound')

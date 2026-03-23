@@ -6,7 +6,7 @@ export function usePwa () {
     const app = page.props.app
     const platform = app.native_platform || app.pwa_platform
 
-    const isPwa = app.is_mobile_shell
+    const isPwa = app.is_pwa
     const isNative = app.is_native
     const isAndroid = platform === 'android'
     const isIos = platform === 'ios'

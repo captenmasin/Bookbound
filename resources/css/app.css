@@ -150,7 +150,9 @@
         scroll-behavior: smooth;
     }
 
-    html.pwa.pwa-ios body {
+    html.pwa.pwa-ios body,
+    html.native.native-ios body
+    {
         margin: 0;
         padding-right: env(safe-area-inset-right, 0px);
         padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -249,8 +251,14 @@
 @custom-variant pwa (&:where(.pwa *));
 @custom-variant not-pwa (&:where(:not(.pwa *) *));
 
+@custom-variant native (&:where(.native *));
+@custom-variant not-native (&:where(:not(.native *) *));
+
 @custom-variant pwa-ios (&:where(.pwa.pwa-ios *));
 @custom-variant pwa-android (&:where(.pwa.pwa-android *));
+
+@custom-variant native-ios (&:where(.native.native-ios *));
+@custom-variant native-android (&:where(.native.native-android *));
 
 @layer base {
     * {

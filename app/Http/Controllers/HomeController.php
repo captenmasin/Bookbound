@@ -7,13 +7,16 @@ use Number;
 use Stripe\Price;
 use Stripe\Stripe;
 use Inertia\Inertia;
-use App\Support\NativeRuntime;
+use App\Support\PwaMode;
 
 class HomeController extends Controller
 {
     public function __invoke()
     {
-        if (NativeRuntime::isStandalone(request())) {
+        $isNative = (bool) config('nativephp-internal.running');
+        $isPwa = PwaMode::resolve(request());
+
+        if ($isNative || $isPwa) {
             return redirect()->route('login');
         }
 

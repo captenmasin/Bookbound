@@ -4,9 +4,9 @@ namespace App\Http\Middleware;
 
 use Inertia\Inertia;
 use Inertia\Middleware;
+use App\Support\PwaMode;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Support\NativeRuntime;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,10 +45,10 @@ class HandleInertiaRequests extends Middleware
             $backUrl = $request->get('src');
         }
 
-        $nativePlatform = NativeRuntime::nativePlatform();
-        $pwaPlatform = NativeRuntime::pwaPlatform($request);
-        $isPwa = NativeRuntime::isPwa($request);
-        $isNative = NativeRuntime::isNative();
+        $isNative = (bool) config('nativephp-internal.running');
+        $isPwa = PwaMode::resolve($request);
+        $pwaPlatform = PwaMode::resolveDevice($request);
+        $nativePlatform = config('nativephp-internal.platform');
 
         return [
             ...parent::share($request),
@@ -64,7 +64,14 @@ class HandleInertiaRequests extends Middleware
                 'pwa_platform' => $pwaPlatform,
                 'is_native' => $isNative,
                 'native_platform' => $nativePlatform,
-                'native_capabilities' => NativeRuntime::capabilities(),
+                'native_capabilities' => [
+                    'scanner' => $isNative,
+                    'share' => $isNative,
+                    'device' => $isNative,
+                    'system' => $isNative,
+                    'secure_storage' => $isNative,
+                    'push_notifications' => $isNative,
+                ],
                 'is_mobile_shell' => $isPwa || $isNative,
             ],
             'currentUrl' => url()->full(),

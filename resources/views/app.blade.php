@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 @php
-    use App\Support\NativeRuntime;
+    use App\Support\PwaMode;
+    use Native\Mobile\Facades\System;
 
     $seoMeta = new \Artesaos\SEOTools\Facades\SEOMeta;
 
@@ -12,11 +13,12 @@
 
     $appearance = $appearance ?? 'system';
 
-    $isNative = NativeRuntime::isNative();
-    $nativePlatform = NativeRuntime::nativePlatform();
-    $isPwa = NativeRuntime::isPwa(request());
-    $pwaPlatform = NativeRuntime::pwaPlatform(request());
-    $isStandaloneShell = NativeRuntime::isStandalone(request());
+    $isNative = (bool) config('nativephp-internal.running');
+    $isNativeIos = $isNative && System::isIos();
+    $isNativeAndroid = $isNative && System::isAndroid();
+    $isPwa = PwaMode::resolve(request());
+    $pwaPlatform = PwaMode::resolveDevice(request());
+    $isStandaloneShell = $isNative || $isPwa;
     $isPwaIos = $isPwa && $pwaPlatform === 'ios';
     $isPwaAndroid = $isPwa && $pwaPlatform === 'android';
     $routeName = request()->route()?->getName();
@@ -29,7 +31,8 @@
     'pwa-ios' => $isPwaIos,
     'pwa-android' => $isPwaAndroid,
     'native' => $isNative,
-    'native-android' => $isNative && $nativePlatform === 'android',
+    'native-ios' => $isNativeIos,
+    'native-android' => $isNativeAndroid,
     ])
 >
 <head>

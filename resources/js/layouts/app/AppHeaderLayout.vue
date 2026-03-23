@@ -86,14 +86,12 @@ router.on('navigate', () => {
 <template>
     <AppShell class="flex-col">
         <AppHeader
-            v-if="!isNative"
             :nav-items="mainNavItems"
             :breadcrumbs="breadcrumbs" />
         <AppContent class="mt-4">
             <slot />
         </AppContent>
         <div
-            v-if="!isNative"
             style="padding-bottom: env(safe-area-inset-bottom)"
             class="border-background-foreground sticky right-0 bottom-0 left-0 z-50 border-t bg-background/75 backdrop-blur-sm lg:hidden"
         >
