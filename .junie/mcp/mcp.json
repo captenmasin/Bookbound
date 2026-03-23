@@ -9,8 +9,9 @@
             ]
         },
         "herd": {
-            "command": "/Users/mason/Library/Application Support/Herd/bin/php84",
+            "command": "/Users/mason/Library/Application",
             "args": [
+                "Support/Herd/bin/php85",
                 "/Applications/Herd.app/Contents/Resources/herd-mcp.phar"
             ],
             "env": {

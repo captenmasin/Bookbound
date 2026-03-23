@@ -28,6 +28,7 @@
         "laravel/tinker": "^2.10.1",
         "lorisleiva/laravel-actions": "^2.9",
         "meilisearch/meilisearch-php": "^1.15",
+        "nativephp/mobile": "^3.1",
         "pirsch-analytics/laravel-pirsch": "^1.0",
         "spatie/laravel-data": "^4.17",
         "spatie/laravel-medialibrary": "^11.13",
