@@ -26,7 +26,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     @class([
     'transition-colors duration-300 ease-in-out' => true,
-    'dark' => $isStandaloneShell ? 'system' : (($appearance ?? 'system') == 'dark'),
+    'dark' => $isStandaloneShell ? 'system' : (($appearance ?? 'system') === 'dark'),
     'pwa' => $isPwa,
     'pwa-ios' => $isPwaIos,
     'pwa-android' => $isPwaAndroid,
