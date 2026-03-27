@@ -12,6 +12,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - php - 8.5
 - filament/filament (FILAMENT) - v4
 - inertiajs/inertia-laravel (INERTIA_LARAVEL) - v3
+- laravel/ai (AI) - v0
 - laravel/cashier (CASHIER) - v15
 - laravel/framework (LARAVEL) - v12
 - laravel/horizon (HORIZON) - v5

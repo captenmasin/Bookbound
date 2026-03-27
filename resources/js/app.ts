@@ -24,11 +24,13 @@ createInertiaApp({
 initializeTheme()
 
 router.on('prefetched', (event) => {
-    if (!event?.detail?.response) {
+    const response = (event as any)?.detail?.response
+
+    if (!response) {
         return
     }
 
-    const parsed = JSON.parse((event as any).detail.response as string)
+    const parsed = typeof response === 'string' ? JSON.parse(response) : response
 
     const urls = parsed?.props?.prefetch
     if (!Array.isArray(urls) || urls.length === 0) return

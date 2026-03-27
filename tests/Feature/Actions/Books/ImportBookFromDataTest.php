@@ -88,6 +88,26 @@ describe('ImportBookFromData', function () {
         ImportBookCover::assertPushed(1);
     });
 
+    test('imports book with long description', function () {
+        $identifier = 'identifier-long-description';
+        $description = str_repeat('The Red Dragon is infamous. ', 20);
+
+        Queue::fake();
+
+        $book = app(ImportBookFromData::class)->handle([
+            'identifier' => $identifier,
+            'codes' => [
+                ['type' => 'ISBN_13', 'identifier' => '9781506186016'],
+            ],
+            'title' => 'The Grand Grimoire The Red Dragon',
+            'published_date' => '2015-01-10',
+            'description' => $description,
+        ]);
+
+        expect($book->description)
+            ->toBe($description);
+    });
+
     test('imports book from cache when exists', function () {
         $identifier = 'cache-12345';
 
@@ -236,6 +256,6 @@ describe('ImportBookFromData', function () {
             ->andReturn(null); // Cache callback returns null/empty data
 
         expect(fn () => app(ImportBookFromData::class)->handle($identifier))
-            ->toThrow(\Exception::class, "No data found for identifier: $identifier");
+            ->toThrow(Exception::class, "No data found for identifier: $identifier");
     });
 });

@@ -17,6 +17,7 @@ use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Support\Facades\Config;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Support\ServiceProvider;
+use Lorisleiva\Actions\Facades\Actions;
 use App\Contracts\BookApiServiceInterface;
 use Filament\Support\Facades\FilamentColor;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -49,6 +50,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Actions::registerCommands();
+
         JsonResource::withoutWrapping();
 
         Vite::prefetch(2);

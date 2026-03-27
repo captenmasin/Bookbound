@@ -1,6 +1,7 @@
 <script setup>
 import Silk from '@/components/backgrounds/Silk/Silk.vue'
-import HomeScreenshot from '~/images/marketing/home-screenshot.png'
+import HomeScreenshot from '~/images/marketing/home-screenshot.webp'
+import DarkVeil from '@/components/backgrounds/DarkVeil/DarkVeil.vue'
 import SplitText from '@/components/textanimations/SplitText/SplitText.vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute.js'
@@ -11,21 +12,12 @@ const page = usePage()
 
 <template>
     <section class="relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10 silk-container z-1">
-            <Silk
-                :speed="15"
-                :scale="1"
-                color="#ffffff"
-                :noise-intensity="5"
-                :rotation="0"
-                class="h-full w-full" />
-        </div>
-        <div class="absolute bottom-0 left-0 z-10 h-36 w-full bg-gradient-to-b from-transparent to-background" />
+        <!--        <div class="absolute bottom-0 left-0 z-10 h-36 w-full bg-linear-to-b from-transparent to-background" />-->
         <div
             aria-hidden="true"
-            class="pointer-events-none absolute inset-0 bg-gradient-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,94%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]"
+            class="pointer-events-none absolute inset-0 bg-linear-to-b from-[hsl(36,40%,98%)] to-[hsl(36,40%,90%)] dark:from-[hsl(0,0%,10%)] dark:to-[hsl(0,0%,6%)]"
         />
-        <div class="container relative z-20 mx-auto flex flex-col items-center gap-16 px-4 pt-20 sm:pt-48">
+        <div class="relative z-20 container mx-auto flex flex-col items-center gap-16 px-4 pt-20 sm:pt-48">
             <div class="w-full items-center justify-center text-center">
                 <SplitText
                     text="Your Reading Life at a Glance"
@@ -67,7 +59,7 @@ const page = usePage()
                 <div class="mx-auto w-full">
                     <div
                         data-aos="zoom-in"
-                        class="relative overflow-hidden rounded-t-xl border aspect-[2.5/1] border-sidebar-border/80">
+                        class="relative aspect-2.5/1 overflow-hidden rounded-t-xl shadow-xs">
                         <img
                             loading="lazy"
                             :src="HomeScreenshot"
@@ -96,9 +88,6 @@ const page = usePage()
                         <!--                                        alt="Book detail page"-->
                         <!--                                        class="rounded">-->
                         <!--                                </div>-->
-                    </div>
-                    <div class="mt-4 text-center text-sm text-secondary-foreground/50">
-                        Product UI previews
                     </div>
                 </div>
             </div>

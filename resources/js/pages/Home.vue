@@ -7,6 +7,7 @@ import HomeHero from '@/components/marketing/HomeHero.vue'
 import FaqSection from '@/components/marketing/FaqSection.vue'
 import ScanScreenshot from '~/images/marketing/scan-screenshot.webp'
 import FilterScreenshot from '~/images/marketing/filter-screenshot.webp'
+import HomeHeroStacked from '@/components/marketing/HomeHeroStacked.vue'
 import ScanScreenshotDark from '~/images/marketing/scan-screenshot-dark.webp'
 import FilterScreenshotDark from '~/images/marketing/filter-screenshot-dark.webp'
 import SingleBookScreenshot from '~/images/marketing/single-book-screenshot.webp'
@@ -382,8 +383,8 @@ watch(mobileMenuOpen, (newValue) => {
             </div>
         </header>
         <main>
-            <!--            <HomeHeroStacked />-->
-            <HomeHero />
+            <HomeHeroStacked />
+            <!--            <HomeHero />-->
             <section
                 id="how-it-works"
                 class="container mx-auto px-4 py-16 sm:py-20">
@@ -400,7 +401,7 @@ watch(mobileMenuOpen, (newValue) => {
                         <Card
                             v-for="step in howItWorksSteps"
                             :key="step.title"
-                            class="overflow-hidden bg-white pb-0 dark:bg-background">
+                            class="overflow-hidden border-0 bg-white pb-0 dark:bg-background">
                             <CardHeader>
                                 <div class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-secondary text-primary">
                                     <Icon
@@ -520,7 +521,7 @@ watch(mobileMenuOpen, (newValue) => {
                             v-for="benefit in keyBenefits"
                             :key="benefit.title"
                             class="w-full p-2 sm:w-1/2 md:w-1/4">
-                            <Card class="relative w-full bg-white dark:bg-background">
+                            <Card class="relative border-0 w-full bg-white dark:bg-background">
                                 <a
                                     v-if="benefit.pro"
                                     href="#pricing"
