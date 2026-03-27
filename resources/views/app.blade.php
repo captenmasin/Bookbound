@@ -81,7 +81,7 @@
         }
     </style>
 
-    @vite(['resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
+    @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
     @inertiaHead
 </head>
 <body class="font-sans antialiased bg-background">

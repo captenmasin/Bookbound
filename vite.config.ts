@@ -1,4 +1,5 @@
 import vue from '@vitejs/plugin-vue'
+import inertia from '@inertiajs/vite'
 import laravel from 'laravel-vite-plugin'
 import path from 'path'
 // @ts-ignore
@@ -10,9 +11,9 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/js/app.ts'],
-            ssr: 'resources/js/ssr.ts',
             refresh: true
         }),
+        inertia(),
         tailwindcss(),
         run([
             {
@@ -26,14 +27,7 @@ export default defineConfig({
                 pattern: ['app/Enums/*.php']
             }
         ]),
-        vue({
-            template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false
-                }
-            }
-        })
+        vue()
     ],
     resolve: {
         alias: {
@@ -41,21 +35,4 @@ export default defineConfig({
             '~': path.resolve('./resources')
         }
     },
-    build: {
-        target: 'esnext', // Assumes modern browser support
-        minify: 'esbuild', // Fastest minifier
-        cssCodeSplit: true,
-        emptyOutDir: true
-    },
-    optimizeDeps: {
-        include: ['vue', '@inertiajs/inertia', '@inertiajs/inertia-vue3'],
-        esbuildOptions: {
-            target: 'es2020'
-        }
-    },
-    server: {
-        fs: {
-            strict: true
-        }
-    }
 })
