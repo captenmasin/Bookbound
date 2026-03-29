@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
 Sitemap: https://bookbound.test/sitemap.xml
+Sitemap: https://bookbound.test/sitemap_books.xml

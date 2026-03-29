@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use Illuminate\Http\Request;
 use Laravel\Horizon\Horizon;
 use App\Enums\UserPermission;
 use Illuminate\Support\Facades\Gate;
@@ -14,11 +16,23 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
      */
     public function boot(): void
     {
-        parent::boot();
+        $this->authorization();
 
         // Horizon::routeSmsNotificationsTo('15556667777');
         // Horizon::routeMailNotificationsTo('example@example.com');
         // Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
+    }
+
+    /**
+     * Configure the Horizon authorization services.
+     */
+    protected function authorization(): void
+    {
+        $this->gate();
+
+        Horizon::auth(function (Request $request): bool {
+            return Gate::check('viewHorizon', [$request->user()]) || app()->environment('local');
+        });
     }
 
     /**
@@ -28,12 +42,12 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
      */
     protected function gate(): void
     {
-        Gate::define('viewHorizon', function ($user = null) {
+        Gate::define('viewHorizon', function (?User $user = null): bool {
             if (request()->bearerToken() && request()->bearerToken() === config('services.horizon.token')) {
                 return true;
             }
 
-            return $user && $user->can(UserPermission::VIEW_HORIZON_PANEL);
+            return $user?->can(UserPermission::VIEW_HORIZON_PANEL) ?? false;
         });
     }
 }

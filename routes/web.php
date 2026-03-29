@@ -19,8 +19,6 @@ use App\Http\Controllers\ImageTransformerController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\PasswordController;
 
-Horizon::auth(fn ($request) => Gate::check('viewHorizon', [$request->user()]));
-
 Route::get('/', HomeController::class)
     ->withoutMiddleware(['auth', 'verified'])
     ->middleware('guest')
