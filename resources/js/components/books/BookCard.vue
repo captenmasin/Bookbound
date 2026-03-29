@@ -44,7 +44,7 @@ const url = computed(() => {
             <Link
                 :href="url"
                 component="books/Show"
-                :page-props="{ ...usePage(), book }"
+                :page-props="{ ...usePage().props, book }"
                 prefetch>
                 <div class="group relative aspect-book w-full overflow-hidden">
                     <span

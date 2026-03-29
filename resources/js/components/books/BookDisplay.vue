@@ -18,7 +18,7 @@ withDefaults(
         <div class="flex w-28 shrink-0 items-center gap-2 md:w-32">
             <Link
                 :href="book.links.show"
-                :page-props="{ ...usePage(), book }"
+                :page-props="{ ...usePage().props, book }"
                 class="group"
                 component="books/Show">
                 <div class="aspect-book aspect-book overflow-clip h-full w-full rounded-md object-cover shadow-xs transition-all group-hover:shadow-xl">
@@ -41,7 +41,7 @@ withDefaults(
                 </p>
                 <Link
                     :href="book.links.show"
-                    :page-props="{ ...usePage(), book }"
+                    :page-props="{ ...usePage().props, book }"
                     class="hover:text-primary"
                     component="books/Show">
                     <h3 class="line-clamp-2 font-serif text-lg font-bold">
