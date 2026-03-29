@@ -124,6 +124,10 @@ function submitForm() {
 watch(
     [filteredBooks, hasFiltered],
     () => {
+        if (typeof localStorage === 'undefined') {
+            return;
+        }
+
         // Only save to localStorage if no filters are applied
         if (!hasFiltered.value) {
             const booksToSave = filteredBooks.value.map((book) => ({

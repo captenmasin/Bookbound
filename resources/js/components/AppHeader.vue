@@ -34,9 +34,10 @@ const activeItemStyles = computed(
 )
 
 const isVisible = ref(true)
-let lastScroll = window.scrollY
 
 const handleScroll = () => {
+    let lastScroll = window.scrollY
+
     const currentScroll = window.scrollY
 
     if (currentScroll > lastScroll && currentScroll > 50) {
@@ -122,13 +123,15 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 
 <template>
     <div
-        class="sticky safe-h-14 z-50 md:h-16 safe-pt top-0 border-b border-sidebar-border/80 transition-all duration-300 ease-in-out bg-background md:static md:translate-y-0"
-        :class="{ '-translate-y-full': !isVisible }">
-        <div class="mx-auto flex items-center h-full px-4 pwa:md:max-w-none md:max-w-7xl">
+        class="safe-h-14 safe-pt sticky top-0 z-50 border-b border-sidebar-border/80 bg-background transition-all duration-300 ease-in-out md:static md:h-16 md:translate-y-0"
+        :class="{ '-translate-y-full': !isVisible }"
+    >
+        <div class="mx-auto flex h-full items-center px-4 md:max-w-7xl pwa:md:max-w-none">
             <div
                 v-if="authed"
                 :class="$page.props.backUrl ? 'ml-0 opacity-100' : '-ml-8 opacity-0'"
-                class="mr-2 transition-all duration-300 lg:hidden">
+                class="mr-2 transition-all duration-300 lg:hidden"
+            >
                 <Link
                     tabindex="-1"
                     class="-ml-4 flex pl-2 text-primary"
@@ -143,9 +146,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                 :href="useRoute('dashboard')"
                 prefetch
                 class="flex items-center gap-x-2">
-                <span class="sr-only">
-                    Go to Home
-                </span>
+                <span class="sr-only"> Go to Home </span>
                 <AppLogo class="flex items-center" />
             </Link>
 
@@ -159,7 +160,8 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                             v-for="(item, index) in navItems"
                             :key="index"
                             :class="item.mobileOnly ? 'flex lg:hidden' : 'flex lg:flex-1'"
-                            class="relative flex h-full items-center">
+                            class="relative flex h-full items-center"
+                        >
                             <Link
                                 prefetch
                                 :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'h-9 cursor-pointer px-3']"
@@ -173,7 +175,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                             </Link>
                             <div
                                 v-if="useIsCurrentUrl(item.href)"
-                                class="absolute bottom-0 left-0 w-full translate-y-px bg-primary h-0.5 dark:bg-white"
+                                class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-primary dark:bg-white"
                             />
                         </NavigationMenuItem>
                     </NavigationMenuList>
@@ -186,12 +188,13 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                 <div>
                     <div
                         v-if="authedUser.subscription.subscribed"
-                        class="rounded-full cursor-default select-none px-2 py-px font-serif font-semibold text-[10px] bg-primary text-primary-foreground">
+                        class="cursor-default rounded-full bg-primary px-2 py-px font-serif text-[10px] font-semibold text-primary-foreground select-none"
+                    >
                         PRO
                     </div>
 
                     <JoinProTrigger v-else>
-                        <button class="mr-2 hidden cursor-pointer items-center gap-1 text-xs font-medium mt-1.5 text-primary xs:flex">
+                        <button class="mt-1.5 mr-2 hidden cursor-pointer items-center gap-1 text-xs font-medium text-primary xs:flex">
                             <Icon
                                 name="Sparkles"
                                 class="size-4" />
@@ -208,8 +211,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                 <UserMenuSheet
                     v-else
                     :user="authedUser"
-                    :items="userMenuItems"
-                />
+                    :items="userMenuItems" />
             </div>
             <div
                 v-else

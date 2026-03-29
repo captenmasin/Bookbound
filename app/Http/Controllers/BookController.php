@@ -124,6 +124,13 @@ class BookController extends Controller
             'notes' => fn ($query) => $query->where('user_id', Auth::id()),
         ]);
 
+        $related = Book::query()
+            ->whereVectorSimilarTo('embedding', $book->embedding, minSimilarity: 0.4)
+            ->limit(10)
+            ->get();
+
+        dd($related);
+
         return Inertia::render('books/Show', [
             'book' => new BookResource($book),
             'averageRating' => number_format($book->ratings->avg('value') ?? 0, 1),

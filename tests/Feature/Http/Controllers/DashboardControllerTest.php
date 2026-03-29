@@ -56,6 +56,13 @@ describe('DashboardController', function () {
                 ->where('readingBooks', 1)
                 ->where('planToRead', 1)
             )
+            ->has('recentlyAdded', 3)
+            ->has('insights', fn ($insights) => $insights
+                ->where('totalPagesOwned', $readingBook->page_count + $readBook->page_count + $planToReadBook->page_count)
+                ->where('completedPages', $readBook->page_count)
+                ->where('recentAddsLast30Days', 3)
+                ->where('completionRate', 33)
+            )
         );
     });
 
@@ -196,6 +203,13 @@ describe('DashboardController', function () {
                 ->where('planToRead', 0)
             )
             ->has('currentlyReading', 0)
+            ->has('recentlyAdded', 0)
+            ->has('insights', fn ($insights) => $insights
+                ->where('totalPagesOwned', 0)
+                ->where('completedPages', 0)
+                ->where('recentAddsLast30Days', 0)
+                ->where('completionRate', 0)
+            )
             ->has('activities')
             ->has('tags', 0)
             ->has('authors', 0)
@@ -227,6 +241,69 @@ describe('DashboardController', function () {
         $response->assertInertia(fn ($page) => $page
             ->has('currentlyReading', 2)
             ->where('currentlyReading.0.id', $newBook->id)
+        );
+    });
+
+    it('limits recently added books to three and orders them by most recent attachment', function () {
+        $user = User::factory()->create();
+
+        $books = Book::factory()->count(4)->create();
+
+        foreach ($books as $index => $book) {
+            $user->books()->attach($book->id, [
+                'status' => UserBookStatus::PlanToRead->value,
+                'created_at' => now()->subDays(4 - $index),
+            ]);
+        }
+
+        actingAs($user);
+
+        $response = get('/dashboard');
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->has('recentlyAdded', 3)
+            ->where('recentlyAdded.0.id', $books[3]->id)
+            ->where('recentlyAdded.1.id', $books[2]->id)
+            ->where('recentlyAdded.2.id', $books[1]->id)
+        );
+    });
+
+    it('calculates dashboard insights from the user library', function () {
+        $user = User::factory()->create();
+
+        $readingBook = Book::factory()->create(['page_count' => 120]);
+        $completedBookOne = Book::factory()->create(['page_count' => 310]);
+        $completedBookTwo = Book::factory()->create(['page_count' => 190]);
+        $queuedBook = Book::factory()->create(['page_count' => 80]);
+
+        $user->books()->attach($readingBook->id, [
+            'status' => UserBookStatus::Reading->value,
+            'created_at' => now()->subDays(7),
+        ]);
+        $user->books()->attach($completedBookOne->id, [
+            'status' => UserBookStatus::Read->value,
+            'created_at' => now()->subDays(20),
+        ]);
+        $user->books()->attach($completedBookTwo->id, [
+            'status' => UserBookStatus::Read->value,
+            'created_at' => now()->subDays(45),
+        ]);
+        $user->books()->attach($queuedBook->id, [
+            'status' => UserBookStatus::PlanToRead->value,
+            'created_at' => now()->subDays(5),
+        ]);
+
+        actingAs($user);
+
+        $response = get('/dashboard');
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->has('insights', fn ($insights) => $insights
+                ->where('totalPagesOwned', 700)
+                ->where('completedPages', 500)
+                ->where('recentAddsLast30Days', 3)
+                ->where('completionRate', 50)
+            )
         );
     });
 });

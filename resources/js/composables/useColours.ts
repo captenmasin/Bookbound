@@ -1,5 +1,9 @@
 export function useColours () {
     function resolveCssVar (hex: string): string {
+        if (typeof document === 'undefined') {
+            return hex
+        }
+
         const varName = hex.replace('var(', '').replace(')', '').trim()
         return getComputedStyle(document.documentElement).getPropertyValue(varName).trim()
     }

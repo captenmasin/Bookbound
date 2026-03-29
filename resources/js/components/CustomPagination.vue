@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
-import { Link, router } from '@inertiajs/vue3'
+import { Link, router, usePage } from '@inertiajs/vue3'
 import {
     Pagination,
     PaginationContent,
@@ -24,13 +24,18 @@ const props = defineProps({
     }
 })
 
+const page = usePage()
+
 function pageUrl (page: number) {
-    const params = new URLSearchParams(window.location.search)
+    const [, search = ''] = page.url.split('?')
+    const params = new URLSearchParams(search)
+
     if (page > 1) {
         params.set('page', String(page))
     } else {
         params.delete('page')
     }
+
     const query = params.toString()
     return `${props.meta.path}${query ? '?' + query : ''}`
 }

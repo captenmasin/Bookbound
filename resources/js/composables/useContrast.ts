@@ -6,6 +6,10 @@ export function useContrast (
 ): string {
     // Handle CSS variables
     if (hex.includes('var')) {
+        if (typeof document === 'undefined') {
+            return justRight
+        }
+
         const hexString = hex.replaceAll('var(', '').replaceAll(')', '')
         hex = getComputedStyle(document.documentElement)
             .getPropertyValue(hexString)

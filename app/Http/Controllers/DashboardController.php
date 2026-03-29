@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Number;
 use App\Models\Tag;
 use Inertia\Inertia;
 use App\Models\Author;
@@ -22,12 +21,8 @@ class DashboardController extends Controller
 
         $books = $request->user()->books()
             ->with(['authors', 'tags'])
-            ->withPivot('status')
+            ->withPivot('status', 'created_at')
             ->get();
-
-        //        dd(BookResource::collection(
-        //            $books
-        //        )->toArray($request));
 
         $books = $books->sortByDesc(fn ($book) => $book->pivot->created_at)
             ->values();
@@ -63,18 +58,36 @@ class DashboardController extends Controller
         $completedBooks = $booksByStatus[UserBookStatus::Read->value] ?? collect();
         $planToReadBooks = $booksByStatus[UserBookStatus::PlanToRead->value] ?? collect();
         $readingBooks = $booksByStatus[UserBookStatus::Reading->value] ?? collect();
+        $booksInLibrary = $books->count();
+        $completedBooksCount = $completedBooks->count();
+        $completedPages = (int) $completedBooks->sum('page_count');
+        $totalPagesOwned = (int) $books->sum('page_count');
+        $recentAddsLast30Days = $books
+            ->filter(fn ($book) => $book->pivot->created_at && $book->pivot->created_at->greaterThanOrEqualTo(now()->subDays(30)))
+            ->count();
+        $completionRate = $booksInLibrary > 0
+            ? (int) round(($completedBooksCount / $booksInLibrary) * 100)
+            : 0;
 
         return Inertia::render('Dashboard', [
             'statValues' => [
-                'booksInLibrary' => $books->count(),
-                'completedBooks' => $completedBooks->count() ?? 0,
+                'booksInLibrary' => $booksInLibrary,
+                'completedBooks' => $completedBooksCount,
                 'readingBooks' => $readingBooks->count() ?? 0,
-                //                'pagesRead' => Number::format($completedBooks->sum('page_count')) ?? 0,
                 'planToRead' => $planToReadBooks->count() ?? 0,
             ],
             'currentlyReading' => BookResource::collection(
                 $currentlyReading
             ),
+            'recentlyAdded' => BookResource::collection(
+                $books->take(3)
+            ),
+            'insights' => [
+                'totalPagesOwned' => $totalPagesOwned,
+                'completedPages' => $completedPages,
+                'recentAddsLast30Days' => $recentAddsLast30Days,
+                'completionRate' => $completionRate,
+            ],
             'activities' => ActivityResource::collection(
                 $request->user()->activities->sortByDesc('id')->take(5)
             ),
