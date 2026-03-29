@@ -8,7 +8,6 @@ import { Link, usePage } from '@inertiajs/vue3'
 import { Toaster } from '@/components/ui/sonner'
 import type { BreadcrumbItemType } from '@/types'
 import { useRoute } from '@/composables/useRoute'
-import { useAuthedUser } from '@/composables/useAuthedUser'
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];

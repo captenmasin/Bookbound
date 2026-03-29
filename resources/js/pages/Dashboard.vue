@@ -147,6 +147,13 @@ onMounted(() => {
     }
 })
 
+const timeOfDay = computed(() => {
+    const hour = new Date().getHours()
+    if (hour >= 5 && hour < 12) return 'morning'
+    if (hour >= 12 && hour < 18) return 'afternoon'
+    return 'evening'
+})
+
 defineOptions({ layout: AppLayout })
 </script>
 
@@ -222,12 +229,12 @@ defineOptions({ layout: AppLayout })
             </DialogContent>
         </Dialog>
 
-        <header class="mt-0 mb-4 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-6 md:items-center">
+        <header class="mt-0 mb-12 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-6 md:items-center">
             <div
                 v-if="authedUser"
                 class="flex flex-col">
-                <h1 class="font-serif text-2xl font-semibold text-foreground md:text-3xl">
-                    Welcome back, {{ firstName }}
+                <h1 class="font-serif text-2xl font-bold text-primary md:text-5xl">
+                    Good {{ timeOfDay }}, {{ firstName }}
                 </h1>
                 <p class="text-sm text-accent-foreground">
                     Here's a quick look at your library
@@ -269,20 +276,22 @@ defineOptions({ layout: AppLayout })
                     :key="stat.name"
                     :href="stat.link"
                     prefetch
-                    class="relative flex items-center justify-between rounded-md border-0 border-accent bg-secondary px-3 py-2 hover:bg-primary/20 active:bg-primary/20 md:p-4 md:transition-all"
+                    class="relative flex items-center justify-between border-0 border-accent bg-secondary/10 px-3 py-2 text-primary hover:bg-primary/20 active:bg-primary/20 md:p-4 md:py-6 md:transition-all"
                 >
-                    <div>
-                        <p class="pr-5 text-sm text-current/60">
+                    <div class="w-full">
+                        <p class="pr-5 text-xs font-semibold tracking-wider text-accent-foreground/50 uppercase">
                             {{ stat.name }}
                         </p>
-                        <p class="text-xl font-semibold md:text-2xl">
-                            {{ stat.value }}
-                        </p>
+                        <div class="flex justify-between items-center w-full">
+                            <p class="font-serif text-xl font-bold md:text-4xl">
+                                {{ stat.value }}
+                            </p>
+                            <Icon
+                                v-if="stat.icon"
+                                :name="stat.icon"
+                                class="text-primary/20 md:size-8" />
+                        </div>
                     </div>
-                    <Icon
-                        v-if="stat.icon"
-                        :name="stat.icon"
-                        class="absolute top-4 right-4 size-4 text-primary md:size-4" />
                 </Link>
             </div>
         </section>

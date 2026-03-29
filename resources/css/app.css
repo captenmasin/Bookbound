@@ -178,7 +178,8 @@
     --primary: hsl(20, 90%, 30%); /* deep terracotta */
     --primary-foreground: hsl(45, 100%, 95%); /* pale yellow-beige */
 
-    --secondary: hsl(40, 50%, 90%); /* warm ivory */
+    /*--secondary: hsl(40, 50%, 90%); !* warm ivory *!*/
+    --secondary: #5D5C4D; /* warm ivory */
     --secondary-foreground: hsl(20, 10%, 40%); /* very dark brown-black */
 
     --muted: hsl(30, 20%, 94%);
