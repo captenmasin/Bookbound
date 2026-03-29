@@ -1,27 +1,34 @@
-import { usePage } from '@inertiajs/vue3'
 import { useRoute } from '@/composables/useRoute'
-import { useDevicePixelRatio } from '@vueuse/core'
 import { ImageProps } from '@/types/image'
+import { usePage } from '@inertiajs/vue3'
+import { useDevicePixelRatio } from '@vueuse/core'
+import { computed, onMounted, ref } from 'vue'
 
 interface ImageTransformOptions {
-    width?: number | string | null
-    height?: number | string | null
-    format?: string
-    quality?: number | string | null
-    flip?: 'h' | 'v' | 'hv'
-    contrast?: number | string | null
-    version?: number | string | null
-    background?: string
-    blur?: number | string | null
-    scale?: boolean | string | null
-    crop?: 'top' | 'bottom' | 'left' | 'right' | 'center'
-    pixelate?: number | string | null
-    rotate?: number | string | null
+    width?: number | string | null;
+    height?: number | string | null;
+    format?: string;
+    quality?: number | string | null;
+    flip?: 'h' | 'v' | 'hv';
+    contrast?: number | string | null;
+    version?: number | string | null;
+    background?: string;
+    blur?: number | string | null;
+    scale?: boolean | string | null;
+    crop?: 'top' | 'bottom' | 'left' | 'right' | 'center';
+    pixelate?: number | string | null;
+    rotate?: number | string | null;
 }
 
 export function useImageTransform () {
     const { props } = usePage()
     const { pixelRatio } = useDevicePixelRatio()
+    const hasMounted = ref(false)
+    const effectivePixelRatio = computed(() => (hasMounted.value ? pixelRatio.value : 1))
+
+    onMounted(() => {
+        hasMounted.value = true
+    })
 
     const cleanPath = (rawPath: string): string => {
         /* eslint-disable-next-line no-useless-escape */
@@ -38,19 +45,10 @@ export function useImageTransform () {
     const baseOptions = (props: ImageProps): Record<string, string | number> | null => {
         const result: Record<string, string | number> = {}
 
-        for (const key of [
-            'width', 'height', 'format', 'quality', 'flip', 'contrast',
-            'version', 'background', 'blur', 'scale', 'crop'
-        ]) {
+        for (const key of ['width', 'height', 'format', 'quality', 'flip', 'contrast', 'version', 'background', 'blur', 'scale', 'crop']) {
             const val = props[key as keyof typeof props]
 
-            if (
-                val === null ||
-                val === undefined ||
-                val === '' ||
-                val === 0 ||
-                val === 'auto'
-            ) {
+            if (val === null || val === undefined || val === '' || val === 0 || val === 'auto') {
                 continue
             }
 
@@ -86,12 +84,12 @@ export function useImageTransform () {
                 return value !== null && value !== undefined && value !== '' && value !== 0 && value !== 'auto'
             })
             .map(([key, value]) => {
-                if ((key === 'width' || key === 'height')) {
+                if (key === 'width' || key === 'height') {
                     if (typeof value !== 'number') {
                         value = parseInt(value as string, 10)
                     }
 
-                    value = Math.round(value * pixelRatio.value)
+                    value = Math.round(value * effectivePixelRatio.value)
                 }
 
                 if (typeof value === 'boolean') return `${key}=${value ? 'true' : 'false'}`
@@ -122,13 +120,13 @@ export function useImageTransform () {
     const buildSrcSet = (props: ImageProps) => {
         if (!props.enableSrcset || props.height) return null
 
-        let sizes = [...props.srcsetSizes ? props.srcsetSizes : [], props.srcsetMaxWidth as number]
+        let sizes = [...(props.srcsetSizes ? props.srcsetSizes : []), props.srcsetMaxWidth as number]
 
         if (props.width) {
             const maxWidth = parseInt(props.width as string, 10)
             if (maxWidth > 0) {
                 sizes.push(maxWidth)
-                sizes = sizes.filter(size => size <= maxWidth)
+                sizes = sizes.filter((size) => size <= maxWidth)
             }
         }
 

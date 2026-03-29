@@ -9,6 +9,9 @@ use App\Enums\UserPermission;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\BookResource;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -18,6 +21,7 @@ use function Illuminate\Events\queueable;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Models\Contracts\FilamentUser;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use App\Actions\Books\GetBookRecommendations;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Glorand\Model\Settings\Traits\HasSettingsField;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -128,6 +132,49 @@ class User extends Authenticatable implements FilamentUser, HasMedia, HasPasskey
     public function getAvatarAttribute(): string
     {
         return $this->getFirstMediaUrl('avatar');
+    }
+
+    public function getAuthors()
+    {
+        return Author::query()
+            ->select('authors.*', DB::raw('count(*) as book_count'))
+            ->join('author_book', 'authors.id', '=', 'author_book.author_id')
+            ->join('book_user', 'author_book.book_id', '=', 'book_user.book_id')
+            ->where('book_user.user_id', $this->id)
+            ->groupBy('authors.id')
+            ->orderByDesc('book_count')
+            ->limit(5);
+    }
+
+    public function getTags(): Collection
+    {
+        $books = $this->books()
+            ->with(['authors', 'tags'])
+            ->withPivot('status', 'created_at')
+            ->get();
+
+        $books = $books->sortByDesc(fn ($book) => $book->pivot->created_at)
+            ->values();
+
+        $topTagNames = $books->flatMap(fn ($book) => $book->tags->pluck('name'))
+            ->countBy()
+            ->sortDesc()
+            ->keys()
+            ->take(10);
+
+        return Tag::whereIn('name', $topTagNames)
+            ->get()->sortBy(fn ($tag) => $topTagNames->search($tag->name))->values();
+    }
+
+    public function getRecommendations()
+    {
+        return collect(GetBookRecommendations::run($this))
+            ->map(fn (array $recommendation): array => [
+                'reason' => $recommendation['reason'],
+                'book' => BookResource::make($recommendation['book'])->toArray(request()),
+            ])
+            ->values()
+            ->all();
     }
 
     public function canAccessPanel(Panel $panel): bool

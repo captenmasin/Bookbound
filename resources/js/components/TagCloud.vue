@@ -19,7 +19,7 @@ const tagsLimit = ref(props.limit)
 </script>
 
 <template>
-    <ul class="space-y-1 space-x-1">
+    <ul class="gap-2 flex flex-wrap">
         <li
             v-for="tag in tags.slice(0, tagsLimit)"
             :key="tag.slug"
@@ -27,7 +27,7 @@ const tagsLimit = ref(props.limit)
         >
             <Link
                 :href="useRoute('books.search', { q: 'tag: ' + tag.name })"
-                class="rounded-full px-2 text-xs py-0.5 bg-black/2 text-muted-foreground hover:bg-primary hover:text-primary-foreground dark:bg-primary/10 md:transition-colors dark:hover:text-primary">
+                class="px-2.5 text-xs py-1 rounded-[2px] bg-primary/10 uppercase text-zinc-800 hover:bg-primary hover:text-primary-foreground dark:bg-primary/10 md:transition-colors dark:hover:text-primary">
                 {{ tag.name }}
             </Link>
         </li>

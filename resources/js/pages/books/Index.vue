@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import CheckboxList from '@/components/CheckboxList.vue';
-import Icon from '@/components/Icon.vue';
-import PageTitle from '@/components/PageTitle.vue';
-import BookCard from '@/components/books/BookCard.vue';
-import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue';
-import BookViewTabs from '@/components/books/BookViewTabs.vue';
-import ShelfView from '@/components/books/ShelfView.vue';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useRoute } from '@/composables/useRoute';
-import { useUserBookStatus } from '@/composables/useUserBookStatus';
-import { useUserSettings } from '@/composables/useUserSettings';
-import AppLayout from '@/layouts/AppLayout.vue';
-import type { Author } from '@/types/author';
-import type { Book } from '@/types/book';
-import { Tag } from '@/types/tag';
-import { Link, router, usePage } from '@inertiajs/vue3';
-import { useUrlSearchParams } from '@vueuse/core';
-import { computed, nextTick, ref, watch, type PropType } from 'vue';
+import Icon from '@/components/Icon.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import PageTitle from '@/components/PageTitle.vue'
+import BookCard from '@/components/books/BookCard.vue'
+import CheckboxList from '@/components/CheckboxList.vue'
+import ShelfView from '@/components/books/ShelfView.vue'
+import BookViewTabs from '@/components/books/BookViewTabs.vue'
+import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
+import { Tag } from '@/types/tag'
+import type { Book } from '@/types/book'
+import type { Author } from '@/types/author'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { useRoute } from '@/composables/useRoute'
+import { useUrlSearchParams } from '@vueuse/core'
+import { Link, router, usePage } from '@inertiajs/vue3'
+import { useUserSettings } from '@/composables/useUserSettings'
+import { useUserBookStatus } from '@/composables/useUserBookStatus'
+import { computed, nextTick, ref, watch, type PropType } from 'vue'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 /* --------------------------------------------------------------------------
  * Props & Refs
@@ -34,29 +34,29 @@ const props = defineProps({
     selectedSort: { type: String, default: null },
     selectedOrder: { type: String, default: 'desc' },
     authors: { type: Array as PropType<Author[]>, default: () => [] },
-    tags: { type: Array as PropType<Tag[]>, default: () => [] },
-});
+    tags: { type: Array as PropType<Tag[]>, default: () => [] }
+})
 
-const params = useUrlSearchParams('history');
-const { possibleStatuses } = useUserBookStatus();
+const params = useUrlSearchParams('history')
+const { possibleStatuses } = useUserBookStatus()
 
 /** Search --------------------------------------------------------------- */
-const searchInput = ref<HTMLInputElement | null>(null);
-const search = ref(String(params.search || ''));
-const currentSearch = ref(String(params.search || ''));
-const displayFilters = ref(search.value !== '' || props.selectedStatuses.length > 0 || props.selectedAuthor !== null);
+const searchInput = ref<HTMLInputElement | null>(null)
+const search = ref(String(params.search || ''))
+const currentSearch = ref(String(params.search || ''))
+const displayFilters = ref(search.value !== '' || props.selectedStatuses.length > 0 || props.selectedAuthor !== null)
 
 /** Filters -------------------------------------------------------------- */
-const status = ref<string[]>(props.selectedStatuses);
-const author = ref<string | null>(props.selectedAuthor);
-const tag = ref<string | null>(props.selectedTag);
-const sort = ref(props.selectedSort);
-const order = ref<'asc' | 'desc'>(props.selectedOrder as 'asc' | 'desc');
+const status = ref<string[]>(props.selectedStatuses)
+const author = ref<string | null>(props.selectedAuthor)
+const tag = ref<string | null>(props.selectedTag)
+const sort = ref(props.selectedSort)
+const order = ref<'asc' | 'desc'>(props.selectedOrder as 'asc' | 'desc')
 
 /** View preferences ----------------------------------------------------- */
-const page = usePage();
-const view = ref<'list' | 'grid' | 'shelf'>((page.props.auth.user?.settings?.library.view as 'list' | 'grid' | 'shelf' | undefined) ?? 'grid');
-const { updateSingleSetting } = useUserSettings();
+const page = usePage()
+const view = ref<'list' | 'grid' | 'shelf'>((page.props.auth.user?.settings?.library.view as 'list' | 'grid' | 'shelf' | undefined) ?? 'grid')
+const { updateSingleSetting } = useUserSettings()
 
 /** Options -------------------------------------------------------------- */
 const sortOptions = [
@@ -65,8 +65,8 @@ const sortOptions = [
     { label: 'Author', value: 'author' },
     { label: 'Rating', value: 'rating' },
     { label: 'Published', value: 'published_date' },
-    { label: 'Colour', value: 'colour' },
-] as const;
+    { label: 'Colour', value: 'colour' }
+] as const
 
 /* --------------------------------------------------------------------------
  * Watchers
@@ -79,33 +79,33 @@ watch(
             tag: tag.value,
             status: status.value,
             sort: sort.value,
-            order: order.value,
-        });
-        submitForm();
+            order: order.value
+        })
+        submitForm()
     },
-    { deep: true },
-);
+    { deep: true }
+)
 
-watch(view, (newView) => updateSingleSetting('library.view', newView));
+watch(view, (newView) => updateSingleSetting('library.view', newView))
 
 /* --------------------------------------------------------------------------
  * Computed
  * -------------------------------------------------------------------------- */
-const filteredBooks = computed(() => props.books ?? []);
+const filteredBooks = computed(() => props.books ?? [])
 
 const hasFiltered = computed(
-    () => !!currentSearch.value || !!author.value || !!tag.value || sort.value !== null || status.value.length > 0 || order.value !== 'desc',
-);
+    () => !!currentSearch.value || !!author.value || !!tag.value || sort.value !== null || status.value.length > 0 || order.value !== 'desc'
+)
 
 /* --------------------------------------------------------------------------
  * Methods
  * -------------------------------------------------------------------------- */
-function submitForm() {
-    currentSearch.value = search.value;
+function submitForm () {
+    currentSearch.value = search.value
 
     nextTick(() => {
-        searchInput.value?.blur();
-    });
+        searchInput.value?.blur()
+    })
 
     router.get(
         useRoute('user.books.index'),
@@ -115,17 +115,17 @@ function submitForm() {
             tag: tag.value,
             status: status.value,
             sort: sort.value,
-            order: order.value,
+            order: order.value
         },
-        { preserveScroll: true, preserveState: true, replace: true },
-    );
+        { preserveScroll: true, preserveState: true, replace: true }
+    )
 }
 
 watch(
     [filteredBooks, hasFiltered],
     () => {
         if (typeof localStorage === 'undefined') {
-            return;
+            return
         }
 
         // Only save to localStorage if no filters are applied
@@ -133,15 +133,15 @@ watch(
             const booksToSave = filteredBooks.value.map((book) => ({
                 title: book.title,
                 authors: book.authors?.map((a) => a.name) || [],
-                status: book.user_status,
-            }));
-            localStorage.setItem('offlineBooks', JSON.stringify(booksToSave));
+                status: book.user_status
+            }))
+            localStorage.setItem('offlineBooks', JSON.stringify(booksToSave))
         }
     },
-    { immediate: true },
-);
+    { immediate: true }
+)
 
-defineOptions({ layout: AppLayout });
+defineOptions({ layout: AppLayout })
 </script>
 
 <template>
@@ -150,33 +150,46 @@ defineOptions({ layout: AppLayout });
         <div class="flex flex-col gap-2.5 md:flex-row md:items-center md:gap-4">
             <div class="flex items-center justify-between gap-8">
                 <PageTitle class="flex gap-2.5">
-                    <template v-if="currentSearch"> Search results for "{{ currentSearch }}" </template>
+                    <template v-if="currentSearch">
+                        Search results for "{{ currentSearch }}"
+                    </template>
                     <template v-else>
                         Your Library
-                        <Badge class="mt-1 font-sans text-xs" variant="secondary">
+                        <Badge
+                            class="mt-1 font-sans text-xs"
+                            variant="secondary">
                             {{ filteredBooks.length }}
                         </Badge>
                     </template>
                 </PageTitle>
-                <BookViewTabs v-model="view" class="book-view-tabs mobile-book-view-tabs flex w-32 max-w-32 flex-1 shrink-0 md:hidden" />
+                <BookViewTabs
+                    v-model="view"
+                    class="book-view-tabs mobile-book-view-tabs flex w-32 max-w-32 flex-1 shrink-0 md:hidden" />
             </div>
 
             <!-- View & Sort Controls ---------------------------------------- -->
             <div class="flex w-full flex-col items-center gap-2.5 md:ml-auto md:w-auto md:flex-row md:gap-2">
                 <!-- View toggle -->
-                <BookViewTabs v-model="view" class="book-view-tabs desktop-book-view-tabs hidden md:flex" />
+                <BookViewTabs
+                    v-model="view"
+                    class="book-view-tabs desktop-book-view-tabs hidden md:flex" />
 
                 <!-- Sort dropdown & order -->
                 <div class="flex w-full items-center justify-end gap-2.5 md:w-56 md:gap-2">
                     <Select v-model="sort">
                         <SelectTrigger class="w-full">
-                            <span v-if="sort" class="text-muted-foreground">Sort:</span>
+                            <span
+                                v-if="sort"
+                                class="text-muted-foreground">Sort:</span>
                             <SelectValue placeholder="Sort by..." />
                             <span class="sr-only"> Select sort option </span>
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectItem v-for="opt in sortOptions" :key="opt.value" :value="opt.value">
+                                <SelectItem
+                                    v-for="opt in sortOptions"
+                                    :key="opt.value"
+                                    :value="opt.value">
                                     {{ opt.label }}
                                 </SelectItem>
                             </SelectGroup>
@@ -210,8 +223,12 @@ defineOptions({ layout: AppLayout });
                         size="icon"
                         @pointerup="displayFilters = !displayFilters"
                     >
-                        <div v-if="hasFiltered" class="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary ring-2 ring-primary/20" />
-                        <Icon name="Filter" class="w-4" />
+                        <div
+                            v-if="hasFiltered"
+                            class="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary ring-2 ring-primary/20" />
+                        <Icon
+                            name="Filter"
+                            class="w-4" />
                     </Button>
                 </div>
             </div>
@@ -229,13 +246,24 @@ defineOptions({ layout: AppLayout });
             >
                 <!-- Search ---------------------------------------------------- -->
                 <div class="mt-4 flex flex-col gap-2 md:mt-0">
-                    <form class="flex w-full flex-col gap-2" @submit.prevent="submitForm">
+                    <form
+                        class="flex w-full flex-col gap-2"
+                        @submit.prevent="submitForm">
                         <div class="grid w-full gap-2">
                             <!--                            <Label for="query">Search</Label>-->
                             <div class="relative flex w-full">
-                                <Input id="query" ref="searchInput" v-model="search" class="pr-10" placeholder="Title or keywords..." />
+                                <Input
+                                    id="query"
+                                    ref="searchInput"
+                                    v-model="search"
+                                    class="pr-10"
+                                    placeholder="Title or keywords..." />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-1">
-                                    <Button type="submit" variant="link" class="cursor-pointer" size="icon">
+                                    <Button
+                                        type="submit"
+                                        variant="link"
+                                        class="cursor-pointer"
+                                        size="icon">
                                         <span class="sr-only"> Search </span>
                                         <Icon name="Search" />
                                     </Button>
@@ -253,9 +281,14 @@ defineOptions({ layout: AppLayout });
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectItem :value="null"> All Authors </SelectItem>
+                                        <SelectItem :value="null">
+                                            All Authors
+                                        </SelectItem>
                                         <template v-if="authors.length">
-                                            <SelectItem v-for="a in authors" :key="a.slug" :value="a.slug">
+                                            <SelectItem
+                                                v-for="a in authors"
+                                                :key="a.slug"
+                                                :value="a.slug">
                                                 {{ a.name }}
                                             </SelectItem>
                                         </template>
@@ -267,16 +300,23 @@ defineOptions({ layout: AppLayout });
                         <!-- Author filter -------------------------------------------- -->
                         <div class="grid w-full gap-2">
                             <!--                            <Label for="query">Tag</Label>-->
-                            <Select v-model="tag" class="flex w-full">
+                            <Select
+                                v-model="tag"
+                                class="flex w-full">
                                 <SelectTrigger class="w-full md:max-w-72">
                                     <SelectValue placeholder="Filter by tag" />
                                     <span class="sr-only"> Select tag filter </span>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectItem :value="null"> All Tags </SelectItem>
+                                        <SelectItem :value="null">
+                                            All Tags
+                                        </SelectItem>
                                         <template v-if="tags.length">
-                                            <SelectItem v-for="t in tags" :key="t.slug" :value="t.slug">
+                                            <SelectItem
+                                                v-for="t in tags"
+                                                :key="t.slug"
+                                                :value="t.slug">
                                                 {{ t.name }}
                                             </SelectItem>
                                         </template>
@@ -289,13 +329,25 @@ defineOptions({ layout: AppLayout });
 
                 <!-- Status filter -------------------------------------------- -->
                 <div class="my-4">
-                    <p class="mb-2 font-serif">Filter by status</p>
-                    <CheckboxList v-model="status" :options="possibleStatuses" />
+                    <p class="mb-2 font-serif">
+                        Filter by status
+                    </p>
+                    <CheckboxList
+                        v-model="status"
+                        :options="possibleStatuses" />
                 </div>
 
                 <!-- Reset button -------------------------------------------- -->
-                <Button v-if="hasFiltered" class="mb-4 w-full" as-child variant="outline">
-                    <Link :href="useRoute('user.books.index')" preserve-scroll> Reset </Link>
+                <Button
+                    v-if="hasFiltered"
+                    class="mb-4 w-full"
+                    as-child
+                    variant="outline">
+                    <Link
+                        :href="useRoute('user.books.index')"
+                        preserve-scroll>
+                        Reset
+                    </Link>
                 </Button>
             </aside>
 
@@ -305,20 +357,34 @@ defineOptions({ layout: AppLayout });
                     v-if="!filteredBooks.length"
                     class="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground md:py-16"
                 >
-                    <Icon name="BookDashed" class="size-8" />
-                    <h3 class="font-serif text-2xl font-semibold">No books found</h3>
-                    <div v-if="totalBooks === 0" class="flex flex-col">
+                    <Icon
+                        name="BookDashed"
+                        class="size-8" />
+                    <h3 class="font-serif text-2xl font-semibold">
+                        No books found
+                    </h3>
+                    <div
+                        v-if="totalBooks === 0"
+                        class="flex flex-col">
                         <p>You haven't added any books yet.</p>
                         <div class="mx-auto flex">
-                            <Button class="mt-4" as-child>
-                                <Link :href="useRoute('books.search')"> Search for books </Link>
+                            <Button
+                                class="mt-4"
+                                as-child>
+                                <Link :href="useRoute('books.search')">
+                                    Search for books
+                                </Link>
                             </Button>
                         </div>
                     </div>
-                    <p v-else>Try adjusting your search or filters.</p>
+                    <p v-else>
+                        Try adjusting your search or filters.
+                    </p>
                 </div>
 
-                <ShelfView v-if="view === 'shelf'" :books="filteredBooks" />
+                <ShelfView
+                    v-if="view === 'shelf'"
+                    :books="filteredBooks" />
 
                 <ul
                     v-else
@@ -329,9 +395,16 @@ defineOptions({ layout: AppLayout });
                     "
                     class="grid"
                 >
-                    <li v-for="book in filteredBooks" :key="book.identifier" class="w-full">
-                        <BookCardHorizontal v-if="view === 'list'" :book="book" />
-                        <BookCard v-if="view === 'grid'" :book="book" />
+                    <li
+                        v-for="book in filteredBooks"
+                        :key="book.identifier"
+                        class="w-full">
+                        <BookCardHorizontal
+                            v-if="view === 'list'"
+                            :book="book" />
+                        <BookCard
+                            v-if="view === 'grid'"
+                            :book="book" />
                     </li>
                 </ul>
             </section>

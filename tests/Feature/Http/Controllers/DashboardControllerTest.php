@@ -10,6 +10,8 @@ use App\Enums\UserBookStatus;
 use function Pest\Laravel\get;
 use function Pest\Laravel\actingAs;
 
+use App\Ai\Agents\BookRecommendationAgent;
+
 describe('DashboardController', function () {
     it('redirects guests to the login page', function () {
         $response = get('/dashboard');
@@ -304,6 +306,62 @@ describe('DashboardController', function () {
                 ->where('recentAddsLast30Days', 3)
                 ->where('completionRate', 50)
             )
+        );
+    });
+
+    it('displays ai-powered recommendations based on the user library', function () {
+        $user = User::factory()->create();
+        $author = Author::factory()->create([
+            'name' => 'Frank Herbert',
+        ]);
+        $tag = Tag::factory()->create([
+            'name' => 'Space Opera',
+        ]);
+
+        $readBook = Book::factory()->create([
+            'title' => 'Dune',
+            'categories' => ['Science Fiction'],
+            'language' => 'en',
+        ]);
+        $readingBook = Book::factory()->create([
+            'title' => 'Hyperion',
+            'categories' => ['Science Fiction'],
+            'language' => 'en',
+        ]);
+        $recommendedBook = Book::factory()->create([
+            'title' => 'Children of Time',
+            'categories' => ['Science Fiction'],
+            'language' => 'en',
+        ]);
+
+        $readBook->authors()->attach($author);
+        $readBook->tags()->attach($tag);
+        $readingBook->authors()->attach($author);
+        $readingBook->tags()->attach($tag);
+        $recommendedBook->tags()->attach($tag);
+
+        $user->books()->attach($readBook->id, ['status' => UserBookStatus::Read->value]);
+        $user->books()->attach($readingBook->id, ['status' => UserBookStatus::Reading->value]);
+
+        BookRecommendationAgent::fake([
+            ['recommendations' => [
+                [
+                    'title' => 'Children of Time',
+                    'author' => 'Adrian Tchaikovsky',
+                    'published_year' => 2015,
+                    'reason' => 'Fits your recent run of big-idea science fiction.',
+                ],
+            ]],
+        ]);
+
+        actingAs($user);
+
+        $response = get('/dashboard');
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Dashboard')
+            ->has('statValues')
         );
     });
 });

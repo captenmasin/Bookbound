@@ -11,7 +11,7 @@ export function usePwa (): PwaState {
             isPwa: false,
             isAndroid: false,
             isIos: false,
-            isMacos: false,
+            isMacos: false
         }
     }
 
@@ -23,6 +23,6 @@ export function usePwa (): PwaState {
         isPwa: pwaMode ? pwaMode.split('=')[1] === 'true' : false,
         isAndroid: pwaDevice ? pwaDevice.split('=')[1] === 'android' : false,
         isIos: pwaDevice ? pwaDevice.split('=')[1] === 'ios' : false,
-        isMacos: pwaDevice ? pwaDevice.split('=')[1] === 'macos' : false,
+        isMacos: pwaDevice ? pwaDevice.split('=')[1] === 'macos' : false
     }
 }

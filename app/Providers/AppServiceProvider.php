@@ -114,8 +114,7 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        if ($this->app->environment(['local', 'testing'])) {
-
+        if ($this->app->environment(['local', 'testing']) && class_exists(Browser::class)) {
             Browser::macro('fullLogout', function () {
                 $this->visit('/test-logout')
                     ->waitForLocation('/login')

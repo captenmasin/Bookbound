@@ -4,21 +4,23 @@ import Image from '@/components/Image.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import TagCloud from '@/components/TagCloud.vue'
 import BookCard from '@/components/books/BookCard.vue'
-import SingleActivity from '@/components/SingleActivity.vue'
+import DashboardStats from '@/components/DashboardStats.vue'
+import BookDisplay from '@/components/books/BookDisplay.vue'
 import { Tag } from '@/types/tag'
-import { Book } from '@/types/book'
 import { Author } from '@/types/author'
 import { Activity } from '@/types/activity'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
+import { Card, CardTitle } from '@/components/ui/card'
 import { UserBookStatus } from '@/enums/UserBookStatus'
-import { Link, router, usePage } from '@inertiajs/vue3'
+import { Book, BookRecommendation } from '@/types/book'
 import { computed, onMounted, PropType, ref } from 'vue'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { useCookies } from '@vueuse/integrations/useCookies'
-import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { Deferred, Link, router, usePage } from '@inertiajs/vue3'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Dialog, DialogContent, DialogClose, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { breakpointsTailwind, useBreakpoints, useTimeAgo } from '@vueuse/core'
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 type Stats = {
     booksInLibrary: number;
@@ -37,6 +39,10 @@ const props = defineProps({
         type: Array as PropType<Book[]>,
         default: () => []
     },
+    recommendations: {
+        type: Array as PropType<BookRecommendation[]>,
+        default: () => []
+    },
     statValues: {
         type: Object as PropType<Stats>,
         default: () => ({})
@@ -48,6 +54,14 @@ const props = defineProps({
     authors: {
         type: Array as PropType<Author[]>,
         default: () => []
+    },
+    insights: {
+        type: Object,
+
+        default: () => ({
+            read: 0,
+            dropped: 0
+        })
     }
 })
 
@@ -57,32 +71,7 @@ const page = usePage()
 const { authedUser, subscribedToPro } = useAuthedUser()
 const hasUpgraded = ref(false)
 
-const breakpoints = useBreakpoints(breakpointsTailwind)
-const mdAndSmaller = breakpoints.smallerOrEqual('md')
-
 const displayProBanner = ref(false)
-
-const actions = [
-    {
-        name: 'View your library',
-        smallName: 'Your library',
-        icon: 'LibraryBig',
-        url: useRoute('user.books.index')
-    },
-    {
-        name: 'Find a new book',
-        smallName: 'Find book',
-        icon: 'Search',
-        url: useRoute('books.search')
-    },
-    {
-        name: 'Scan a barcode',
-        smallName: 'Scan barcode',
-        icon: 'ScanBarcode',
-        url: useRoute('books.scan'),
-        mobileOnly: true
-    }
-]
 
 const stats = [
     {
@@ -230,44 +219,17 @@ defineOptions({ layout: AppLayout })
             </DialogContent>
         </Dialog>
 
-        <header class="mt-0 mb-12 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-6 md:items-center">
+        <header class="mt-4 mb-8 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-10 md:items-center">
             <div
                 v-if="authedUser"
                 class="flex flex-col">
-                <h1 class="font-serif text-2xl font-bold text-primary md:text-5xl">
+                <h1 class="font-serif text-2xl font-bold tracking-tight text-primary md:text-5xl">
                     Good {{ timeOfDay }}, {{ firstName }}
                 </h1>
-                <p class="text-sm text-accent-foreground">
+                <p class="font-serif text-lg text-primary/80 italic">
                     Here's a quick look at your library
                 </p>
             </div>
-            <ul class="flex gap-1 md:gap-4">
-                <li
-                    v-for="action in actions"
-                    :key="action.name"
-                    :class="action.mobileOnly ? 'md:hidden' : ''">
-                    <Button
-                        :variant="mdAndSmaller ? 'ghost' : 'ghost'"
-                        :size="mdAndSmaller ? 'icon' : 'sm'"
-                        :as="Link"
-                        :href="action.url"
-                        class="md:text-primary"
-                    >
-                        <Icon
-                            :name="action.icon"
-                            class="size-4" />
-                        <span class="sr-only">
-                            {{ action.name }}
-                        </span>
-                        <span class="hidden xl:inline">
-                            {{ action.name }}
-                        </span>
-                        <span class="hidden md:inline xl:hidden">
-                            {{ action.smallName }}
-                        </span>
-                    </Button>
-                </li>
-            </ul>
         </header>
 
         <section>
@@ -277,10 +239,10 @@ defineOptions({ layout: AppLayout })
                     :key="stat.name"
                     :href="stat.link"
                     prefetch
-                    class="relative flex items-center justify-between border-0 border-accent bg-card px-3 py-2 text-primary hover:bg-primary/20 active:bg-primary/20 md:p-4 md:py-6 md:transition-all"
+                    class="group relative flex items-center border border-card-outline bg-card px-4 py-3 text-primary hover:brightness-95 md:p-8 md:transition-all"
                 >
                     <div class="w-full">
-                        <p class="pr-5 text-xs font-semibold tracking-wider text-primary/50 uppercase">
+                        <p class="pr-5 text-xs tracking-wider text-primary/50 uppercase">
                             {{ stat.name }}
                         </p>
                         <div class="flex w-full items-center justify-between">
@@ -290,77 +252,38 @@ defineOptions({ layout: AppLayout })
                             <Icon
                                 v-if="stat.icon"
                                 :name="stat.icon"
-                                class="text-primary/20 md:size-8" />
+                                class="text-primary opacity-20 group-hover:opacity-100 md:size-8" />
                         </div>
                     </div>
                 </Link>
             </div>
         </section>
 
-        <div class="mt-4 flex flex-col items-start gap-6 md:mt-12 md:flex-row md:gap-8">
+        <div class="mt-4 flex flex-col items-start gap-6 md:mt-16 md:flex-row md:gap-18">
             <div class="flex w-full flex-col md:mt-0 md:w-auto md:flex-1">
                 <section>
-                    <h2
-                        v-if="currentlyReading && currentlyReading.length"
-                        class="font-serif text-2xl mb-4 font-semibold text-primary">
-                        Currently reading
-                    </h2>
+                    <div class="flex items-center justify-between">
+                        <h2
+                            v-if="currentlyReading && currentlyReading.length"
+                            class="mb-6 font-serif text-2xl font-semibold text-primary">
+                            Currently reading
+                        </h2>
+                        <Button
+                            variant="link"
+                            as-child>
+                            <Link :href="useRoute('user.books.index')">
+                                View full library
+                            </Link>
+                        </Button>
+                    </div>
 
                     <div v-if="currentlyReading && currentlyReading.length">
-                        <ul class="flex flex-col gap-8">
+                        <ul class="flex flex-col gap-4 md:gap-8">
                             <li
                                 v-for="book in currentlyReading"
                                 :key="book.identifier">
-                                <div
-                                    class="grid grid-cols-5 items-center gap-8"
-                                    :style="`--colour: ${book.colour};`">
-                                    <div class="col-span-1 flex items-center gap-2">
-                                        <Image
-                                            v-if="book.cover"
-                                            :src="book.cover"
-                                            :height="315"
-                                            :width="200"
-                                            class="h-full w-full object-cover" />
-                                    </div>
-                                    <div class="col-span-3 flex flex-col">
-                                        <p
-                                            v-if="book.primary_category"
-                                            class="tracking-wider text-[11px] mb-2 text-primary/50 uppercase font-sans">
-                                            {{ book.primary_category }}
-                                        </p>
-                                        <h3 class="font-serif text-xl font-bold">
-                                            {{ book.title }}
-                                        </h3>
-                                        <p
-                                            v-if="book.authors"
-                                            class="italic mt-2 text-primary/50">
-                                            {{ book.authors.map(author => author.name).join(', ') }}
-                                        </p>
-                                    </div>
-                                </div>
+                                <BookDisplay :book="book" />
                             </li>
-                        </ul>
-                    </div>
-
-                    <div
-                        v-if="currentlyReading && currentlyReading.length"
-                        class="-mx-4 -mt-2 snap-x snap-mandatory overflow-x-auto px-4 py-4 md:-mx-2 md:px-2"
-                    >
-                        <ul class="flex w-max flex-row gap-4 md:grid md:w-full md:grid-cols-5 md:gap-4">
-                            <li
-                                v-for="book in currentlyReading"
-                                :key="book.identifier"
-                                class="w-40 snap-center md:w-auto">
-                                <BookCard :book="book" />
-                            </li>
-                            <!--                            <li class="w-40 snap-center md:w-auto">-->
-                            <!--                                <Link-->
-                            <!--                                    :href="useRoute('books.search')"-->
-                            <!--                                    class="flex aspect-book size-full items-center justify-center rounded-md border-2 border-dashed border-primary/10 bg-secondary/50 p-4 text-center text-base font-semibold text-primary/50 transition-all hover:bg-secondary/75"-->
-                            <!--                                >-->
-                            <!--                                    Find more books-->
-                            <!--                                </Link>-->
-                            <!--                            </li>-->
                         </ul>
                     </div>
 
@@ -385,35 +308,101 @@ defineOptions({ layout: AppLayout })
                     </article>
                 </section>
 
+                <section class="mt-4 md:mt-12">
+                    <div class="mb-6 flex items-center justify-between">
+                        <h2 class="font-serif text-2xl font-semibold text-primary">
+                            Recommended next
+                        </h2>
+                        <!--                        <Button variant="link" as-child>-->
+                        <!--                            <Link :href="useRoute('books.search')"> Browse books </Link>-->
+                        <!--                        </Button>-->
+                    </div>
+
+                    <Deferred data="recommendations">
+                        <template #fallback>
+                            loading...
+                        </template>
+
+                        <div
+                            v-if="recommendations && recommendations.length"
+                            class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 md:grid-cols-3 lg:grid-cols-5"
+                        >
+                            <BookCard
+                                v-for="recommendation in recommendations"
+                                :key="recommendation.book.id"
+                                class="aspect-book w-[200px] shrink-0 sm:w-auto"
+                                :book="recommendation.book"
+                            />
+                        </div>
+
+                        <article
+                            v-else
+                            class="rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground"
+                        >
+                            <Icon
+                                name="Sparkles"
+                                class="mx-auto size-8" />
+                            <h3 class="mt-2 font-serif text-2xl font-semibold text-primary">
+                                Recommended next
+                            </h3>
+                            <p
+                                v-if="statValues.booksInLibrary < 2"
+                                class="mt-2">
+                                Add a couple more books to your library to unlock recommendations.
+                            </p>
+                            <p
+                                v-else
+                                class="mt-2">
+                                Import more titles into your catalog to broaden your recommendations.
+                            </p>
+                        </article>
+                    </Deferred>
+                </section>
+
                 <section
                     v-if="activities && activities.length"
                     class="mt-4 md:mt-12">
                     <div class="mb-1 flex items-center justify-between">
-                        <h2 class="font-serif text-xl font-semibold text-accent-foreground">
+                        <h2 class="mb-2 font-serif text-2xl font-semibold text-primary">
                             Recent activity
                         </h2>
                         <Button
                             as-child
-                            class="px-0"
                             variant="link">
                             <Link :href="useRoute('user.activities.index')">
-                                View all
+                                View all activities
                             </Link>
                         </Button>
                     </div>
-                    <ul class="divide-y divide-muted rounded-xl bg-white shadow dark:divide-zinc-950 dark:bg-zinc-900">
-                        <SingleActivity
-                            v-for="activity in activities"
-                            :key="activity.id"
-                            :activity="activity" />
-                    </ul>
+
+                    <div class="rounded-md bg-white p-6 pb-0 ring-1 ring-primary/10">
+                        <div class="ml-2 space-y-0 border-l border-primary/10 pl-8">
+                            <div
+                                v-for="(activity, index) in activities"
+                                :key="activity.id"
+                                class="relative pb-10">
+                                <div
+                                    :class="index === 0 ? 'border-primary bg-primary' : 'border-primary bg-white'"
+                                    class="absolute top-1 -left-9.5 h-3 w-3 rounded-full border ring-4 ring-white"
+                                />
+                                <p class="font-label mb-1 text-[10px] tracking-widest text-primary/40 uppercase">
+                                    {{ useTimeAgo(activity.created_at) }}
+                                </p>
+                                <p
+                                    class="font-serif text-pretty"
+                                    v-html="activity.description" />
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </div>
-            <div class="w-full md:w-1/3 bg-red-200">
-                <div>
-                    <h2 class="mb-2 font-serif text-xl font-semibold text-accent-foreground">
+            <div class="flex w-full flex-col gap-8 md:w-1/4">
+                <DashboardStats :insights="insights" />
+
+                <Card>
+                    <CardTitle class="mb-2">
                         Top tags
-                    </h2>
+                    </CardTitle>
                     <TagCloud
                         v-if="tags && tags.length"
                         :tags
@@ -423,14 +412,15 @@ defineOptions({ layout: AppLayout })
                             Add more books to see your top tags.
                         </p>
                     </div>
-                </div>
-                <div class="my-8">
-                    <h2 class="mb-2 font-serif text-xl font-semibold text-accent-foreground">
+                </Card>
+                <Card>
+                    <CardTitle class="mb-2">
                         Top authors
-                    </h2>
+                    </CardTitle>
+
                     <ul
                         v-if="authors && authors.length"
-                        class="mt-2 divide-y divide-muted p-0">
+                        class="divide-y divide-primary/10 p-0">
                         <li
                             v-for="author in authors"
                             :key="author.uuid"
@@ -448,7 +438,7 @@ defineOptions({ layout: AppLayout })
                             Add more books to see your top authors.
                         </p>
                     </div>
-                </div>
+                </Card>
             </div>
         </div>
     </div>

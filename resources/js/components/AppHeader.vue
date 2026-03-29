@@ -14,7 +14,7 @@ import { UserPermission } from '@/enums/UserPermission'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
-import { Activity, BriefcaseBusiness, ChartLine, NotebookPen, Settings, Shield, Star, Wallet, Sparkles } from 'lucide-vue-next'
+import { Activity, BriefcaseBusiness, ChartLine, NotebookPen, Settings, Shield, Sparkles, Star, Wallet } from 'lucide-vue-next'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
 
 interface Props {
@@ -34,6 +34,7 @@ const activeItemStyles = computed(
 )
 
 const isVisible = ref(true)
+const hasMounted = ref(false)
 
 const handleScroll = () => {
     let lastScroll = window.scrollY
@@ -111,6 +112,7 @@ const userMenuItems = ref([
 ])
 
 onMounted(() => {
+    hasMounted.value = true
     window.addEventListener('scroll', handleScroll, { passive: true })
 })
 
@@ -119,14 +121,15 @@ onUnmounted(() => {
 })
 
 const isDesktop = useMediaQuery('(min-width: 768px)')
+const showDesktopMenu = computed(() => (hasMounted.value ? isDesktop.value : true))
 </script>
 
 <template>
     <div
-        class="safe-h-14 safe-pt sticky top-0 z-50 border-b border-sidebar-border/80 bg-background transition-all duration-300 ease-in-out md:static md:h-16 md:translate-y-0"
+        class="safe-h-14 safe-pt sticky top-0 z-50 border-b border-sidebar-border/80 bg-background transition-all duration-300 ease-in-out md:static md:safe-h-16 md:translate-y-0"
         :class="{ '-translate-y-full': !isVisible }"
     >
-        <div class="mx-auto flex h-full items-center px-4 md:max-w-7xl pwa:md:max-w-none">
+        <div class="mx-auto flex h-full items-center px-4 md:px-12 md:max-w-screen-2xl pwa:md:max-w-none">
             <div
                 v-if="authed"
                 :class="$page.props.backUrl ? 'ml-0 opacity-100' : '-ml-8 opacity-0'"
@@ -204,7 +207,7 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
                 </div>
 
                 <UserMenuDropdown
-                    v-if="isDesktop"
+                    v-if="showDesktopMenu"
                     :user="authedUser"
                     :items="userMenuItems" />
 

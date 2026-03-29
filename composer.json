@@ -47,7 +47,7 @@
         "barryvdh/laravel-ide-helper": "^3.5",
         "captenmasin/laravel-dumper": "^1.0",
         "fakerphp/faker": "^1.23",
-        "laravel/boost": "^2.2",
+        "laravel/boost": "^2.4",
         "laravel/dusk": "^8.3",
         "laravel/pail": "^1.2",
         "laravel/pint": "^1.18",

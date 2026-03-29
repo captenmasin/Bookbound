@@ -17,7 +17,8 @@ return [
             ],
             'limits' => [
                 'max_books' => 50,
-                'private_notes' => false,
+                //                'private_notes' => false,
+                'private_notes' => true,
                 'custom_covers' => false,
             ],
         ],

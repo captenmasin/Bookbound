@@ -44,6 +44,11 @@ export type Book = {
     published_date: string,
 }
 
+export type BookRecommendation = {
+    book: Book,
+    reason: string,
+}
+
 export type BookApiResult = {
     id: number;
     codes: { type: string; identifier: string }[];

@@ -13,6 +13,7 @@
 /public/images
 /public/service-worker.js
 .env
+.env.dev
 .env.backup
 .env.production
 .phpactor.json

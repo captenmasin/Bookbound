@@ -77,8 +77,9 @@ const url = computed(() => {
                                 class="line-clamp-2 text-xs">
                                 {{ book.authors.map((a) => a.name).join(', ') }}
                             </p>
+
                             <StarRatingDisplay
-                                v-if="userRating"
+                                v-if="userRating?.value"
                                 class="mt-1"
                                 text-class="text-inherit"
                                 :rating="userRating.value"
