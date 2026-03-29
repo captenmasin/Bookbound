@@ -2,10 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
-use Laravel\Dusk\Browser;
 use Laravel\Cashier\Cashier;
 use App\Services\ISBNdbService;
 use Filament\Support\Colors\Color;
@@ -113,28 +111,5 @@ class AppServiceProvider extends ServiceProvider
                 'preload' => $preload,
             ]);
         });
-
-        if ($this->app->environment(['local', 'testing']) && class_exists(Browser::class)) {
-            Browser::macro('fullLogout', function () {
-                $this->visit('/test-logout')
-                    ->waitForLocation('/login')
-                    ->assertPathIs('/login');
-
-                return $this;
-            });
-
-            Browser::macro('disableClientSideValidation', function () {
-                $this->script('for(var f=document.forms,i=f.length;i--;)f[i].setAttribute("novalidate",i)');
-
-                return $this;
-            });
-
-            Browser::macro('loginFully', function (User $user) {
-                $this->loginAs($user)
-                    ->visit('/sanctum/csrf-cookie');
-
-                return $this;
-            });
-        }
     }
 }
