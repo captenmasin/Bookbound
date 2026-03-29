@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::getConnection()->getDriverName() !== 'pgsql') {
+            return;
+        }
+
         Schema::ensureVectorExtensionExists();
 
         Schema::table('books', function (Blueprint $table) {
@@ -23,6 +27,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (Schema::getConnection()->getDriverName() !== 'pgsql') {
+            return;
+        }
+
         Schema::table('books', function (Blueprint $table) {
             $table->dropColumn('embedding');
         });
