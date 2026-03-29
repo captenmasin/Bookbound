@@ -10,7 +10,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/js/app.ts'],
+            input: ['resources/css/app.css', 'resources/js/app.ts'],
             refresh: true
         }),
         inertia(),
@@ -34,5 +34,5 @@ export default defineConfig({
             '@': path.resolve(__dirname, './resources/js'),
             '~': path.resolve('./resources')
         }
-    },
+    }
 })
