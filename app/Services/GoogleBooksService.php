@@ -40,7 +40,6 @@ class GoogleBooksService implements BookApiServiceInterface
         $page = 1): array
     {
         $query = $query.($author ? (' inauthor:"'.$author.'"') : '');
-        ray('Google books query: '.$query);
 
         $query = trim($query);
 
