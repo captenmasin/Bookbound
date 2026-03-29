@@ -29,6 +29,8 @@ class BookResource extends JsonResource
             'published_date' => Str::before($this->published_date, ' '),
             'tags' => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'page_count' => $this->page_count,
+            'categories' => $this->categories ?? null,
+            'primary_category' => $this->categories[0] ?? null,
 
             'has_custom_cover' => $user ? $this->hasCustomCover($user) : false,
             'cover' => $this->getCover($user),

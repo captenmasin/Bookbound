@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Image from '@/components/Image.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
-import { Link } from '@inertiajs/vue3'
 import type { Book } from '@/types/book'
 import { computed, PropType } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
 import { useBook } from '@/composables/useBook'
 import { useColours } from '@/composables/useColours'
 import { useContrast } from '@/composables/useContrast'
@@ -43,6 +43,8 @@ const url = computed(() => {
         >
             <Link
                 :href="url"
+                component="books/Show"
+                :page-props="{ ...usePage(), book }"
                 prefetch>
                 <div class="group relative aspect-book w-full overflow-hidden">
                     <span

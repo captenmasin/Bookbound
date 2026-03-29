@@ -3,19 +3,19 @@
 namespace App\Actions\Books;
 
 use App\Models\Book;
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\spin;
 
 use Illuminate\Support\Collection;
+use App\Ai\Agents\BookCategoryAgent;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class CreateBookEmbedding
+class GenerateBookCategories
 {
     use AsAction;
 
-    public $commandSignature = 'book:embeddings {--fresh}';
+    public $commandSignature = 'book:categories {--fresh}';
 
     public function handle(Book|Collection|array $books): void
     {
@@ -26,14 +26,10 @@ class CreateBookEmbedding
         };
 
         foreach ($books as $book) {
-            $embeddingContent =
-                $book->title.' '.
-                $book->authors->implode('name', ', ').' '.
-                ($book->publisher?->name ?? '').' '.
-                $book->description.' '.$book->tags->implode('name', ', ');
+            $categories = BookCategoryAgent::make(book: $book)->categorize();
 
             $book->updateQuietly([
-                'embedding' => Str::of(strtolower(strip_tags($embeddingContent)))->toEmbeddings(model: 'text-embedding-3-small'),
+                'categories' => $categories,
             ]);
         }
     }
@@ -44,7 +40,7 @@ class CreateBookEmbedding
         if ($fresh) {
             $books = Book::all();
         } else {
-            $books = Book::whereNull('embedding')->get();
+            $books = Book::whereNull('categories')->get();
         }
 
         $generating = spin(
@@ -52,6 +48,6 @@ class CreateBookEmbedding
             message: 'Generating response...'
         );
 
-        $command->info(count($books).' embeddings generated');
+        $command->info(count($books).' categories generated');
     }
 }

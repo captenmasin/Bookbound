@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
+import Image from '@/components/Image.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import TagCloud from '@/components/TagCloud.vue'
 import BookCard from '@/components/books/BookCard.vue'
@@ -270,20 +271,20 @@ defineOptions({ layout: AppLayout })
         </header>
 
         <section>
-            <div class="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
+            <div class="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-6">
                 <Link
                     v-for="stat in stats"
                     :key="stat.name"
                     :href="stat.link"
                     prefetch
-                    class="relative flex items-center justify-between border-0 border-accent bg-secondary/10 px-3 py-2 text-primary hover:bg-primary/20 active:bg-primary/20 md:p-4 md:py-6 md:transition-all"
+                    class="relative flex items-center justify-between border-0 border-accent bg-card px-3 py-2 text-primary hover:bg-primary/20 active:bg-primary/20 md:p-4 md:py-6 md:transition-all"
                 >
                     <div class="w-full">
-                        <p class="pr-5 text-xs font-semibold tracking-wider text-accent-foreground/50 uppercase">
+                        <p class="pr-5 text-xs font-semibold tracking-wider text-primary/50 uppercase">
                             {{ stat.name }}
                         </p>
-                        <div class="flex justify-between items-center w-full">
-                            <p class="font-serif text-xl font-bold md:text-4xl">
+                        <div class="flex w-full items-center justify-between">
+                            <p class="font-serif text-xl font-bold text-primary md:text-4xl">
                                 {{ stat.value }}
                             </p>
                             <Icon
@@ -301,9 +302,45 @@ defineOptions({ layout: AppLayout })
                 <section>
                     <h2
                         v-if="currentlyReading && currentlyReading.length"
-                        class="font-serif text-xl font-semibold text-accent-foreground">
+                        class="font-serif text-2xl mb-4 font-semibold text-primary">
                         Currently reading
                     </h2>
+
+                    <div v-if="currentlyReading && currentlyReading.length">
+                        <ul class="flex flex-col gap-8">
+                            <li
+                                v-for="book in currentlyReading"
+                                :key="book.identifier">
+                                <div
+                                    class="grid grid-cols-5 items-center gap-8"
+                                    :style="`--colour: ${book.colour};`">
+                                    <div class="col-span-1 flex items-center gap-2">
+                                        <Image
+                                            v-if="book.cover"
+                                            :src="book.cover"
+                                            :height="315"
+                                            :width="200"
+                                            class="h-full w-full object-cover" />
+                                    </div>
+                                    <div class="col-span-3 flex flex-col">
+                                        <p
+                                            v-if="book.primary_category"
+                                            class="tracking-wider text-[11px] mb-2 text-primary/50 uppercase font-sans">
+                                            {{ book.primary_category }}
+                                        </p>
+                                        <h3 class="font-serif text-xl font-bold">
+                                            {{ book.title }}
+                                        </h3>
+                                        <p
+                                            v-if="book.authors"
+                                            class="italic mt-2 text-primary/50">
+                                            {{ book.authors.map(author => author.name).join(', ') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
 
                     <div
                         v-if="currentlyReading && currentlyReading.length"
@@ -316,14 +353,14 @@ defineOptions({ layout: AppLayout })
                                 class="w-40 snap-center md:w-auto">
                                 <BookCard :book="book" />
                             </li>
-                            <li class="w-40 snap-center md:w-auto">
-                                <Link
-                                    :href="useRoute('books.search')"
-                                    class="flex aspect-book size-full items-center justify-center rounded-md border-2 border-dashed border-primary/10 bg-secondary/50 p-4 text-center text-base font-semibold text-primary/50 transition-all hover:bg-secondary/75"
-                                >
-                                    Find more books
-                                </Link>
-                            </li>
+                            <!--                            <li class="w-40 snap-center md:w-auto">-->
+                            <!--                                <Link-->
+                            <!--                                    :href="useRoute('books.search')"-->
+                            <!--                                    class="flex aspect-book size-full items-center justify-center rounded-md border-2 border-dashed border-primary/10 bg-secondary/50 p-4 text-center text-base font-semibold text-primary/50 transition-all hover:bg-secondary/75"-->
+                            <!--                                >-->
+                            <!--                                    Find more books-->
+                            <!--                                </Link>-->
+                            <!--                            </li>-->
                         </ul>
                     </div>
 
@@ -372,7 +409,7 @@ defineOptions({ layout: AppLayout })
                     </ul>
                 </section>
             </div>
-            <div class="w-full md:w-72">
+            <div class="w-full md:w-1/3 bg-red-200">
                 <div>
                     <h2 class="mb-2 font-serif text-xl font-semibold text-accent-foreground">
                         Top tags

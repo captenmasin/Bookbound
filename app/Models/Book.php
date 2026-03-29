@@ -34,6 +34,7 @@ class Book extends Model implements HasMedia
         return [
             'codes' => 'array',
             'embedding' => 'array',
+            'categories' => 'array',
         ];
     }
 

@@ -3,7 +3,8 @@
 namespace App\Observers;
 
 use App\Models\Book;
-use App\Actions\Books\CreateAuthorEmbedding;
+use App\Actions\Books\CreateBookEmbedding;
+use App\Actions\Books\GenerateBookCategories;
 
 class BookObserver
 {
@@ -12,7 +13,8 @@ class BookObserver
      */
     public function created(Book $book): void
     {
-        CreateAuthorEmbedding::dispatch($book);
+        CreateBookEmbedding::dispatch($book);
+        GenerateBookCategories::dispatch($book);
     }
 
     /**

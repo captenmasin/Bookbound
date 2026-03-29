@@ -38,7 +38,7 @@ const finalSrc = computed(() => {
         :height="height"
         loading="lazy"
         class="transition-opacity"
-        :class="isLoaded ? '' : 'animate-pulse'"
+        :class="isLoaded ? '' : 'NO-animate-pulse'"
         :style="isLoaded ? null : {
             backgroundImage: showPlaceholder && placeholder && !isLoaded ? `url(${placeholder})` : '',
             backgroundSize: 'cover',

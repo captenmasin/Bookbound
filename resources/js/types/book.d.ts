@@ -29,6 +29,8 @@ export type Book = {
     average_rating?: number,
     ratings_count?: number,
     page_count: number,
+    categories?: string[],
+    primary_category?: string,
     user_notes?: Note[],
     user_tags: string[],
     edition: string,

@@ -12,8 +12,8 @@
 @theme inline {
     --breakpoint-xs: 28rem;
 
-    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-serif: 'Source Serif 4', 'Instrument Serif', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-sans: 'Work Sans', Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: 'Noto Serif', 'Instrument Serif', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -166,20 +166,19 @@
 }
 
 :root {
-    --background: hsl(40, 50%, 98%); /* warm ivory */
+    --background: oklch(0.984 0.0107 76.6); /* warm ivory */
     --foreground: hsl(20, 10%, 10%); /* very dark brown-black */
 
-    --card: hsl(36, 33%, 96%);
+    --card: oklch(0.9661 0.0107 76.6);
     --card-foreground: hsl(20, 10%, 10%);
 
     --popover: hsl(36, 33%, 96%);
     --popover-foreground: hsl(20, 10%, 10%);
 
-    --primary: hsl(20, 90%, 30%); /* deep terracotta */
+    --primary: oklch(0.3677 0.112 41.52); /* deep terracotta */
     --primary-foreground: hsl(45, 100%, 95%); /* pale yellow-beige */
 
-    /*--secondary: hsl(40, 50%, 90%); !* warm ivory *!*/
-    --secondary: #5D5C4D; /* warm ivory */
+    --secondary: hsl(40, 50%, 90%); /* warm ivory */
     --secondary-foreground: hsl(20, 10%, 40%); /* very dark brown-black */
 
     --muted: hsl(30, 20%, 94%);
