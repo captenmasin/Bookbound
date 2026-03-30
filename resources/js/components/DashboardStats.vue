@@ -35,7 +35,7 @@ withDefaults(
             <div>
                 <div class="mb-2 flex justify-between text-xs tracking-wide text-[#9c8f83] uppercase">
                     <span>Books dropped</span>
-                    <span class="font-medium text-[#8a4b2f]">24%</span>
+                    <span class="font-medium text-[#8a4b2f]">{{ insights.dropped }}%</span>
                 </div>
                 <Progress
                     :model-value="insights.dropped"
