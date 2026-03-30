@@ -10,6 +10,7 @@ use App\Enums\UserBookStatus;
 use function Pest\Laravel\get;
 use function Pest\Laravel\actingAs;
 
+use Illuminate\Support\Facades\Http;
 use App\Ai\Agents\BookRecommendationAgent;
 
 describe('DashboardController', function () {
@@ -24,6 +25,130 @@ describe('DashboardController', function () {
 
         $response = get('/dashboard');
         $response->assertOk();
+    });
+
+    it('includes live weather on the dashboard when geolocation and forecast lookups succeed', function () {
+        Http::fake([
+            'https://ipapi.co/*' => Http::response([
+                'latitude' => 51.5072,
+                'longitude' => -0.1276,
+            ]),
+            'https://api.open-meteo.com/v1/forecast*' => Http::response([
+                'current' => [
+                    'weather_code' => 0,
+                    'is_day' => 1,
+                ],
+            ]),
+        ]);
+
+        $user = User::factory()->create();
+        actingAs($user);
+
+        $response = $this
+            ->withServerVariables(['REMOTE_ADDR' => '8.8.8.8'])
+            ->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->where('weather.condition', 'sunny')
+            ->where('weather.icon', 'Sun')
+            ->where('weather.label', 'Sunny')
+            ->where('weather.isFallback', false)
+        );
+    });
+
+    it('maps rainy and stormy weather codes to normalized dashboard weather states', function () {
+        Http::fake([
+            'https://ipapi.co/*' => Http::response([
+                'latitude' => 40.7128,
+                'longitude' => -74.0060,
+            ]),
+            'https://api.open-meteo.com/v1/forecast*' => Http::sequence()
+                ->push([
+                    'current' => [
+                        'weather_code' => 61,
+                        'is_day' => 1,
+                    ],
+                ])
+                ->push([
+                    'current' => [
+                        'weather_code' => 95,
+                        'is_day' => 1,
+                    ],
+                ]),
+        ]);
+
+        $firstUser = User::factory()->create();
+        actingAs($firstUser);
+
+        $rainyResponse = $this
+            ->withServerVariables(['REMOTE_ADDR' => '1.1.1.1'])
+            ->get('/dashboard');
+
+        $rainyResponse->assertInertia(fn ($page) => $page
+            ->where('weather.condition', 'rainy')
+            ->where('weather.icon', 'CloudRain')
+            ->where('weather.label', 'Rainy')
+        );
+
+        $stormyUser = User::factory()->create();
+        actingAs($stormyUser);
+
+        $stormyResponse = $this
+            ->withServerVariables(['REMOTE_ADDR' => '9.9.9.9'])
+            ->get('/dashboard');
+
+        $stormyResponse->assertInertia(fn ($page) => $page
+            ->where('weather.condition', 'stormy')
+            ->where('weather.icon', 'CloudLightning')
+            ->where('weather.label', 'Stormy')
+        );
+    });
+
+    it('returns time-of-day fallback weather when geolocation fails', function () {
+        Http::fake([
+            'https://ipapi.co/*' => Http::response([], 500),
+        ]);
+
+        $user = User::factory()->create();
+        actingAs($user);
+
+        $response = $this
+            ->withServerVariables(['REMOTE_ADDR' => '8.8.4.4'])
+            ->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->where('weather.condition', 'time_of_day')
+            ->where('weather.icon', 'Sun')
+            ->where('weather.label', 'Time of day')
+            ->where('weather.isFallback', true)
+        );
+    });
+
+    it('returns time-of-day fallback weather when the forecast lookup fails', function () {
+        Http::fake([
+            'https://ipapi.co/*' => Http::response([
+                'latitude' => 34.0522,
+                'longitude' => -118.2437,
+            ]),
+            'https://api.open-meteo.com/v1/forecast*' => Http::response([], 500),
+        ]);
+
+        $user = User::factory()->create();
+        actingAs($user);
+
+        $response = $this
+            ->withServerVariables(['REMOTE_ADDR' => '208.67.222.222'])
+            ->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->where('weather.condition', 'time_of_day')
+            ->where('weather.icon', 'Sun')
+            ->where('weather.label', 'Time of day')
+            ->where('weather.isFallback', true)
+        );
     });
 
     it('displays user information on the dashboard', function () {

@@ -9,6 +9,7 @@ use App\Http\Resources\TagResource;
 use App\Http\Resources\BookResource;
 use App\Http\Resources\AuthorResource;
 use App\Http\Resources\ActivityResource;
+use App\Services\DashboardWeatherResolver;
 
 class DashboardController extends Controller
 {
@@ -65,6 +66,7 @@ class DashboardController extends Controller
             ),
             'tags' => TagResource::collection($request->user()->getTags()),
             'authors' => AuthorResource::collection($request->user()->getAuthors()->get()),
+            'weather' => Inertia::defer(fn () => new DashboardWeatherResolver()->resolve($request)),
             'breadcrumbs' => [
                 ['title' => 'Dashboard', 'href' => route('dashboard')],
             ],

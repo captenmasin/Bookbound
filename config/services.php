@@ -56,6 +56,11 @@ return [
         'key' => env('ISBNDB_API_KEY'),
     ],
 
+    'weather' => [
+        'ip_geolocation_url' => env('WEATHER_IP_GEOLOCATION_URL', 'https://ipapi.co'),
+        'forecast_url' => env('WEATHER_FORECAST_URL', 'https://api.open-meteo.com/v1/forecast'),
+    ],
+
     'turnstile' => [
         'url' => env('TURNSTILE_API_URL', 'https://challenges.cloudflare.com/turnstile/v0/siteverify'),
         'site_key' => env('TURNSTILE_SITE_KEY'),

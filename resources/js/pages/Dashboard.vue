@@ -30,6 +30,13 @@ type Stats = {
     planToRead: number | string;
 };
 
+type Weather = {
+    condition: string;
+    icon: string;
+    label: string;
+    isFallback: boolean;
+};
+
 const props = defineProps({
     activities: {
         type: Array as PropType<Activity[]>,
@@ -54,6 +61,10 @@ const props = defineProps({
     authors: {
         type: Array as PropType<Author[]>,
         default: () => []
+    },
+    weather: {
+        type: Object as PropType<Weather | null>,
+        default: null
     },
     insights: {
         type: Object,
@@ -144,6 +155,42 @@ const timeOfDay = computed(() => {
     return 'evening'
 })
 
+const fallbackWeather = computed(() => {
+    if (timeOfDay.value === 'morning') {
+        return {
+            icon: 'Sun',
+            label: 'Morning'
+        }
+    }
+
+    if (timeOfDay.value === 'afternoon') {
+        return {
+            icon: 'SunMedium',
+            label: 'Afternoon'
+        }
+    }
+
+    return {
+        icon: 'MoonStar',
+        label: 'Evening'
+    }
+})
+
+const greetingWeather = computed(() => {
+    if (!props.weather) {
+        return fallbackWeather.value
+    }
+
+    if (props.weather.isFallback) {
+        return fallbackWeather.value
+    }
+
+    return {
+        icon: props.weather.icon,
+        label: props.weather.label
+    }
+})
+
 defineOptions({ layout: AppLayout })
 </script>
 
@@ -222,8 +269,19 @@ defineOptions({ layout: AppLayout })
         <header class="mt-4 mb-8 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-10 md:items-center">
             <div
                 v-if="authedUser"
-                class="flex flex-col">
-                <h1 class="font-serif text-2xl font-bold tracking-tight text-primary md:text-5xl">
+                class="flex w-full flex-col">
+                <h1
+                    class="flex w-full items-center gap-2 font-serif text-2xl font-bold tracking-tight text-primary md:gap-3 md:text-5xl"
+                >
+                    <span
+                        class="inline-flex items-center"
+                        :aria-label="greetingWeather.label">
+                        <Icon
+                            :name="greetingWeather.icon"
+                            class="size-5 text-primary md:size-10" />
+                        <span class="sr-only">{{ greetingWeather.label }}</span>
+                    </span>
+
                     Good {{ timeOfDay }}, {{ firstName }}
                 </h1>
                 <p class="font-serif text-lg text-primary/80 italic">
@@ -325,7 +383,7 @@ defineOptions({ layout: AppLayout })
 
                         <div
                             v-if="recommendations && recommendations.length"
-                            class="-mx-4 pb-4 flex gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 md:grid-cols-3 lg:grid-cols-5"
+                            class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 md:grid-cols-3 lg:grid-cols-5"
                         >
                             <BookCard
                                 v-for="recommendation in recommendations"
