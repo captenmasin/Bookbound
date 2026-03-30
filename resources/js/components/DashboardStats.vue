@@ -53,7 +53,7 @@ withDefaults(
                     Top genres
                 </p>
                 <p class="text-lg font-semibold text-[#2d2a26]">
-                    etc
+                    [TODO]
                 </p>
             </div>
         </div>

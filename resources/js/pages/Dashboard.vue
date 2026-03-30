@@ -242,7 +242,7 @@ defineOptions({ layout: AppLayout })
                     class="group relative flex items-center border border-card-outline bg-card px-4 py-3 text-primary hover:brightness-95 md:p-8 md:transition-all"
                 >
                     <div class="w-full">
-                        <p class="pr-5 text-xs tracking-wider text-primary/50 uppercase">
+                        <p class="mb-2 pr-5 text-xs tracking-wider text-primary/50 uppercase">
                             {{ stat.name }}
                         </p>
                         <div class="flex w-full items-center justify-between">
@@ -259,13 +259,13 @@ defineOptions({ layout: AppLayout })
             </div>
         </section>
 
-        <div class="mt-4 flex flex-col items-start gap-6 md:mt-16 md:flex-row md:gap-18">
+        <div class="mt-10 flex flex-col items-start gap-6 md:mt-16 md:flex-row md:gap-18">
             <div class="flex w-full flex-col md:mt-0 md:w-auto md:flex-1">
                 <section>
-                    <div class="flex items-center justify-between">
+                    <div class="mb-3 flex items-center justify-between">
                         <h2
                             v-if="currentlyReading && currentlyReading.length"
-                            class="mb-6 font-serif text-2xl font-semibold text-primary">
+                            class="font-serif text-2xl font-semibold text-primary">
                             Currently reading
                         </h2>
                         <Button
@@ -308,8 +308,8 @@ defineOptions({ layout: AppLayout })
                     </article>
                 </section>
 
-                <section class="mt-4 md:mt-12">
-                    <div class="mb-6 flex items-center justify-between">
+                <section class="mt-10 md:mt-12">
+                    <div class="mb-3 flex items-center justify-between">
                         <h2 class="font-serif text-2xl font-semibold text-primary">
                             Recommended next
                         </h2>
@@ -325,7 +325,7 @@ defineOptions({ layout: AppLayout })
 
                         <div
                             v-if="recommendations && recommendations.length"
-                            class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 md:grid-cols-3 lg:grid-cols-5"
+                            class="-mx-4 pb-4 flex gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 md:grid-cols-3 lg:grid-cols-5"
                         >
                             <BookCard
                                 v-for="recommendation in recommendations"
@@ -361,7 +361,7 @@ defineOptions({ layout: AppLayout })
 
                 <section
                     v-if="activities && activities.length"
-                    class="mt-4 md:mt-12">
+                    class="mt-8 md:mt-12">
                     <div class="mb-1 flex items-center justify-between">
                         <h2 class="mb-2 font-serif text-2xl font-semibold text-primary">
                             Recent activity
@@ -389,7 +389,7 @@ defineOptions({ layout: AppLayout })
                                     {{ useTimeAgo(activity.created_at) }}
                                 </p>
                                 <p
-                                    class="font-serif text-pretty"
+                                    class="font-serif text-sm text-pretty md:text-base"
                                     v-html="activity.description" />
                             </div>
                         </div>
