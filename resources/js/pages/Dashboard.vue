@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
-import Image from '@/components/Image.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import TagCloud from '@/components/TagCloud.vue'
 import BookCard from '@/components/books/BookCard.vue'
@@ -8,6 +7,7 @@ import DashboardStats from '@/components/DashboardStats.vue'
 import BookDisplay from '@/components/books/BookDisplay.vue'
 import { Tag } from '@/types/tag'
 import { Author } from '@/types/author'
+import { useTimeAgo } from '@vueuse/core'
 import { Activity } from '@/types/activity'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
@@ -19,7 +19,6 @@ import { useAuthedUser } from '@/composables/useAuthedUser'
 import { useCookies } from '@vueuse/integrations/useCookies'
 import { Deferred, Link, router, usePage } from '@inertiajs/vue3'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { breakpointsTailwind, useBreakpoints, useTimeAgo } from '@vueuse/core'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 type Stats = {
@@ -60,6 +59,10 @@ const props = defineProps({
     },
     authors: {
         type: Array as PropType<Author[]>,
+        default: () => []
+    },
+    topGenres: {
+        type: Array as PropType<string[]>,
         default: () => []
     },
     weather: {
@@ -270,9 +273,7 @@ defineOptions({ layout: AppLayout })
             <div
                 v-if="authedUser"
                 class="flex w-full flex-col">
-                <h1
-                    class="flex w-full items-center gap-2 font-serif text-2xl font-bold tracking-tight text-primary md:gap-3 md:text-5xl"
-                >
+                <h1 class="flex w-full items-center gap-2 font-serif text-2xl font-bold tracking-tight text-primary md:gap-3 md:text-5xl">
                     <span
                         class="inline-flex items-center"
                         :aria-label="greetingWeather.label">
@@ -383,7 +384,7 @@ defineOptions({ layout: AppLayout })
 
                         <div
                             v-if="recommendations && recommendations.length"
-                            class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 md:grid-cols-3 lg:grid-cols-5"
+                            class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 md:grid-cols-3 lg:grid-cols-5"
                         >
                             <BookCard
                                 v-for="recommendation in recommendations"
@@ -395,23 +396,16 @@ defineOptions({ layout: AppLayout })
 
                         <article
                             v-else
-                            class="rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground"
+                            class="rounded-lg border-2 border-dashed border-primary/10 px-4 py-16 text-center text-sm text-muted-foreground"
                         >
                             <Icon
                                 name="Sparkles"
-                                class="mx-auto size-8" />
-                            <h3 class="mt-2 font-serif text-2xl font-semibold text-primary">
-                                Recommended next
-                            </h3>
-                            <p
-                                v-if="statValues.booksInLibrary < 2"
-                                class="mt-2">
+                                class="mx-auto size-6" />
+                            <!--                            <h3 class="mt-2 font-serif text-2xl font-semibold text-primary">-->
+                            <!--                                Recommended next-->
+                            <!--                            </h3>-->
+                            <p class="mt-2">
                                 Add a couple more books to your library to unlock recommendations.
-                            </p>
-                            <p
-                                v-else
-                                class="mt-2">
-                                Import more titles into your catalog to broaden your recommendations.
                             </p>
                         </article>
                     </Deferred>
@@ -455,7 +449,9 @@ defineOptions({ layout: AppLayout })
                 </section>
             </div>
             <div class="flex w-full flex-col gap-8 md:w-1/4">
-                <DashboardStats :insights="insights" />
+                <DashboardStats
+                    :insights="insights"
+                    :top-genres="topGenres" />
 
                 <Card>
                     <CardTitle class="mb-2">

@@ -9,8 +9,11 @@ withDefaults(
             read: 0;
             dropped: 0;
         };
+        topGenres?: string[];
     }>(),
-    {}
+    {
+        topGenres: () => []
+    }
 )
 </script>
 
@@ -44,16 +47,24 @@ withDefaults(
         </div>
 
         <div class="mt-8 flex items-center gap-4">
-            <div class="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+            <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                 <CircleGaugeIcon class="size-5" />
             </div>
 
-            <div>
+            <div v-if="topGenres">
                 <p class="text-xs tracking-wide text-[#9c8f83] uppercase">
                     Top genres
                 </p>
-                <p class="text-lg font-semibold text-[#2d2a26]">
-                    [TODO]
+                <p
+                    v-if="topGenres.length"
+                    class="text-sm leading-[1.25] text-pretty font-semibold text-[#2d2a26]">
+                    {{ topGenres.join(', ') }}
+                </p>
+
+                <p
+                    v-else
+                    class="text-sm text-muted-foreground">
+                    Add more books to see your top genres.
                 </p>
             </div>
         </div>

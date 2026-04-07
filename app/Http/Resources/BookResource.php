@@ -32,8 +32,8 @@ class BookResource extends JsonResource
             'published_date' => Str::before($this->published_date, ' '),
             'tags' => $this->whenLoaded('tags', fn () => TagResource::collection($this->tags)),
             'page_count' => $this->page_count,
-            'categories' => $this->categories ?? null,
-            'primary_category' => $this->categories[0] ?? null,
+            'categories' => $this->whenLoaded('categories', fn () => $this->categories->pluck('name')->values()->all()),
+            'primary_category' => $this->whenLoaded('categories', fn () => $this->categories->first()?->name),
 
             'has_custom_cover' => $user ? $this->hasCustomCover($user) : false,
             'cover' => $this->getCover($user),
@@ -50,6 +50,7 @@ class BookResource extends JsonResource
             'in_library' => $user && $this->isInLibrary($user),
             'user_status' => $user ? $this->getUserStatus($user) : null,
             'user_tags' => $user ? $this->getUserTags($user) : [],
+            'user_read_at' => $user ? $this->getUserReadAt($user) : null,
 
             'edition' => $this->edition,
             'binding' => self::normalizeBinding($this->binding),
@@ -120,6 +121,11 @@ class BookResource extends JsonResource
     protected function getUserTags(User $user): ?array
     {
         return $this->getUserPivot($user)?->tags;
+    }
+
+    protected function getUserReadAt(User $user): ?string
+    {
+        return $this->getUserPivot($user)?->read_at?->toIso8601String();
     }
 
     protected function getUserReview(?User $user = null): ?ReviewResource

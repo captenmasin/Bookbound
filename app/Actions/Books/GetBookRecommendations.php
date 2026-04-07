@@ -68,7 +68,7 @@ class GetBookRecommendations
     protected function getLibraryBooks(User $user): Collection
     {
         return $user->books()
-            ->with(['authors', 'tags'])
+            ->with(['authors', 'categories', 'tags'])
             ->withPivot(['status', 'created_at', 'updated_at'])
             ->get();
     }
@@ -128,7 +128,7 @@ class GetBookRecommendations
         }
 
         return [
-            'book' => $book->loadMissing(['authors', 'tags', 'publisher']),
+            'book' => $book->loadMissing(['authors', 'categories', 'tags', 'publisher']),
             'reason' => $recommendation['reason'],
         ];
     }
@@ -150,7 +150,7 @@ class GetBookRecommendations
             ->values();
 
         $candidates = Book::query()
-            ->with(['authors', 'tags', 'publisher'])
+            ->with(['authors', 'categories', 'tags', 'publisher'])
             ->whereNotIn('id', $excludedBookIds)
             ->where(function ($query) use ($recommendation, $titleTokens, $authorTokens): void {
                 $query->whereRaw('LOWER(title) LIKE ?', ['%'.Str::lower($recommendation['title']).'%']);

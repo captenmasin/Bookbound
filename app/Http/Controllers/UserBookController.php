@@ -8,10 +8,10 @@ use App\Enums\ActivityType;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Enums\UserBookStatus;
-use App\Http\Resources\TagResource;
 use App\Http\Resources\BookResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\AuthorResource;
+use App\Http\Resources\CategoryResource;
 use App\Http\Requests\Books\DestroyBookUserRequest;
 
 class UserBookController extends Controller
@@ -20,6 +20,7 @@ class UserBookController extends Controller
     {
         $bookQuery = Auth::user()->books()->with([
             'authors',
+            'categories',
             'ratings',
             'users' => fn ($q) => $q->where('user_id', auth()->id()),
         ]);
@@ -33,30 +34,28 @@ class UserBookController extends Controller
             }
         }
 
-        if ($request->filled('tag')) {
-            $tagSlug = $request->get('tag');
-            $bookQuery->whereHas('tags', function ($query) use ($tagSlug) {
-                $query->where('slug', $tagSlug);
-            });
+        if ($request->filled('category')) {
+            $category = $request->input('category');
+            $bookQuery->whereHas('categories', fn ($query) => $query->where('slug', $category));
         }
 
         if ($request->filled('search')) {
-            $search = strtolower($request->get('search'));
-            $bookQuery->where(function ($query) use ($search) {
-                $query
-                    ->whereRaw('LOWER(title) LIKE ?', ["%{$search}%"])
-                    ->orWhereRaw('LOWER(description) LIKE ?', ["%{$search}%"])
-                    ->orWhereHas('authors', fn ($q) => $q->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]))
-                    ->orWhereRaw('LOWER(identifier) LIKE ?', ["%{$search}%"]);
-            });
+            $matchingBookIds = Book::search($request->string('search')->value())
+                ->keys();
+
+            if ($matchingBookIds->isEmpty()) {
+                $bookQuery->whereRaw('0 = 1');
+            } else {
+                $bookQuery->whereIn('books.id', $matchingBookIds);
+            }
         }
 
-        $sort = in_array($request->get('sort'), ['title', 'rating', 'published_date', 'added', 'author', 'colour'])
-            ? $request->get('sort')
+        $sort = in_array($request->input('sort'), ['title', 'rating', 'published_date', 'added', 'author', 'colour'])
+            ? $request->input('sort')
             : null;
 
         $books = $bookQuery->get();
-        $direction = $request->get('order', 'desc');
+        $direction = $request->input('order', 'desc');
         $desc = $direction === 'desc';
 
         if ($sort === 'title') {
@@ -94,31 +93,34 @@ class UserBookController extends Controller
         }
 
         if ($request->filled('author')) {
-            $authorSlug = $request->get('author');
+            $authorSlug = $request->input('author');
             $books = $books->filter(function ($book) use ($authorSlug) {
                 return $book->authors->contains('slug', $authorSlug);
             });
         }
 
-        $selectedStatuses = $request->get('status', []);
+        $selectedStatuses = $request->input('status', []);
 
         return Inertia::render('books/Index', [
             'totalBooks' => $request->user()->books->count(),
             'books' => BookResource::collection($books),
             'selectedStatuses' => $selectedStatuses,
-            'selectedAuthor' => $request->get('author'),
-            'selectedTag' => $request->get('tag'),
+            'selectedAuthor' => $request->input('author'),
+            'selectedCategory' => $request->input('category'),
             'selectedSort' => $sort,
-            'selectedOrder' => $request->get('order', 'desc'),
-            'searchQuery' => $request->get('search', ''),
+            'selectedOrder' => $request->input('order', 'desc'),
+            'searchQuery' => $request->input('search', ''),
 
             'authors' => Inertia::defer(fn () => AuthorResource::collection($request->user()->books->load('authors')->flatMap(function ($book) {
                 return $book->authors;
             })->sortBy('name')->all())),
 
-            'tags' => Inertia::defer(fn () => TagResource::collection($request->user()->books->load('tags')->flatMap(function ($book) {
-                return $book->tags;
-            })->unique('slug')->all())),
+            'categories' => Inertia::defer(fn () => CategoryResource::collection($request->user()->books
+                ->load('categories')
+                ->flatMap(fn ($book) => $book->categories)
+                ->unique('slug')
+                ->sortBy('name')
+                ->values())),
 
             'breadcrumbs' => [
                 ['title' => 'Dashboard', 'href' => route('dashboard')],
@@ -133,7 +135,7 @@ class UserBookController extends Controller
     public function updateTags(Request $request, Book $book)
     {
         $bookUser = $request->user()->books()->where('book_id', $book->id)->first()?->pivot;
-        $bookUser->tags = $request->get('tags', []);
+        $bookUser->tags = $request->input('tags', []);
         $bookUser->save();
 
         return redirect()->back()

@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\Author;
 use App\Models\BookUser;
+use App\Models\Category;
 use App\Enums\UserBookStatus;
 use Illuminate\Support\Collection;
 use Laravel\Ai\Messages\UserMessage;
@@ -20,7 +21,6 @@ test('it recommends concrete books from the user library profile', function () {
 
     $libraryBook = Book::factory()->make([
         'title' => 'Dune',
-        'categories' => ['Science Fiction'],
         'language' => 'en',
     ]);
     $libraryBook->setRelation('pivot', new BookUser([
@@ -32,6 +32,9 @@ test('it recommends concrete books from the user library profile', function () {
     ]));
     $libraryBook->setRelation('tags', new Collection([
         new Tag(['id' => 20, 'name' => 'Space Opera']),
+    ]));
+    $libraryBook->setRelation('categories', new Collection([
+        new Category(['id' => 30, 'name' => 'Science Fiction']),
     ]));
 
     BookRecommendationAgent::fake([

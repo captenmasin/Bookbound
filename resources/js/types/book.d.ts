@@ -33,6 +33,7 @@ export type Book = {
     primary_category?: string,
     user_notes?: Note[],
     user_tags: string[],
+    user_read_at?: string | null,
     edition: string,
     binding: string,
     type: BookType,

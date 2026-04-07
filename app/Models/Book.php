@@ -34,7 +34,6 @@ class Book extends Model implements HasMedia
         return [
             'codes' => 'array',
             'embedding' => 'array',
-            'categories' => 'array',
         ];
     }
 
@@ -63,6 +62,7 @@ class Book extends Model implements HasMedia
             'description' => $this->description,
             'authors' => $this->authors()->get()->pluck('name')->toArray(),
             'tags' => $this->tags()->get()->pluck('name')->toArray(),
+            'categories' => $this->categories()->get()->pluck('name')->toArray(),
             'identifier' => $this->identifier,
             'path' => $this->path,
         ];
@@ -160,11 +160,16 @@ class Book extends Model implements HasMedia
         return $this->belongsToMany(Tag::class);
     }
 
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class);
+    }
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
             ->using(BookUser::class)
-            ->withPivot(['status', 'tags', 'created_at', 'updated_at']);
+            ->withPivot(['status', 'tags', 'read_at', 'created_at', 'updated_at']);
     }
 
     public function notes(): HasMany

@@ -4,13 +4,17 @@ use App\Models\Tag;
 use App\Models\Book;
 use App\Models\User;
 use App\Models\Author;
+use App\Models\Category;
 use App\Enums\UserBookStatus;
+use Illuminate\Support\Facades\Queue;
 use App\Actions\Books\ImportBookFromData;
 use App\Actions\Books\SearchBooksFromApi;
 use App\Ai\Agents\BookRecommendationAgent;
 use App\Actions\Books\GetBookRecommendations;
 
 it('returns a locally matched recommendation for a user library', function () {
+    Queue::fake();
+
     $user = User::factory()->create();
     $sharedAuthor = Author::factory()->create([
         'name' => 'Frank Herbert',
@@ -18,20 +22,20 @@ it('returns a locally matched recommendation for a user library', function () {
     $sharedTag = Tag::factory()->create([
         'name' => 'Space Opera',
     ]);
+    $scienceFiction = Category::create([
+        'name' => 'Science Fiction',
+    ]);
 
     $readBook = Book::factory()->create([
         'title' => 'Dune',
-        'categories' => ['Science Fiction'],
         'language' => 'en',
     ]);
     $readingBook = Book::factory()->create([
         'title' => 'Hyperion',
-        'categories' => ['Science Fiction'],
         'language' => 'en',
     ]);
     $candidateBook = Book::factory()->create([
         'title' => 'Children of Time',
-        'categories' => ['Science Fiction'],
         'language' => 'en',
     ]);
     $candidateAuthor = Author::factory()->create([
@@ -40,10 +44,13 @@ it('returns a locally matched recommendation for a user library', function () {
 
     $readBook->authors()->attach($sharedAuthor);
     $readBook->tags()->attach($sharedTag);
+    $readBook->categories()->attach($scienceFiction);
     $readingBook->authors()->attach($sharedAuthor);
     $readingBook->tags()->attach($sharedTag);
+    $readingBook->categories()->attach($scienceFiction);
     $candidateBook->authors()->attach($candidateAuthor);
     $candidateBook->tags()->attach($sharedTag);
+    $candidateBook->categories()->attach($scienceFiction);
 
     $user->books()->attach($readBook, ['status' => UserBookStatus::Read->value]);
     $user->books()->attach($readingBook, ['status' => UserBookStatus::Reading->value]);
@@ -67,6 +74,8 @@ it('returns a locally matched recommendation for a user library', function () {
 });
 
 it('imports a missing recommendation from the api and does not add it to the user library', function () {
+    Queue::fake();
+
     $user = User::factory()->create();
     $sharedAuthor = Author::factory()->create([
         'name' => 'Octavia E. Butler',
@@ -74,28 +83,31 @@ it('imports a missing recommendation from the api and does not add it to the use
     $sharedTag = Tag::factory()->create([
         'name' => 'Speculative Fiction',
     ]);
+    $scienceFiction = Category::create([
+        'name' => 'Science Fiction',
+    ]);
 
     $readBook = Book::factory()->create([
         'title' => 'Kindred',
-        'categories' => ['Science Fiction'],
         'language' => 'en',
     ]);
     $readingBook = Book::factory()->create([
         'title' => 'Parable of the Sower',
-        'categories' => ['Science Fiction'],
         'language' => 'en',
     ]);
     $importedBook = Book::factory()->create([
         'identifier' => 'imported-dawn',
         'title' => 'Dawn',
-        'categories' => ['Science Fiction'],
         'language' => 'en',
     ]);
 
     $readBook->authors()->attach($sharedAuthor);
     $readBook->tags()->attach($sharedTag);
+    $readBook->categories()->attach($scienceFiction);
     $readingBook->authors()->attach($sharedAuthor);
     $readingBook->tags()->attach($sharedTag);
+    $readingBook->categories()->attach($scienceFiction);
+    $importedBook->categories()->attach($scienceFiction);
 
     $user->books()->attach($readBook, ['status' => UserBookStatus::Read->value]);
     $user->books()->attach($readingBook, ['status' => UserBookStatus::Reading->value]);
@@ -112,6 +124,13 @@ it('imports a missing recommendation from the api and does not add it to the use
     ]);
 
     $searchMock = Mockery::mock(SearchBooksFromApi::class);
+    $searchMock->shouldReceive('handle')
+        ->once()
+        ->with('Dawn Octavia E. Butler', null, null, 10, 1)
+        ->andReturn([
+            'total' => 0,
+            'books' => [],
+        ]);
     $searchMock->shouldReceive('handle')
         ->once()
         ->with('Dawn', 'Octavia E. Butler', null, 10, 1)

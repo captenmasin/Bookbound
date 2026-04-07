@@ -3,8 +3,8 @@ import { useId } from 'reka-ui'
 import { Checkbox } from '@/components/ui/checkbox'
 
 interface Option {
-    label: string
-    value: string
+    label: string;
+    value: string;
 }
 
 const props = defineProps({
@@ -38,32 +38,35 @@ function isChecked (index: number) {
             :key="option.value">
             <label
                 :class="[
-                    proxyStatus?.includes(option.value) ? 'bg-accent' : '',
+                    proxyStatus?.includes(option.value) ? '' : '',
                     isChecked(index - 1) ? 'rounded-t-none' : '',
                     isChecked(index + 1) ? 'rounded-b-none' : '',
-                    !isChecked(index) ? 'text-secondary-foreground hover:text-gray-900 dark:hover:text-white/80' : 'text-gray-900 dark:text-white'
+                    !isChecked(index) ? 'text-secondary-foreground hover:text-gray-900 dark:hover:text-white/80' : 'text-gray-900 dark:text-white',
                 ]"
-                class="flex w-full cursor-pointer items-center justify-between rounded-md p-2 transition-all"
-                :for="`${idPrefix}-${option.value}`">
-                <span class="text-sm">
-                    {{ option.label }}
-                </span>
+                class="flex w-full cursor-pointer items-center py-1.5 gap-2 transition-all"
+                :for="`${idPrefix}-${option.value}`"
+            >
                 <Checkbox
                     :id="`${idPrefix}-${option.value}`"
                     :checked="proxyStatus?.includes(option.value)"
-                    @update:checked="checked => {
-                        if (!proxyStatus) return
+                    @update:checked="
+                        (checked) => {
+                            if (!proxyStatus) return;
 
-                        if (checked) {
-                            if (!proxyStatus.includes(option.value)) {
-                                proxyStatus.push(option.value)
+                            if (checked) {
+                                if (!proxyStatus.includes(option.value)) {
+                                    proxyStatus.push(option.value);
+                                }
+                            } else {
+                                const i = proxyStatus.indexOf(option.value);
+                                if (i !== -1) proxyStatus.splice(i, 1);
                             }
-                        } else {
-                            const i = proxyStatus.indexOf(option.value)
-                            if (i !== -1) proxyStatus.splice(i, 1)
                         }
-                    }"
+                    "
                 />
+                <span class="text-sm">
+                    {{ option.label }}
+                </span>
             </label>
         </li>
     </ul>

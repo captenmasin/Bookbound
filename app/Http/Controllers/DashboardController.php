@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $request->user()->load('activities');
 
         $books = $request->user()->books()
-            ->with(['authors', 'tags', 'notes'])
+            ->with(['authors', 'categories', 'tags', 'notes'])
             ->withPivot('status', 'created_at')
             ->get();
 
@@ -66,6 +66,7 @@ class DashboardController extends Controller
             ),
             'tags' => TagResource::collection($request->user()->getTags()),
             'authors' => AuthorResource::collection($request->user()->getAuthors()->get()),
+            'topGenres' => $request->user()->getTopGenres(),
             'weather' => Inertia::defer(fn () => new DashboardWeatherResolver()->resolve($request)),
             'breadcrumbs' => [
                 ['title' => 'Dashboard', 'href' => route('dashboard')],

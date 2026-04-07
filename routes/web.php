@@ -15,6 +15,7 @@ use App\Http\Controllers\BookCoverController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ActivitiesController;
 use App\Http\Controllers\GeneralPageController;
+use App\Http\Controllers\GoodreadsImportController;
 use App\Http\Controllers\ImageTransformerController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\PasswordController;
@@ -91,6 +92,12 @@ Route::middleware(['auth', 'verified'])->name('user.')->group(function () {
     Route::prefix('books')->name('books.')->controller(UserBookController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::put('{book:identifier}/tags', 'updateTags')->name('update_tags');
+    });
+
+    Route::prefix('books/imports')->name('books.imports.')->controller(GoodreadsImportController::class)->group(function () {
+        Route::get('goodreads', 'create')->name('create');
+        Route::post('goodreads', 'store')->name('store');
+        Route::get('goodreads/{goodreadsImport}', 'show')->name('show');
     });
 
     // Authenticated user settings routes

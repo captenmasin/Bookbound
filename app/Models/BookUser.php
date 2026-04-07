@@ -8,7 +8,13 @@ class BookUser extends Pivot
 {
     protected $table = 'book_user';
 
-    protected $casts = [
-        'tags' => 'json',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'tags' => 'json',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'read_at' => 'datetime',
+        ];
+    }
 }

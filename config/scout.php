@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Book;
+
 return [
 
     /*
@@ -16,7 +18,7 @@ return [
     |
     */
 
-    'driver' => env('SCOUT_DRIVER', 'algolia'),
+    'driver' => env('SCOUT_DRIVER', 'meilisearch'),
 
     /*
     |--------------------------------------------------------------------------
@@ -137,12 +139,49 @@ return [
     */
 
     'meilisearch' => [
-        'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
+        'host' => rtrim(env('MEILISEARCH_HOST', 'http://127.0.0.1:7700'), '/'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
-            // 'users' => [
-            //     'filterableAttributes'=> ['id', 'name', 'email'],
-            // ],
+            Book::class => [
+                'searchableAttributes' => [
+                    'title',
+                    'authors',
+                    'identifier',
+                    'description',
+                    'tags',
+                ],
+                'sortableAttributes' => [
+                    'title',
+                    'published_date',
+                    'id',
+                ],
+                'filterableAttributes' => [
+                    'id',
+                    'identifier',
+                    'path',
+                ],
+                'synonyms' => [
+                    'sci-fi' => ['science fiction', 'sci fi', 'scifi'],
+                    'ya' => ['young adult'],
+                    'thriller' => ['suspense', 'psychological thriller'],
+                    'rom-com' => ['romantic comedy'],
+                    'non-fiction' => ['nonfiction', 'fact', 'true story'],
+                    'historical fiction' => ['historical novel'],
+                    'memoir' => ['autobiography', 'life story'],
+                    'self-help' => ['self improvement', 'personal development'],
+                    'crime' => ['detective', 'mystery', 'whodunit'],
+                    'fantasy' => ['epic fantasy', 'urban fantasy', 'magic'],
+                    'dystopia' => ['dystopian', 'post-apocalyptic'],
+                    'graphic novel' => ['comic book', 'manga'],
+                    'classic' => ['literature', 'canonical'],
+                    'children' => ['kids', 'childrens', 'young readers'],
+                    'teen' => ['ya', 'young adult', 'teenager'],
+                    'adult' => ['mature', 'grown-up'],
+                    'humor' => ['funny', 'comedy', 'humour'],
+                    'horror' => ['scary', 'terror', 'ghost'],
+                    'poetry' => ['poems', 'verse'],
+                ],
+            ],
         ],
     ],
 

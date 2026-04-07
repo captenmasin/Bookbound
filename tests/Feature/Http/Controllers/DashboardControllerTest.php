@@ -5,12 +5,14 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\Author;
 use App\Models\Activity;
+use App\Models\Category;
 use App\Enums\UserBookStatus;
 
 use function Pest\Laravel\get;
 use function Pest\Laravel\actingAs;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use App\Ai\Agents\BookRecommendationAgent;
 
 describe('DashboardController', function () {
@@ -302,6 +304,41 @@ describe('DashboardController', function () {
         );
     });
 
+    it('displays top genres from user books', function () {
+        Queue::fake();
+
+        $user = User::factory()->create();
+        $scienceFiction = Category::create([
+            'name' => 'Science Fiction',
+        ]);
+        $spaceOpera = Category::create([
+            'name' => 'Space Opera',
+        ]);
+        $literaryFiction = Category::create([
+            'name' => 'Literary Fiction',
+        ]);
+
+        $dune = Book::factory()->create();
+        $hyperion = Book::factory()->create();
+        $suttree = Book::factory()->create();
+
+        $dune->categories()->attach([$scienceFiction->id, $spaceOpera->id]);
+        $hyperion->categories()->attach($scienceFiction);
+        $suttree->categories()->attach($literaryFiction);
+
+        $user->books()->attach($dune->id, ['status' => UserBookStatus::Read->value]);
+        $user->books()->attach($hyperion->id, ['status' => UserBookStatus::Reading->value]);
+        $user->books()->attach($suttree->id, ['status' => UserBookStatus::PlanToRead->value]);
+
+        actingAs($user);
+
+        $response = get('/dashboard');
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->where('topGenres', ['Science Fiction', 'Space Opera', 'Literary Fiction'])
+        );
+    });
+
     it('displays recent user activities', function () {
         $user = User::factory()->create();
 
@@ -340,6 +377,7 @@ describe('DashboardController', function () {
             ->has('activities')
             ->has('tags', 0)
             ->has('authors', 0)
+            ->where('topGenres', [])
         );
     });
 
@@ -435,6 +473,8 @@ describe('DashboardController', function () {
     });
 
     it('displays ai-powered recommendations based on the user library', function () {
+        Queue::fake();
+
         $user = User::factory()->create();
         $author = Author::factory()->create([
             'name' => 'Frank Herbert',
@@ -442,28 +482,31 @@ describe('DashboardController', function () {
         $tag = Tag::factory()->create([
             'name' => 'Space Opera',
         ]);
+        $scienceFiction = Category::create([
+            'name' => 'Science Fiction',
+        ]);
 
         $readBook = Book::factory()->create([
             'title' => 'Dune',
-            'categories' => ['Science Fiction'],
             'language' => 'en',
         ]);
         $readingBook = Book::factory()->create([
             'title' => 'Hyperion',
-            'categories' => ['Science Fiction'],
             'language' => 'en',
         ]);
         $recommendedBook = Book::factory()->create([
             'title' => 'Children of Time',
-            'categories' => ['Science Fiction'],
             'language' => 'en',
         ]);
 
         $readBook->authors()->attach($author);
         $readBook->tags()->attach($tag);
+        $readBook->categories()->attach($scienceFiction);
         $readingBook->authors()->attach($author);
         $readingBook->tags()->attach($tag);
+        $readingBook->categories()->attach($scienceFiction);
         $recommendedBook->tags()->attach($tag);
+        $recommendedBook->categories()->attach($scienceFiction);
 
         $user->books()->attach($readBook->id, ['status' => UserBookStatus::Read->value]);
         $user->books()->attach($readingBook->id, ['status' => UserBookStatus::Reading->value]);

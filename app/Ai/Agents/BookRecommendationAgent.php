@@ -28,7 +28,7 @@ class BookRecommendationAgent implements Agent, Conversational, HasStructuredOut
         public User $user,
         public Collection $libraryBooks,
     ) {
-        $this->libraryBooks->each(fn (Book $book) => $book->loadMissing(['authors', 'tags']));
+        $this->libraryBooks->each(fn (Book $book) => $book->loadMissing(['authors', 'categories', 'tags']));
     }
 
     public function instructions(): Stringable|string
@@ -176,7 +176,7 @@ PROMPT;
             ->implode(', ');
 
         $topCategories = $this->libraryBooks
-            ->flatMap(fn (Book $book): array => $book->categories ?? [])
+            ->flatMap(fn (Book $book) => $book->categories->pluck('name'))
             ->filter()
             ->countBy()
             ->sortDesc()

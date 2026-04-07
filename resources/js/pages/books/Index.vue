@@ -7,11 +7,10 @@ import CheckboxList from '@/components/CheckboxList.vue'
 import ShelfView from '@/components/books/ShelfView.vue'
 import BookViewTabs from '@/components/books/BookViewTabs.vue'
 import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
-import { Tag } from '@/types/tag'
 import type { Book } from '@/types/book'
 import type { Author } from '@/types/author'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
 import { useUrlSearchParams } from '@vueuse/core'
@@ -19,8 +18,19 @@ import { Link, router, usePage } from '@inertiajs/vue3'
 import { useUserSettings } from '@/composables/useUserSettings'
 import { useUserBookStatus } from '@/composables/useUserBookStatus'
 import { computed, nextTick, ref, watch, type PropType } from 'vue'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select'
+
+type CategoryOption = {
+    name: string;
+    slug: string;
+};
 
 /* --------------------------------------------------------------------------
  * Props & Refs
@@ -30,11 +40,17 @@ const props = defineProps({
     totalBooks: { type: Number, default: 0 },
     selectedStatuses: { type: Array as PropType<string[]>, default: () => [] },
     selectedAuthor: { type: String as PropType<string | null>, default: null },
-    selectedTag: { type: String as PropType<string | null>, default: null },
+    selectedCategory: {
+        type: String as PropType<string | null>,
+        default: null
+    },
     selectedSort: { type: String, default: null },
     selectedOrder: { type: String, default: 'desc' },
     authors: { type: Array as PropType<Author[]>, default: () => [] },
-    tags: { type: Array as PropType<Tag[]>, default: () => [] }
+    categories: {
+        type: Array as PropType<CategoryOption[]>,
+        default: () => []
+    }
 })
 
 const params = useUrlSearchParams('history')
@@ -44,18 +60,28 @@ const { possibleStatuses } = useUserBookStatus()
 const searchInput = ref<HTMLInputElement | null>(null)
 const search = ref(String(params.search || ''))
 const currentSearch = ref(String(params.search || ''))
-const displayFilters = ref(search.value !== '' || props.selectedStatuses.length > 0 || props.selectedAuthor !== null)
+const displayFilters = ref(
+    search.value !== '' ||
+        props.selectedStatuses.length > 0 ||
+        props.selectedAuthor !== null
+)
 
 /** Filters -------------------------------------------------------------- */
 const status = ref<string[]>(props.selectedStatuses)
 const author = ref<string | null>(props.selectedAuthor)
-const tag = ref<string | null>(props.selectedTag)
+const category = ref<string | null>(props.selectedCategory)
 const sort = ref(props.selectedSort)
 const order = ref<'asc' | 'desc'>(props.selectedOrder as 'asc' | 'desc')
 
 /** View preferences ----------------------------------------------------- */
 const page = usePage()
-const view = ref<'list' | 'grid' | 'shelf'>((page.props.auth.user?.settings?.library.view as 'list' | 'grid' | 'shelf' | undefined) ?? 'grid')
+const view = ref<'list' | 'grid' | 'shelf'>(
+    (page.props.auth.user?.settings?.library.view as
+        | 'list'
+        | 'grid'
+        | 'shelf'
+        | undefined) ?? 'grid'
+)
 const { updateSingleSetting } = useUserSettings()
 
 /** Options -------------------------------------------------------------- */
@@ -72,11 +98,11 @@ const sortOptions = [
  * Watchers
  * -------------------------------------------------------------------------- */
 watch(
-    [author, tag, status, sort, order],
+    [author, category, status, sort, order],
     () => {
         Object.assign(params, {
             author: author.value,
-            tag: tag.value,
+            category: category.value,
             status: status.value,
             sort: sort.value,
             order: order.value
@@ -94,7 +120,13 @@ watch(view, (newView) => updateSingleSetting('library.view', newView))
 const filteredBooks = computed(() => props.books ?? [])
 
 const hasFiltered = computed(
-    () => !!currentSearch.value || !!author.value || !!tag.value || sort.value !== null || status.value.length > 0 || order.value !== 'desc'
+    () =>
+        !!currentSearch.value ||
+        !!author.value ||
+        !!category.value ||
+        sort.value !== null ||
+        status.value.length > 0 ||
+        order.value !== 'desc'
 )
 
 /* --------------------------------------------------------------------------
@@ -112,7 +144,7 @@ function submitForm () {
         {
             search: search.value,
             author: author.value,
-            tag: tag.value,
+            category: category.value,
             status: status.value,
             sort: sort.value,
             order: order.value
@@ -146,96 +178,10 @@ defineOptions({ layout: AppLayout })
 
 <template>
     <div>
-        <!-- Header --------------------------------------------------------- -->
-        <div class="flex flex-col gap-2.5 md:flex-row md:items-center md:gap-4">
-            <div class="flex items-center justify-between gap-8">
-                <PageTitle class="flex gap-2.5">
-                    <template v-if="currentSearch">
-                        Search results for "{{ currentSearch }}"
-                    </template>
-                    <template v-else>
-                        Your Library
-                        <Badge
-                            class="mt-1 font-sans text-xs"
-                            variant="secondary">
-                            {{ filteredBooks.length }}
-                        </Badge>
-                    </template>
-                </PageTitle>
-                <BookViewTabs
-                    v-model="view"
-                    class="book-view-tabs mobile-book-view-tabs flex w-32 max-w-32 flex-1 shrink-0 md:hidden" />
-            </div>
-
-            <!-- View & Sort Controls ---------------------------------------- -->
-            <div class="flex w-full flex-col items-center gap-2.5 md:ml-auto md:w-auto md:flex-row md:gap-2">
-                <!-- View toggle -->
-                <BookViewTabs
-                    v-model="view"
-                    class="book-view-tabs desktop-book-view-tabs hidden md:flex" />
-
-                <!-- Sort dropdown & order -->
-                <div class="flex w-full items-center justify-end gap-2.5 md:w-56 md:gap-2">
-                    <Select v-model="sort">
-                        <SelectTrigger class="w-full">
-                            <span
-                                v-if="sort"
-                                class="text-muted-foreground">Sort:</span>
-                            <SelectValue placeholder="Sort by..." />
-                            <span class="sr-only"> Select sort option </span>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectItem
-                                    v-for="opt in sortOptions"
-                                    :key="opt.value"
-                                    :value="opt.value">
-                                    {{ opt.label }}
-                                </SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    class="cursor-pointer bg-white text-secondary-foreground"
-                                    size="icon"
-                                    @click="order = order === 'asc' ? 'desc' : 'asc'"
-                                >
-                                    <span class="sr-only"> Toggle sort order </span>
-                                    <Icon :name="order === 'asc' ? 'ArrowUpWideNarrow' : 'ArrowDownWideNarrow'" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <span>
-                                    {{ order === 'asc' ? 'Ascending' : 'Descending' }}
-                                </span>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                    <Button
-                        class="relative cursor-pointer bg-white text-secondary-foreground md:hidden"
-                        variant="outline"
-                        size="icon"
-                        @pointerup="displayFilters = !displayFilters"
-                    >
-                        <div
-                            v-if="hasFiltered"
-                            class="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary ring-2 ring-primary/20" />
-                        <Icon
-                            name="Filter"
-                            class="w-4" />
-                    </Button>
-                </div>
-            </div>
-        </div>
-
         <!-- Main layout ----------------------------------------------------- -->
-        <div class="flex flex-col items-start gap-0 md:mt-4 md:flex-row md:gap-8 md:pt-0">
+        <div
+            class="flex flex-col items-start gap-0 md:mt-4 md:flex-row md:gap-8 md:pt-0"
+        >
             <aside
                 :class="
                     displayFilters
@@ -248,22 +194,27 @@ defineOptions({ layout: AppLayout })
                 <div class="mt-4 flex flex-col gap-2 md:mt-0">
                     <form
                         class="flex w-full flex-col gap-2"
-                        @submit.prevent="submitForm">
+                        @submit.prevent="submitForm"
+                    >
                         <div class="grid w-full gap-2">
-                            <!--                            <Label for="query">Search</Label>-->
+                            <Label for="query">Search</Label>
                             <div class="relative flex w-full">
                                 <Input
                                     id="query"
                                     ref="searchInput"
                                     v-model="search"
-                                    class="pr-10"
-                                    placeholder="Title or keywords..." />
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-1">
+                                    class="h-10 border-card-outline bg-card pr-10 shadow-none"
+                                    placeholder="Title or keywords..."
+                                />
+                                <div
+                                    class="absolute inset-y-0 right-0 flex items-center pr-1"
+                                >
                                     <Button
                                         type="submit"
                                         variant="link"
                                         class="cursor-pointer"
-                                        size="icon">
+                                        size="icon"
+                                    >
                                         <span class="sr-only"> Search </span>
                                         <Icon name="Search" />
                                     </Button>
@@ -272,23 +223,26 @@ defineOptions({ layout: AppLayout })
                         </div>
 
                         <!-- Author filter -------------------------------------------- -->
-                        <div class="grid w-full gap-2">
-                            <!--                            <Label for="query">Author</Label>-->
+                        <div class="mt-2 grid w-full gap-2">
+                            <Label> Filter by author </Label>
                             <Select v-model="author">
                                 <SelectTrigger class="w-full">
-                                    <SelectValue placeholder="Filter by author" />
-                                    <span class="sr-only"> Select author filter </span>
+                                    <SelectValue placeholder="All authors" />
+                                    <span class="sr-only">
+                                        Select author filter
+                                    </span>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectItem :value="null">
-                                            All Authors
+                                            All authors
                                         </SelectItem>
                                         <template v-if="authors.length">
                                             <SelectItem
                                                 v-for="a in authors"
                                                 :key="a.slug"
-                                                :value="a.slug">
+                                                :value="a.slug"
+                                            >
                                                 {{ a.name }}
                                             </SelectItem>
                                         </template>
@@ -298,26 +252,33 @@ defineOptions({ layout: AppLayout })
                         </div>
 
                         <!-- Author filter -------------------------------------------- -->
-                        <div class="grid w-full gap-2">
-                            <!--                            <Label for="query">Tag</Label>-->
+                        <div class="grid w-full gap-2 mt-2">
+                            <p
+                                class="flex justify-between font-sans text-xs font-semibold tracking-wide text-secondary-foreground uppercase"
+                            >
+                                Filter by category
+                            </p>
                             <Select
-                                v-model="tag"
+                                v-model="category"
                                 class="flex w-full">
                                 <SelectTrigger class="w-full md:max-w-72">
-                                    <SelectValue placeholder="Filter by tag" />
-                                    <span class="sr-only"> Select tag filter </span>
+                                    <SelectValue placeholder="All categories" />
+                                    <span class="sr-only">
+                                        Select category
+                                    </span>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectItem :value="null">
-                                            All Tags
+                                            All categories
                                         </SelectItem>
-                                        <template v-if="tags.length">
+                                        <template v-if="categories.length">
                                             <SelectItem
-                                                v-for="t in tags"
-                                                :key="t.slug"
-                                                :value="t.slug">
-                                                {{ t.name }}
+                                                v-for="categoryOption in categories"
+                                                :key="categoryOption.slug"
+                                                :value="categoryOption.slug"
+                                            >
+                                                {{ categoryOption.name }}
                                             </SelectItem>
                                         </template>
                                     </SelectGroup>
@@ -329,30 +290,96 @@ defineOptions({ layout: AppLayout })
 
                 <!-- Status filter -------------------------------------------- -->
                 <div class="my-4">
-                    <p class="mb-2 font-serif">
+                    <p
+                        class="mb-2 flex justify-between font-sans text-xs font-semibold tracking-wide text-secondary-foreground uppercase"
+                    >
                         Filter by status
                     </p>
                     <CheckboxList
                         v-model="status"
-                        :options="possibleStatuses" />
+                        :options="possibleStatuses"
+                    />
                 </div>
 
                 <!-- Reset button -------------------------------------------- -->
-                <Button
-                    v-if="hasFiltered"
-                    class="mb-4 w-full"
-                    as-child
-                    variant="outline">
-                    <Link
-                        :href="useRoute('user.books.index')"
-                        preserve-scroll>
-                        Reset
-                    </Link>
-                </Button>
+                <!--                <Button-->
+                <!--                    v-if="hasFiltered"-->
+                <!--                    class="mb-4 w-full"-->
+                <!--                    as-child-->
+                <!--                    variant="outline">-->
+                <!--                    <Link-->
+                <!--                        :href="useRoute('user.books.index')"-->
+                <!--                        preserve-scroll>-->
+                <!--                        Reset-->
+                <!--                    </Link>-->
+                <!--                </Button>-->
             </aside>
 
             <!-- Books list -------------------------------------------------- -->
             <section class="mt-4 flex w-full flex-1 flex-col md:mt-0 md:w-auto">
+                <div class="mb-4 flex flex-col gap-2">
+                    <PageTitle
+                        class="flex flex-col md:flex-row items-start w-full md:items-center md:justify-between gap-4 md:gap-2.5 text-primary"
+                    >
+                        <div>
+                            <template v-if="currentSearch">
+                                Search results for "{{ currentSearch }}"
+                            </template>
+                            <template v-else>
+                                Your Library
+                            </template>
+                            <p
+                                class="font-sans text-xs text-secondary-foreground"
+                            >
+                                {{ filteredBooks.length }} books
+                                {{
+                                    currentSearch || hasFiltered
+                                        ? "found"
+                                        : "available"
+                                }}
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-2 w-full md:w-auto">
+                            <BookViewTabs
+                                v-model="view"
+                                class="book-view-tabs mobile-book-view-tabs min-w-28 flex md:max-w-68 flex-1 shrink-0 font-sans"
+                            />
+
+                            <div
+                                class="w-full md:w-auto bg-red-200 md:min-w-40 gap-2 font-sans font-normal grid"
+                            >
+                                <Select v-model="sort">
+                                    <SelectTrigger
+                                        class="w-full data-[size=default]:h-9"
+                                    >
+                                        <span
+                                            v-if="sort"
+                                            class="text-muted-foreground"
+                                        >Sort:</span
+                                        >
+                                        <SelectValue placeholder="Sort by..." />
+                                        <span class="sr-only">
+                                            Select sort option
+                                        </span>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectItem
+                                                v-for="opt in sortOptions"
+                                                :key="opt.value"
+                                                :value="opt.value"
+                                            >
+                                                {{ opt.label }}
+                                            </SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </PageTitle>
+                </div>
+
                 <div
                     v-if="!filteredBooks.length"
                     class="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-primary/10 px-4 py-8 text-center text-sm text-muted-foreground md:py-16"
@@ -367,12 +394,24 @@ defineOptions({ layout: AppLayout })
                         v-if="totalBooks === 0"
                         class="flex flex-col">
                         <p>You haven't added any books yet.</p>
-                        <div class="mx-auto flex">
+                        <div class="mx-auto flex flex-col gap-2 md:flex-row">
                             <Button
                                 class="mt-4"
                                 as-child>
                                 <Link :href="useRoute('books.search')">
                                     Search for books
+                                </Link>
+                            </Button>
+                            <Button
+                                class="mt-4"
+                                variant="outline"
+                                as-child>
+                                <Link
+                                    :href="
+                                        useRoute('user.books.imports.create')
+                                    "
+                                >
+                                    Import Goodreads
                                 </Link>
                             </Button>
                         </div>
@@ -398,10 +437,12 @@ defineOptions({ layout: AppLayout })
                     <li
                         v-for="book in filteredBooks"
                         :key="book.identifier"
-                        class="w-full">
+                        class="w-full"
+                    >
                         <BookCardHorizontal
                             v-if="view === 'list'"
-                            :book="book" />
+                            :book="book"
+                        />
                         <BookCard
                             v-if="view === 'grid'"
                             :book="book" />

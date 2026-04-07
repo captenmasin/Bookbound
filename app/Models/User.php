@@ -166,7 +166,26 @@ class User extends Authenticatable implements FilamentUser, HasMedia, HasPasskey
             ->get()->sortBy(fn ($tag) => $topTagNames->search($tag->name))->values();
     }
 
-    public function getRecommendations()
+    public function getTopGenres(int $limit = 3): Collection
+    {
+        $books = $this->books()
+            ->with('categories:id,name')
+            ->withPivot('created_at')
+            ->get()
+            ->sortByDesc(fn ($book) => $book->pivot->created_at)
+            ->values();
+
+        return $books
+            ->flatMap(fn ($book) => $book->categories->pluck('name'))
+            ->filter()
+            ->countBy()
+            ->sortDesc()
+            ->keys()
+            ->take($limit)
+            ->values();
+    }
+
+    public function getRecommendations(): array
     {
         return collect(GetBookRecommendations::run($this))
             ->map(fn (array $recommendation): array => [
@@ -206,7 +225,12 @@ class User extends Authenticatable implements FilamentUser, HasMedia, HasPasskey
     {
         return $this->belongsToMany(Book::class)
             ->using(BookUser::class)
-            ->withPivot(['status', 'tags', 'created_at', 'updated_at']);
+            ->withPivot(['status', 'tags', 'read_at', 'created_at', 'updated_at']);
+    }
+
+    public function goodreadsImports(): HasMany
+    {
+        return $this->hasMany(GoodreadsImport::class);
     }
 
     public function notes(): HasMany

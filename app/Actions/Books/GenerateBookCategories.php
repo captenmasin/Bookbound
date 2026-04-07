@@ -3,6 +3,8 @@
 namespace App\Actions\Books;
 
 use App\Models\Book;
+use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\spin;
@@ -26,11 +28,18 @@ class GenerateBookCategories
         };
 
         foreach ($books as $book) {
-            $categories = BookCategoryAgent::make(book: $book)->categorize();
+            $categoryIds = collect(BookCategoryAgent::make(book: $book)->categorize())
+                ->map(fn (mixed $category): ?string => is_string($category) ? trim($category) : null)
+                ->filter()
+                ->unique()
+                ->map(function (string $category): int {
+                    return Category::query()->firstOrCreate(
+                        ['slug' => Str::slug($category)],
+                        ['name' => $category],
+                    )->getKey();
+                });
 
-            $book->updateQuietly([
-                'categories' => $categories,
-            ]);
+            $book->categories()->sync($categoryIds->all());
         }
     }
 
@@ -40,7 +49,7 @@ class GenerateBookCategories
         if ($fresh) {
             $books = Book::all();
         } else {
-            $books = Book::whereNull('categories')->get();
+            $books = Book::doesntHave('categories')->get();
         }
 
         $generating = spin(

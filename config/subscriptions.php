@@ -16,7 +16,8 @@ return [
                 'Review and Rate Books',
             ],
             'limits' => [
-                'max_books' => 50,
+                //                'max_books' => 50,
+                'max_books' => 500,
                 //                'private_notes' => false,
                 'private_notes' => true,
                 'custom_covers' => false,
