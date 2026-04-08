@@ -12,9 +12,32 @@ export function useUserBookStatus () {
 
     const page = usePage()
     const authed = page.props.auth.check
+
+    function normalizeStatus (status: string | UserBookStatus | null | undefined): UserBookStatus | null {
+        if (!status) {
+            return null
+        }
+
+        if (Object.values(UserBookStatus).includes(status as UserBookStatus)) {
+            return status as UserBookStatus
+        }
+
+        if (status in UserBookStatus) {
+            return UserBookStatus[status as keyof typeof UserBookStatus]
+        }
+
+        return null
+    }
+
+    function normalizeStatusMap (statuses: Record<string, UserBookStatus | string> | undefined): StatusMap {
+        return Object.fromEntries(
+            Object.entries(statuses ?? {}).map(([identifier, status]) => [identifier, normalizeStatus(status)])
+        )
+    }
+
     const addedBooks = authed
-        ? ref<Record<string, UserBookStatus | string>>({ ...page.props.auth.user?.book_identifiers })
-        : ref<Record<string, UserBookStatus | string>>({})
+        ? ref<StatusMap>(normalizeStatusMap(page.props.auth.user?.book_identifiers))
+        : ref<StatusMap>({})
 
     const selectedStatuses = ref<StatusMap>({})
     const addingBooks = ref<string[]>([])
@@ -69,7 +92,7 @@ export function useUserBookStatus () {
                 const book = response.book
                 useRequest(useRoute('api.user.books.store'), 'POST', {
                     identifier: book.identifier,
-                    status: status || 'PlanToRead'
+                    status: status || UserBookStatus.PlanToRead
                 })
                     .then((response) => {
                         if (response.success) {
@@ -137,7 +160,7 @@ export function useUserBookStatus () {
 
     onMounted(() => {
         selectedStatuses.value = {
-            ...(addedBooks.value as unknown as Record<string, UserBookStatus>)
+            ...addedBooks.value
         }
     })
 

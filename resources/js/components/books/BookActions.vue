@@ -7,7 +7,14 @@ import { Book, BookApiResult } from '@/types/book'
 import { UserBookStatus } from '@/enums/UserBookStatus'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { useUserBookStatus } from '@/composables/useUserBookStatus'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select'
 
 defineProps({
     book: {
@@ -18,12 +25,22 @@ defineProps({
 
 const emit = defineEmits(['updated', 'added', 'removed'])
 
-const { possibleStatuses, updateStatus, selectedStatuses, addedBookIdentifiers, addingBooks, addBookToUser, removeBookFromUser } =
-    useUserBookStatus()
+const {
+    possibleStatuses,
+    updateStatus,
+    selectedStatuses,
+    addedBookIdentifiers,
+    addingBooks,
+    addBookToUser,
+    removeBookFromUser
+} = useUserBookStatus()
 
 const { authed } = useAuthedUser()
 
-function selectNewStatus (book: BookApiResult | Book, status: UserBookStatus | 'REMOVE') {
+function selectNewStatus (
+    book: BookApiResult | Book,
+    status: UserBookStatus | 'REMOVE'
+) {
     if (!authed.value) {
         router.get(
             useRoute('login', {
@@ -72,8 +89,11 @@ function selectNewStatus (book: BookApiResult | Book, status: UserBookStatus | '
     <div class="relative flex w-full flex-1 items-center justify-end gap-2">
         <div
             v-if="addingBooks.includes(book.identifier)"
-            class="absolute top-1/2 left-2 aspect-square w-6 shrink-0 -translate-y-1/2">
-            <div class="flex animate-spin items-center justify-center rounded-full size-full bg-muted text-muted-foreground">
+            class="absolute top-1/2 left-2 aspect-square w-6 shrink-0 -translate-y-1/2"
+        >
+            <div
+                class="flex animate-spin items-center justify-center rounded-full size-full bg-muted text-muted-foreground"
+            >
                 <Icon
                     name="LoaderCircle"
                     class="size-4" />
@@ -83,10 +103,14 @@ function selectNewStatus (book: BookApiResult | Book, status: UserBookStatus | '
         <div class="w-full md:w-full">
             <Select
                 v-model="selectedStatuses[book.identifier]"
-                @update:model-value="(value) => selectNewStatus(book, value as UserBookStatus)">
+                @update:model-value="
+                    (value) => selectNewStatus(book, value as UserBookStatus)
+                "
+            >
                 <SelectTrigger
-                    class="w-full"
-                    :class="addingBooks.includes(book.identifier) ? 'pl-9' : ''">
+                    class="w-full bg-primary text-primary-foreground border-primary  cursor-pointer hover:bg-primary/90"
+                    :class="addingBooks.includes(book.identifier) ? 'pl-9' : ''"
+                >
                     <SelectValue placeholder="Add to library" />
                     <span class="sr-only"> Select book status </span>
                 </SelectTrigger>
@@ -95,7 +119,8 @@ function selectNewStatus (book: BookApiResult | Book, status: UserBookStatus | '
                         <SelectItem
                             v-for="status in possibleStatuses"
                             :key="status.value"
-                            :value="status.value">
+                            :value="status.value"
+                        >
                             {{ status.label }}
                         </SelectItem>
 

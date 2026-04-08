@@ -68,7 +68,7 @@ const { userRating } = useBook(props.book)
                 :href="url"
                 :target="target"
                 prefetch>
-                <div class="relative aspect-book w-20 shrink-0 overflow-hidden rounded-sm shadow-sm md:w-22">
+                <div class="relative aspect-book w-20 shrink-0 overflow-hidden rounded-sm shadow-sm md:w-40">
                     <!--                    <span-->
                     <!--                        v-if="book.type"-->
                     <!--                        class="absolute top-1 right-1 rounded-full bg-white/75 px-1.5 py-px text-[10px] text-zinc-900 opacity-0 transition-all group-hover:opacity-100"-->
@@ -84,7 +84,7 @@ const { userRating } = useBook(props.book)
                     </div>
                 </div>
             </component>
-            <div class="flex w-full min-w-0 flex-col">
+            <div class="flex w-full min-w-0 flex-col max-w-xl">
                 <div class="flex">
                     <component
                         :is="linkTag"
@@ -93,7 +93,7 @@ const { userRating } = useBook(props.book)
                         prefetch>
                         <h3
                             :class="isLink ? 'hover:text-primary dark:hover:text-primary/80' : ''"
-                            class="line-clamp-1 font-serif text-lg text-pretty transition-colors md:line-clamp-2 md:text-lg/6"
+                            class="line-clamp-1 font-serif text-lg text-pretty transition-colors md:line-clamp-2 md:text-xl/7"
                         >
                             {{ book.title }}
                         </h3>
@@ -107,7 +107,7 @@ const { userRating } = useBook(props.book)
                 <p
                     v-if="book.description"
                     :class="userRating ? 'line-clamp-1' : 'line-clamp-2'"
-                    class="mt-0.5 text-xs text-muted-foreground md:mt-1 md:line-clamp-2"
+                    class="mt-0.5 text-sm text-muted-foreground md:mt-1 md:line-clamp-3"
                 >
                     {{ book.description_clean }}
                 </p>
