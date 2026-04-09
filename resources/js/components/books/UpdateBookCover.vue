@@ -7,6 +7,7 @@ import { useRoute } from '@/composables/useRoute'
 import { router, useForm } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button/index.js'
 import { useAuthedUser } from '@/composables/useAuthedUser'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const props = defineProps({
     book: Object as PropType<Book>
@@ -23,8 +24,12 @@ const { authedUser } = useAuthedUser()
 const canRemoveCover = ref(props.book && props.book.has_custom_cover)
 
 const canUpdateCover = computed(() => {
-    return props.book && props.book.in_library &&
-        authedUser.value && authedUser.value?.subscription.allow_custom_covers
+    return (
+        props.book &&
+        props.book.in_library &&
+        authedUser.value &&
+        authedUser.value?.subscription.allow_custom_covers
+    )
 })
 
 const displayUndo = ref(false)
@@ -107,9 +112,8 @@ const clearCoverFileInput = () => {
 
 <template>
     <div>
-        <div class="relative">
-            <div
-                v-show="!coverPreview || !canUpdateCover">
+        <div class="relative overflow-clip">
+            <div v-show="!coverPreview || !canUpdateCover">
                 <slot />
             </div>
 
@@ -123,7 +127,8 @@ const clearCoverFileInput = () => {
                         <img
                             :src="coverPreview"
                             alt="Cover Preview"
-                            class="rounded-md object-cover size-full">
+                            class="rounded-md object-cover size-full"
+                        >
                     </div>
                 </div>
             </form>
@@ -132,19 +137,17 @@ const clearCoverFileInput = () => {
                 v-if="canUpdateCover"
                 :key="key"
                 :class="coverPreview ? 'opacity-100' : 'opacity-100'"
-                class="flex w-full gap-2 transition-all hover:opacity-100">
-                <div class="flex w-full items-center gap-2 mt-1.5">
+                class="flex w-full justify-end flex-col gap-2 rounded-b-md absolute bottom-0 p-2 h-24 right-0 bg-linear-to-t from-black/90 to-transparent transition-all hover:opacity-100"
+            >
+                <div class="flex w-full items-center justify-between gap-2">
                     <Button
+                        variant="ghost"
                         size="sm"
-                        variant="white"
-                        class="flex-1 cursor-pointer py-0 text-xs"
+                        class="text-white cursor-pointer rounded-none"
                         @click="clickCoverInput"
                     >
-                        <Icon
-                            name="ImagePlus" />
-                        <span class="hidden md:flex">
-                            Update Cover
-                        </span>
+                        <Icon name="ImagePlus" />
+                        <span class="hidden md:flex"> Update Cover </span>
                     </Button>
 
                     <!--                    <Button-->
@@ -173,17 +176,25 @@ const clearCoverFileInput = () => {
                     <!--                        Undo-->
                     <!--                    </Button>-->
 
-                    <Button
-                        v-if="canRemoveCover"
-                        type="button"
-                        size="icon"
-                        variant="secondary"
-                        class="cursor-pointer size-8"
-                        @click.prevent="deleteCover"
-                    >
-                        <Icon
-                            name="X" />
-                    </Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger as-child>
+                                <Button
+                                    v-if="canRemoveCover"
+                                    type="button"
+                                    size="icon"
+                                    variant="ghost"
+                                    class="cursor-pointer text-white size-8 rounded-none"
+                                    @click.prevent="deleteCover"
+                                >
+                                    <Icon name="X" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                Remove custom cover
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
 
                 <input
@@ -200,6 +211,7 @@ const clearCoverFileInput = () => {
         <InputError
             v-if="canUpdateCover && form.errors.cover"
             class="mt-2"
-            :message="form.errors.cover" />
+            :message="form.errors.cover"
+        />
     </div>
 </template>

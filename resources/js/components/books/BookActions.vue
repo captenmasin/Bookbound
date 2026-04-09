@@ -108,10 +108,13 @@ function selectNewStatus (
                 "
             >
                 <SelectTrigger
-                    class="w-full bg-primary text-primary-foreground border-primary  cursor-pointer hover:bg-primary/90"
+                    class="w-full bg-primary text-primary-foreground border-primary cursor-pointer hover:bg-primary/90"
                     :class="addingBooks.includes(book.identifier) ? 'pl-9' : ''"
                 >
-                    <SelectValue placeholder="Add to library" />
+                    <SelectValue
+                        class="text-primary-foreground"
+                        placeholder="Add to library"
+                    />
                     <span class="sr-only"> Select book status </span>
                 </SelectTrigger>
                 <SelectContent>

@@ -17,10 +17,11 @@ return [
             ],
             'limits' => [
                 //                'max_books' => 50,
-                'max_books' => 500,
                 //                'private_notes' => false,
+                //                'custom_covers' => false,
+                'max_books' => 500,
                 'private_notes' => true,
-                'custom_covers' => false,
+                'custom_covers' => true,
             ],
         ],
 

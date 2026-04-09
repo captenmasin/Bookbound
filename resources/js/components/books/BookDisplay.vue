@@ -21,7 +21,7 @@ withDefaults(
                 :page-props="{ ...usePage().props, book }"
                 class="group"
                 component="books/Show">
-                <div class="aspect-book aspect-book overflow-clip h-full w-full rounded-md object-cover shadow-xs transition-all group-hover:shadow-xl">
+                <div class="aspect-book overflow-clip h-full w-full rounded-md object-cover shadow-xs transition-all group-hover:shadow-xl">
                     <Image
                         v-if="book.cover"
                         :src="book.cover"
