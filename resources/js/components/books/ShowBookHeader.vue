@@ -60,7 +60,9 @@ function refresh () {
             By {{ book.authors.map((a) => a.name).join(", ") }}
         </p>
         <div class="mt-2.5 flex items-center divide-x gap-4">
-            <div class="grid gap-1 pr-4">
+            <div
+                v-if="!small || book.in_library"
+                class="grid gap-1 pr-4">
                 <Label> Your rating </Label>
                 <RatingForm
                     v-if="book.in_library"
