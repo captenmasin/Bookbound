@@ -2,6 +2,7 @@
 import Icon from '@/components/Icon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import SingleReview from '@/components/SingleReview.vue'
+import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
 import { Book } from '@/types/book'
 import { Review } from '@/types/review'
 import { useForm } from '@inertiajs/vue3'
@@ -62,12 +63,19 @@ function deleteReview () {
     <div>
         <div
             v-if="authed && authedUser && !displayForm && !hasExistingReview"
-            class="flex flex-col items-center justify-center gap-2 rounded border-2 border-dashed py-8 text-center border-primary/20">
+            class="flex flex-col items-center justify-center gap-2 rounded border-2 border-dashed py-8 text-center border-primary/20"
+        >
             <UserAvatar
                 :user="authedUser"
                 class="size-10 md:size-14"
                 :size="64"
-                font-size="text-lg md:text-xl" />
+                font-size="text-lg md:text-xl"
+            />
+
+            <StarRatingDisplay
+                v-if="book.user_rating"
+                :rating="book.user_rating?.value"
+            />
 
             <h2 class="font-serif text-lg font-semibold md:text-2xl">
                 Share your thoughts
@@ -76,8 +84,7 @@ function deleteReview () {
             <Button
                 class="md:mt-3"
                 @click="displayForm = true">
-                <Icon
-                    name="Pencil" />
+                <Icon name="Pencil" />
                 Write a review
             </Button>
         </div>
@@ -85,35 +92,47 @@ function deleteReview () {
         <form
             v-if="displayForm"
             class="mb-4 flex flex-col gap-4"
-            @submit.prevent="submit">
+            @submit.prevent="submit"
+        >
+            <div class="grid gap-1">
+                <Label>
+                    Your rating
+                </Label>
+                <StarRatingDisplay
+                    v-if="book.user_rating"
+                    :rating="book.user_rating?.value"
+                />
+            </div>
+
             <div class="grid gap-2">
                 <Label for="reviewTitle">Title</Label>
                 <Input
                     id="reviewTitle"
                     v-model="form.title"
-                />
+                    class="text-xl font-semibold h-11" />
             </div>
             <div class="grid gap-2">
                 <Label for="reviewContent">Content</Label>
                 <Textarea
                     id="reviewContent"
                     v-model="form.content"
-                    class="w-full rounded border p-2"
-                    rows="4"
+                    class="w-full border p-2 min-h-24"
                 />
             </div>
-            <div class="flex justify-end">
+            <div class="flex justify-end gap-4">
                 <Button
-                    class="mr-2"
                     variant="link"
-                    @click="displayForm = false; form.reset()">
+                    @click="
+                        displayForm = false;
+                        form.reset();
+                    "
+                >
                     Cancel
                 </Button>
                 <Button
-                    id="dewlnnlwe"
                     type="submit"
                     :disabled="form.processing">
-                    {{ hasExistingReview ? 'Update Review' : 'Submit Review' }}
+                    {{ hasExistingReview ? "Update Review" : "Submit Review" }}
                 </Button>
             </div>
         </form>
@@ -123,18 +142,19 @@ function deleteReview () {
             :review="existingReview"
             :book="book"
             class="mb-4 rounded border-2 border-dashed p-4 border-secondary"
-            @deleted="deleteReview" />
+            @deleted="deleteReview"
+        />
 
         <div
             v-if="!displayForm"
-            class="mb-4 flex w-full items-end justify-end gap-4">
+            class="mb-4 flex w-full items-end justify-end gap-4"
+        >
             <Button
                 v-if="hasExistingReview"
                 variant="secondary"
-                @click="displayForm = true">
-                <Icon
-                    name="pencil"
-                    class="mr-2" />
+                @click="displayForm = true"
+            >
+                <Icon name="pencil" />
                 Edit review
             </Button>
         </div>

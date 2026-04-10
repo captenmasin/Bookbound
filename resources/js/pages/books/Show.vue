@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import Icon from '@/components/Icon.vue'
 import Image from '@/components/Image.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
-import TagCloud from '@/components/TagCloud.vue'
 import BookCard from '@/components/books/BookCard.vue'
 import ShareButton from '@/components/ShareButton.vue'
 import RatingForm from '@/components/books/RatingForm.vue'
@@ -10,6 +8,7 @@ import BookActions from '@/components/books/BookActions.vue'
 import NotesSection from '@/components/books/NotesSection.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
 import ReviewsSection from '@/components/books/ReviewsSection.vue'
+import ShowBookHeader from '@/components/books/ShowBookHeader.vue'
 import UpdateBookCover from '@/components/books/UpdateBookCover.vue'
 import { Review } from '@/types/review'
 import type { Book } from '@/types/book'
@@ -22,6 +21,12 @@ import { useMarkdown } from '@/composables/useMarkdown'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { useUserSettings } from '@/composables/useUserSettings'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+    Tooltip,
+    TooltipTrigger,
+    TooltipProvider,
+    TooltipContent
+} from '@/components/ui/tooltip'
 
 const props = defineProps({
     book: { type: Object as PropType<Book>, required: true },
@@ -94,16 +99,29 @@ defineOptions({
 <template>
     <div class="md:mt-4 max-w-7xl mx-auto">
         <div class="grid grid-cols-12 gap-4 md:flex-row md:gap-16">
-            <div class="flex w-full flex-col col-span-3">
-                <UpdateBookCover :book="book">
-                    <div class="overflow-hidden rounded-md aspect-book">
-                        <Image
-                            width="250"
-                            class="object-cover size-full"
-                            :src="book.cover"
+            <div class="flex w-full flex-col col-span-12 md:col-span-3">
+                <div class="flex gap-4">
+                    <div class="md:w-full w-28 shrink-0">
+                        <UpdateBookCover :book="book">
+                            <div class="overflow-hidden rounded-md aspect-book">
+                                <Image
+                                    width="250"
+                                    class="object-cover size-full"
+                                    :src="book.cover"
+                                />
+                            </div>
+                        </UpdateBookCover>
+                    </div>
+                    <div class="flex md:hidden">
+                        <ShowBookHeader
+                            :key="refreshKey"
+                            small
+                            :book="book"
+                            :average-rating="averageRating"
+                            @refresh="refreshRating"
                         />
                     </div>
-                </UpdateBookCover>
+                </div>
                 <div class="grid gap-1 mt-4">
                     <Label> Reading status </Label>
                     <BookActions
@@ -115,48 +133,14 @@ defineOptions({
                 </div>
             </div>
 
-            <div class="col-span-9">
-                <div class="hidden flex-col md:flex">
-                    <div class="flex mb-1 items-center justify-between gap-4">
-                        <p
-                            v-if="book.primary_category"
-                            class="font-sans text-xs font-normal tracking-wider text-primary uppercase"
-                        >
-                            {{ book.primary_category }}
-                        </p>
-                        <ShareButton
-                            :url="book.links.show"
-                            variant="secondary"
-                            :title="book.title"
-                            :text="book.description"
-                            button-class="text-xs py-0"
-                            modal-title="Share this book"
-                        >
-                            Share book
-                        </ShareButton>
-                    </div>
-                    <h2 class="font-serif text-4xl font-semibold text-pretty">
-                        {{ book.title }}
-                    </h2>
-                    <p
-                        v-if="book.authors && book.authors.length > 0"
-                        class="mt-2 text-lg font-serif italic text-muted-foreground"
-                    >
-                        By {{ book.authors.map((a) => a.name).join(", ") }}
-                    </p>
-                    <div
-                        v-if="book.ratings_count"
-                        class="mt-1 flex items-center gap-2"
-                    >
-                        <StarRatingDisplay
-                            :rating="parseFloat(averageRating)"
-                        />
-                        <div class="mt-px text-xs text-muted-foreground">
-                            {{ averageRating }} &mdash; {{ book.ratings_count }}
-                            {{ usePlural("rating", book.ratings_count) }}
-                        </div>
-                    </div>
-                </div>
+            <div class="col-span-12 md:col-span-9">
+                <ShowBookHeader
+                    :key="refreshKey"
+                    class="hidden md:flex"
+                    :book="book"
+                    :average-rating="averageRating"
+                    @refresh="refreshRating"
+                />
 
                 <Label
                     v-if="book.description"
@@ -169,48 +153,68 @@ defineOptions({
                 />
 
                 <Card
-                    class="grid grid-cols-1 divide-x gap-4 mt-4 py-6 md:grid-cols-12"
+                    class="grid grid-cols-1 divide-y md:divide-y-0 md:divide-x md:gap-4 mt-4 py-1 md:py-6 md:grid-cols-12"
                 >
                     <div
                         v-for="item in data"
                         :key="item.title"
                         :class="{
-                            'col-span-4': item.title === 'Publisher',
-                            'col-span-2': item.title !== 'Publisher',
+                            'md:col-span-4': item.title === 'Publisher',
+                            'md:col-span-2': item.title !== 'Publisher',
                         }"
-                        class="flex flex-col px-1"
+                        class="flex flex-col py-4 md:py-0 md:px-1"
                     >
                         <Label>
                             {{ item.title }}
                         </Label>
-                        <p class="text-base font-serif mt-1 line-clamp-1">
-                            {{ item.value }}
-                        </p>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger as-child>
+                                    <p
+                                        class="text-base cursor-default font-serif mt-1 line-clamp-1"
+                                    >
+                                        {{ item.value }}
+                                    </p>
+                                </TooltipTrigger>
+                                <TooltipContent v-if="item.value?.length > 10">
+                                    {{ item.value }}
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
                 </Card>
 
-                <div class="grid mt-5 max-w-lg grid-cols-2 gap-12 items-center">
-                    <div class="grid gap-1">
-                        <Label> Your rating </Label>
-                        <RatingForm
-                            v-if="book.in_library"
-                            :key="refreshKey"
-                            :only="['rating', 'book', 'averageRating']"
-                            :book="book"
-                            @deleted="refreshRating"
-                            @added="refreshRating"
-                            @updated="refreshRating"
-                        />
-                        <div
-                            v-else
-                            class="text-sm text-muted-foreground">
-                            Add book to library to review
+                <Deferred data="related">
+                    <template #fallback />
+
+                    <div
+                        v-if="related && related.length > 0"
+                        class="mt-8">
+                        <Label> Related books </Label>
+                        <div class="-mx-4 mt-2 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-2 sm:overflow-visible sm:px-0 sm:pb-0 md:grid-cols-5">
+                            <div
+                                v-for="relatedBook in related"
+                                :key="relatedBook.identifier"
+                                class="w-[200px] shrink-0 sm:w-auto"
+                            >
+                                <BookCard
+                                    :hover="true"
+                                    :book="relatedBook" />
+                            </div>
                         </div>
                     </div>
-                </div>
+                </Deferred>
 
                 <div class="mt-8 border-t pt-8 border-secondary">
-                    <div class="flex w-full items-center justify-between">
+                    <div class="flex w-full mb-4 md:mb-0 flex-col-reverse md:flex-row md:items-center justify-between">
+                        <div>
+                            <h2
+                                class="text-xl font-semibold font-serif capitalize text-primary"
+                            >
+                                {{ displayType }}
+                            </h2>
+                        </div>
+
                         <div class="mb-4 flex w-full md:w-auto">
                             <Tabs
                                 v-model="displayType"
@@ -312,27 +316,27 @@ defineOptions({
     <!--                            <TagCloud :tags="book.tags" />-->
     <!--                        </div>-->
 
-    <!--                        <Deferred data="related">-->
-    <!--                            <template #fallback />-->
+    <!--                            <Deferred data="related">-->
+    <!--                                <template #fallback />-->
 
-    <!--                            <div-->
-    <!--                                v-if="related && related.length > 0"-->
-    <!--                                class="mt-4 hidden md:block">-->
-    <!--                                <p class="font-medium text-sm/6">-->
-    <!--                                    Related-->
-    <!--                                </p>-->
-    <!--                                <div class="-mx-1 flex flex-wrap">-->
-    <!--                                    <div-->
-    <!--                                        v-for="relatedBook in related"-->
-    <!--                                        :key="relatedBook.identifier"-->
-    <!--                                        class="w-1/2 p-1">-->
-    <!--                                        <BookCard-->
-    <!--                                            :hover="false"-->
-    <!--                                            :book="relatedBook" />-->
+    <!--                                <div-->
+    <!--                                    v-if="related && related.length > 0"-->
+    <!--                                    class="mt-4 hidden md:block">-->
+    <!--                                    <p class="font-medium text-sm/6">-->
+    <!--                                        Related-->
+    <!--                                    </p>-->
+    <!--                                    <div class="-mx-1 flex flex-wrap">-->
+    <!--                                        <div-->
+    <!--                                            v-for="relatedBook in related"-->
+    <!--                                            :key="relatedBook.identifier"-->
+    <!--                                            class="w-1/2 p-1">-->
+    <!--                                            <BookCard-->
+    <!--                                                :hover="false"-->
+    <!--                                                :book="relatedBook" />-->
+    <!--                                        </div>-->
     <!--                                    </div>-->
     <!--                                </div>-->
-    <!--                            </div>-->
-    <!--                        </Deferred>-->
+    <!--                            </Deferred>-->
     <!--                    </div>-->
     <!--                </div>-->
     <!--            </div>-->

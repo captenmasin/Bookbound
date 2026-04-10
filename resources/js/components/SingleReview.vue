@@ -53,17 +53,17 @@ const isUserReview = computed(() => {
 </script>
 
 <template>
-    <div :class="cn('group py-6', props.class)">
-        <div class="flex items-center justify-between">
+    <div :class="cn('group', props.class)">
+        <div class="flex items-start justify-between">
             <h3
                 v-if="review.title"
-                class="text-xl font-semibold">
+                class="text-xl text-wrap break-all font-semibold">
                 {{ review.title }}
             </h3>
 
             <div
                 v-if="isUserReview"
-                class="flex transition-all group-hover:opacity-100 md:opacity-0">
+                class="flex transition-all ml-8 group-hover:opacity-100 md:opacity-0">
                 <ConfirmationModal
                     @confirmed="deleteReview()">
                     <template #title>
@@ -106,7 +106,7 @@ const isUserReview = computed(() => {
                 <UserAvatar
                     :user="review.user"
                     :size="28"
-                    class="size-10" />
+                    class="size-10 ring ring-black/10 -ring-offset-1" />
             </div>
             <div class="flex flex-col gap-px">
                 <Label>

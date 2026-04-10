@@ -99,7 +99,7 @@ const slots = useSlots()
             :variant="variant"
             class="cursor-pointer"
             :class="buttonClass"
-            :size="slots.default ? 'sm' : 'icon'"
+            :size="slots.default && slots.default.length > 0 ? 'sm' : 'icon'"
             @click="handleClick"
         >
             <Icon name="share" />

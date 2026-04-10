@@ -7,7 +7,12 @@ import { useRoute } from '@/composables/useRoute'
 import { router, useForm } from '@inertiajs/vue3'
 import { Button } from '@/components/ui/button/index.js'
 import { useAuthedUser } from '@/composables/useAuthedUser'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
+} from '@/components/ui/tooltip'
 
 const props = defineProps({
     book: Object as PropType<Book>
@@ -143,7 +148,8 @@ const clearCoverFileInput = () => {
                     <Button
                         variant="ghost"
                         size="sm"
-                        class="text-white cursor-pointer rounded-none"
+                        :class="canRemoveCover ? '' : 'w-full'"
+                        class="text-white text-xs cursor-pointer rounded-none"
                         @click="clickCoverInput"
                     >
                         <Icon name="ImagePlus" />
@@ -176,11 +182,10 @@ const clearCoverFileInput = () => {
                     <!--                        Undo-->
                     <!--                    </Button>-->
 
-                    <TooltipProvider>
+                    <TooltipProvider v-if="canRemoveCover">
                         <Tooltip>
                             <TooltipTrigger as-child>
                                 <Button
-                                    v-if="canRemoveCover"
                                     type="button"
                                     size="icon"
                                     variant="ghost"

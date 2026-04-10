@@ -116,6 +116,29 @@ class Book extends Model implements HasMedia
             ->values();
     }
 
+    public function relatedBooksByVector(int $limit = 6)
+    {
+        if (! $this->hasEmbeddingVector()) {
+            return collect();
+        }
+
+        return Cache::rememberForever('book:related:vector:'.$this->id, function () use ($limit) {
+            return Book::query()
+                ->whereNotNull('embedding')
+                ->whereVectorSimilarTo('embedding', $this->embedding, minSimilarity: 0.4)
+                ->limit($limit * 2)
+                ->get()
+                ->filter(fn ($book) => $book->title !== $this->title && $book->id !== $this->id)
+                ->take($limit)
+                ->values();
+        });
+    }
+
+    protected function hasEmbeddingVector(): bool
+    {
+        return is_array($this->embedding) && $this->embedding !== [];
+    }
+
     public function relatedBooksByAuthorsAndTags(int $limit = 6)
     {
         return Cache::remember('related_books_'.$this->id, now()->addHours(6), function () use ($limit) {

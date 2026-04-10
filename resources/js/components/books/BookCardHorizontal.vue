@@ -123,7 +123,9 @@ const { userRating } = useBook(props.book)
             :class="userRating ? '-mt-11' : '-mt-11'"
             class="w-full shrink-0 pl-24 md:ml-auto md:w-40 md:max-w-64 md:max-w-none md:pl-0"
         >
-            <BookActions :book="book" />
+            <BookActions
+                size="sm"
+                :book="book" />
         </div>
     </div>
 </template>

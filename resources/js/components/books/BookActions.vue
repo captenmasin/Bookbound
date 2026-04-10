@@ -20,6 +20,10 @@ defineProps({
     book: {
         type: Object as PropType<Book | BookApiResult>,
         required: true
+    },
+    size: {
+        type: String as PropType<'default' | 'sm' | 'lg' | undefined>,
+        default: 'default'
     }
 })
 
@@ -109,6 +113,7 @@ function selectNewStatus (
             >
                 <SelectTrigger
                     class="w-full bg-primary text-primary-foreground border-primary cursor-pointer hover:bg-primary/90"
+                    :size="size"
                     :class="addingBooks.includes(book.identifier) ? 'pl-9' : ''"
                 >
                     <SelectValue

@@ -4,6 +4,7 @@ import SingleReview from '@/components/SingleReview.vue'
 import ReviewForm from '@/components/books/ReviewForm.vue'
 import { Book } from '@/types/book'
 import { Review } from '@/types/review'
+import { Card } from '@/components/ui/card'
 import { computed, PropType, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -59,12 +60,14 @@ const displayReviews = computed(() => {
                 :book="book"
                 :existing-review="book.user_review" />
 
-            <div class="flex flex-col divide-y divide-muted">
-                <SingleReview
+            <div class="flex flex-col gap-4">
+                <Card
                     v-for="review in displayReviews"
-                    :key="review.uuid"
-                    :review="review"
-                    :book="book" />
+                    :key="review.uuid">
+                    <SingleReview
+                        :review="review"
+                        :book="book" />
+                </Card>
             </div>
 
             <div

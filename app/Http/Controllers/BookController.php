@@ -124,10 +124,12 @@ class BookController extends Controller
             'notes' => fn ($query) => $query->where('user_id', Auth::id()),
         ]);
 
-        //        $related = Book::query()
-        //            ->whereVectorSimilarTo('embedding', $book->embedding, minSimilarity: 0.4)
-        //            ->limit(10)
-        //            ->get();
+        //        dd($book->relatedBooksByVector(5));
+
+        //                $related = Book::query()
+        //                    ->whereVectorSimilarTo('embedding', $book->embedding, minSimilarity: 0.4)
+        //                    ->limit(10)
+        //                    ->get();
         //
         //        dd($related);
 
@@ -135,11 +137,13 @@ class BookController extends Controller
             'book' => new BookResource($book),
             'averageRating' => number_format($book->ratings->avg('value') ?? 0, 1),
             'related' => Inertia::defer(function () use ($book) {
-                //                $relatedBooks = $book->relatedBooksByAuthorsAndTags(4);
-                $relatedBooks = $book->relatedBooksBySearch(4);
-                $relatedBooks->map(fn ($related) => $related->load(['authors', 'categories']));
+                return BookResource::collection($book->relatedBooksByVector(5));
 
-                return BookResource::collection($relatedBooks);
+                //                $relatedBooks = $book->relatedBooksByAuthorsAndTags(4);
+                //                $relatedBooks = $book->relatedBooksBySearch(5);
+                //                $relatedBooks->map(fn ($related) => $related->load(['authors', 'categories']));
+
+                //                return BookResource::collection($relatedBooks);
             }),
             'reviews' => Inertia::defer(fn () => ReviewResource::collection(
                 $book->reviews->load('user', 'book')
