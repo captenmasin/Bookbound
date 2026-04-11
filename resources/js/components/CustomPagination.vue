@@ -21,19 +21,23 @@ const props = defineProps({
     meta: {
         type: Object as PropType<Meta>,
         required: true
+    },
+    pageName: {
+        type: String,
+        default: 'page'
     }
 })
 
-const page = usePage()
+const currentPage = usePage()
 
-function pageUrl (page: number) {
-    const [, search = ''] = page.url.split('?')
+function pageUrl (pageNumber: number) {
+    const [, search = ''] = currentPage.url.split('?')
     const params = new URLSearchParams(search)
 
-    if (page > 1) {
-        params.set('page', String(page))
+    if (pageNumber > 1) {
+        params.set(props.pageName, String(pageNumber))
     } else {
-        params.delete('page')
+        params.delete(props.pageName)
     }
 
     const query = params.toString()
@@ -62,10 +66,10 @@ function next () {
     )
 }
 
-function prefetch (page: number) {
-    if (page < 1 || page > props.meta.last_page) return
+function prefetch (pageNumber: number) {
+    if (pageNumber < 1 || pageNumber > props.meta.last_page) return
     router.prefetch(
-        pageUrl(page),
+        pageUrl(pageNumber),
         {
             method: 'get'
         },

@@ -93,6 +93,7 @@ class User extends Authenticatable implements FilamentUser, HasMedia, HasPasskey
 
         'profile' => [
             'colour' => '#f2ead9',
+            'is_private' => false,
         ],
     ];
 
@@ -108,6 +109,7 @@ class User extends Authenticatable implements FilamentUser, HasMedia, HasPasskey
 
             'profile' => 'array',
             'profile.colour' => ['string', 'hex_color'],
+            'profile.is_private' => ['boolean'],
         ];
     }
 

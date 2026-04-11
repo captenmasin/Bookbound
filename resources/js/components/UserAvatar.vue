@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
-import { User } from '@/types/user'
+import type { PublicUser, User } from '@/types/user'
 import { computed, PropType } from 'vue'
 import { getInitials } from '@/composables/useInitials'
 import { useContrast } from '@/composables/useContrast'
@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 const props = defineProps({
     user: {
-        type: Object as PropType<User>,
+        type: Object as PropType<User | PublicUser>,
         required: true
     },
     class: {

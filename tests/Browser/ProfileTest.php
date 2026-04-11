@@ -93,6 +93,23 @@ test('user can request a new verification email', function () {
         ->and($user->hasVerifiedEmail())->toBeFalse();
 });
 
+test('user can toggle their public profile visibility', function () {
+    $user = User::factory()->create([
+        'username' => 'privacy-user',
+    ]);
+
+    actingAs($user);
+
+    visit('/settings/profile')
+        ->assertSee('Private profile')
+        ->type('#name', 'Private User')
+        ->press('#profile_is_private_toggle')
+        ->press('#profile-save')
+        ->assertSee('Profile updated successfully');
+
+    expect($user->fresh()->settings()->get('profile.is_private'))->toBeTrue();
+});
+
 test('user can update avatar', function () {
     $user = User::factory()->create();
 

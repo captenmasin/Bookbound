@@ -50,6 +50,7 @@ describe('Settings\\ProfileController', function () {
             'email' => 'new@example.com',
             'avatar' => $file,
             'profile_colour' => '#123456',
+            'profile_is_private' => true,
         ]);
 
         $response->assertRedirect(route('user.settings.profile.edit', absolute: false));
@@ -61,7 +62,8 @@ describe('Settings\\ProfileController', function () {
             ->and($this->user->username)->toBe('newusername')
             ->and($this->user->email_verified_at)->toBeNull()
             ->and($this->user->hasMedia('avatar'))->toBeTrue()
-            ->and($this->user->settings()->get('profile.colour'))->toBe('#123456');
+            ->and($this->user->settings()->get('profile.colour'))->toBe('#123456')
+            ->and($this->user->settings()->get('profile.is_private'))->toBeTrue();
     });
 
     it('deletes the user avatar and flashes success', function () {

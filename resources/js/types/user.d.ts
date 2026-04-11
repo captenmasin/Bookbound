@@ -19,17 +19,36 @@ export type UserSubscription = {
     can_add_book: boolean;
 };
 
+export type UserSettings = {
+    profile?: {
+        colour?: string;
+        is_private?: boolean;
+    };
+    [key: string]: any;
+};
+
 export type User = {
     id: number;
     permissions: string[];
     name: string;
     username: string;
+    colour: string;
     email?: string;
     avatar?: string;
     email_verified: boolean;
-    settings?: Record<string, any>;
+    settings?: UserSettings;
     book_identifiers?: Record<string, UserBookStatus>;
     subscription: UserSubscription;
+};
+
+export type PublicUser = {
+    id: number;
+    name: string;
+    username: string;
+    avatar?: string;
+    colour: string;
+    books_count: number;
+    books_read_count: number;
 };
 
 export type UserPasskey = {

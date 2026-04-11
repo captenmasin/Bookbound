@@ -26,8 +26,7 @@ defineProps({
             class="aspect-square items-center justify-center"
             :class="logoSize">
             <AppLogoIcon
-                :class="logoBorderColor"
-                class="rounded-lg border fill-current text-primary size-full dark:text-white" />
+                class="rounded-lg fill-current text-primary size-full dark:text-white" />
         </div>
         <div class="relative ml-2 grid flex-1 flex-col gap-0 text-left text-sm text-primary">
             <span

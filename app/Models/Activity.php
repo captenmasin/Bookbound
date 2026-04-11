@@ -31,49 +31,56 @@ class Activity extends Model
 
     public function getDescriptionAttribute(): string
     {
-        return Cache::remember('activity_description_'.$this->id, now()->addDay(), function () {
-            $this->load('subject');
+        return $this->descriptionForAudience('owner');
+    }
+
+    public function publicDescription(): string
+    {
+        return $this->descriptionForAudience('public');
+    }
+
+    private function descriptionForAudience(string $audience): string
+    {
+        return Cache::remember("activity_description_{$audience}_{$this->id}", now()->addDay(), function () use ($audience) {
+            $this->loadMissing(['subject', 'user']);
+
             $subject = $this->subject;
             $extra = $this->properties ?? [];
+            $bookTitle = match (true) {
+                $subject instanceof Book && $subject->title => $subject->title,
+                $subject instanceof Note && $subject->book?->title => $subject->book->title,
+                $subject instanceof Review && $subject->book?->title => $subject->book->title,
+                default => $extra['book_title'] ?? 'Unknown Book',
+            };
 
-            if ($subject instanceof Book && $subject->title) {
-                $bookTitle = $subject->title;
-            } elseif ($subject instanceof Note && $subject->book?->title) {
-                $bookTitle = $subject->book->title;
-            } elseif ($subject instanceof Review && $subject->book?->title) {
-                $bookTitle = $subject->book->title;
-            } else {
-                $bookTitle = $extra['book_title'] ?? null;
-            }
-
-            if ($bookTitle === null) {
-                $bookTitle = 'Unknown Book';
-            }
+            $actor = $audience === 'public'
+                ? ($this->user?->name ?? 'This reader')
+                : 'You';
 
             return match ($this->type) {
-                ActivityType::BookAdded->value => "You added <strong>{$bookTitle}</strong> to your library as <em>".($extra['status'] ?? 'unknown').'</em>.',
+                ActivityType::BookAdded->value => "{$actor} added <strong>{$bookTitle}</strong> to ".($audience === 'public' ? 'their' : 'your').' library as <em>'.($extra['status'] ?? 'unknown').'</em>.',
 
-                ActivityType::BookStatusUpdated->value => "You updated the status of <strong>{$bookTitle}</strong> to <em>".($extra['status'] ?? 'unknown').'</em>.',
+                ActivityType::BookStatusUpdated->value => "{$actor} updated the status of <strong>{$bookTitle}</strong> to <em>".($extra['status'] ?? 'unknown').'</em>.',
 
-                ActivityType::BookRemoved->value => "You removed <strong>{$bookTitle}</strong> from your library.",
+                ActivityType::BookRemoved->value => "{$actor} removed <strong>{$bookTitle}</strong> from ".($audience === 'public' ? 'their' : 'your').' library.',
 
-                ActivityType::BookNoteAdded->value => "You added a note to <strong>{$bookTitle}</strong>.",
+                ActivityType::BookNoteAdded->value => "{$actor} added a note to <strong>{$bookTitle}</strong>.",
 
-                ActivityType::BookNoteUpdated->value => "You updated your note on <strong>{$bookTitle}</strong>.",
+                ActivityType::BookNoteUpdated->value => "{$actor} updated ".($audience === 'public' ? 'their' : 'your')." note on <strong>{$bookTitle}</strong>.",
 
-                ActivityType::BookNoteRemoved->value => "You removed your note from <strong>{$bookTitle}</strong>.",
+                ActivityType::BookNoteRemoved->value => "{$actor} removed ".($audience === 'public' ? 'their' : 'your')." note from <strong>{$bookTitle}</strong>.",
 
-                ActivityType::BookReviewAdded->value => "You added a review for <strong>{$bookTitle}</strong> ".(! empty($extra['rating']) ? ('&mdash; '.$extra['rating'].' stars') : '').'.',
+                ActivityType::BookReviewAdded->value => "{$actor} added a review for <strong>{$bookTitle}</strong> ".(! empty($extra['rating']) ? ('&mdash; '.$extra['rating'].' stars') : '').'.',
 
-                ActivityType::BookReviewUpdated->value => "You updated your review for <strong>{$bookTitle}</strong>".(! empty($extra['rating']) ? ('&mdash; '.$extra['rating'].' stars') : '').'.',
+                ActivityType::BookReviewUpdated->value => "{$actor} updated ".($audience === 'public' ? 'their' : 'your')." review for <strong>{$bookTitle}</strong>".(! empty($extra['rating']) ? ('&mdash; '.$extra['rating'].' stars') : '').'.',
 
-                ActivityType::BookReviewRemoved->value => "You removed your review from <strong>{$bookTitle}</strong>.",
+                ActivityType::BookReviewRemoved->value => "{$actor} removed ".($audience === 'public' ? 'their' : 'your')." review from <strong>{$bookTitle}</strong>.",
 
-                ActivityType::BookCoverUpdated->value => "You updated the cover for <strong>{$bookTitle}</strong>.",
+                ActivityType::BookCoverUpdated->value => "{$actor} updated the cover for <strong>{$bookTitle}</strong>.",
 
-                ActivityType::BookCoverRemoved->value => "You removed the cover for <strong>{$bookTitle}</strong>.",
+                ActivityType::BookCoverRemoved->value => "{$actor} removed the cover for <strong>{$bookTitle}</strong>.",
 
-                default => 'You did something.',
+                default => $audience === 'public' ? 'This reader did something.' : 'You did something.',
             };
         });
     }

@@ -9,6 +9,7 @@ import { toast } from 'vue-sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import Switch from '@/components/ui/switch/Switch.vue'
 import { useRoute } from '@/composables/useRoute'
 import { getInitials } from '@/composables/useInitials'
 import { Link, router, useForm } from '@inertiajs/vue3'
@@ -32,7 +33,8 @@ const form = useForm({
     username: authedUser.value?.username,
     email: authedUser.value?.email,
     avatar: authedUser.value?.avatar,
-    profile_colour: getSingleSetting('profile.colour', '#000000')
+    profile_colour: getSingleSetting('profile.colour', '#000000'),
+    profile_is_private: getSingleSetting('profile.is_private', false)
 })
 
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -232,6 +234,42 @@ defineOptions({
 
             <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
                 <Label
+                    for="profile_is_private"
+                    class="grid gap-1">
+                    <p>Private profile</p>
+                    <p class="text-xs text-muted-foreground">
+                        Hide your public profile from everyone except you
+                    </p>
+                </Label>
+
+                <div class="flex w-full flex-col">
+                    <button
+                        id="profile_is_private_toggle"
+                        type="button"
+                        class="flex items-center justify-between rounded-lg border border-input-border bg-input-background px-4 py-3 text-left"
+                        @click="form.profile_is_private = !form.profile_is_private">
+                        <div class="pr-4">
+                            <p class="font-medium text-sm">
+                                {{ form.profile_is_private ? 'Private' : 'Public' }}
+                            </p>
+                            <p class="text-xs text-muted-foreground">
+                                Public profiles are available at /@{{ form.username || 'username' }}
+                            </p>
+                        </div>
+                        <Switch
+                            id="profile_is_private"
+                            :checked="form.profile_is_private"
+                            class="pointer-events-none" />
+                    </button>
+
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.profile_is_private" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 items-start gap-1 md:grid-cols-2">
+                <Label
                     for="email"
                     class="grid gap-1">
                     <p>
@@ -292,6 +330,7 @@ defineOptions({
                     </Button>
 
                     <Button
+                        id="profile-save"
                         type="submit"
                         :disabled="form.processing || !form.isDirty">
                         Save

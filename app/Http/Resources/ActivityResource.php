@@ -14,10 +14,14 @@ class ActivityResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $description = $request->routeIs('profiles.show')
+            ? $this->publicDescription()
+            : $this->description;
+
         return [
             'id' => $this->id,
             'type' => $this->type,
-            'description' => $this->description,
+            'description' => $description,
             'created_at' => $this->created_at,
         ];
     }

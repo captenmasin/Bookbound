@@ -15,6 +15,7 @@ use App\Http\Controllers\BookCoverController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ActivitiesController;
 use App\Http\Controllers\GeneralPageController;
+use App\Http\Controllers\PublicProfileController;
 use App\Http\Controllers\GoodreadsImportController;
 use App\Http\Controllers\ImageTransformerController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -136,5 +137,8 @@ Route::get('image-transform/{options}/{path}', ImageTransformerController::class
 require __DIR__.'/auth.php';
 require __DIR__.'/testing.php';
 require __DIR__.'/subscriptions.php';
+
+Route::get('@{user:username}', PublicProfileController::class)
+    ->name('profiles.show');
 
 Route::fallback(ErrorPage::class);

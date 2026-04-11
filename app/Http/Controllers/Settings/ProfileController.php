@@ -77,6 +77,8 @@ class ProfileController extends Controller
             ]);
         }
 
+        $request->user()->settings()->update('profile.is_private', $request->boolean('profile_is_private'));
+
         $request->user()->save();
 
         return to_route('user.settings.profile.edit');

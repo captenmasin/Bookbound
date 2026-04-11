@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Book;
+use App\Models\User;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 use Illuminate\Console\Command;
@@ -94,6 +95,7 @@ class GenerateSitemap extends Command
             );
 
         $sitemap->add($this->generateBooks());
+        $sitemap->add($this->generateProfiles());
 
         $sitemap->writeToFile(public_path('sitemap.xml'));
     }
@@ -107,6 +109,29 @@ class GenerateSitemap extends Command
                 ->setLastModificationDate($book->updated_at)
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                 ->setPriority(0.9));
+        }
+
+        $sitemap->writeToFile(public_path($path));
+
+        return $path;
+    }
+
+    private function generateProfiles(): string
+    {
+        $path = 'sitemap_profiles.xml';
+        $sitemap = Sitemap::create();
+
+        foreach (User::query()->get() as $user) {
+            if ($user->settings()->get('profile.is_private', false)) {
+                continue;
+            }
+
+            $sitemap->add(
+                Url::create(route('profiles.show', $user))
+                    ->setLastModificationDate($user->updated_at)
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                    ->setPriority(0.6)
+            );
         }
 
         $sitemap->writeToFile(public_path($path));
