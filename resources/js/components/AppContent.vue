@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import AppProBanner from '@/components/AppProBanner.vue'
+import AppProBannerSimple from '@/components/AppProBannerSimple.vue'
 import { computed } from 'vue'
 import { SidebarInset } from '@/components/ui/sidebar'
-import AppProBanner from '@/components/AppProBanner.vue'
 
 interface Props {
     variant?: 'header' | 'sidebar';
@@ -18,7 +19,8 @@ const className = computed(() => props.class)
         :class="className">
         <slot />
     </SidebarInset>
-    <AppProBanner />
+    <AppProBannerSimple />
+    <!--    <AppProBanner />-->
     <main
         v-if="props.variant !== 'sidebar'"
         class="mx-auto flex h-full w-full max-w-screen-2xl flex-1 flex-col gap-4 rounded-xl px-4 md:px-12 pwa:max-w-none"

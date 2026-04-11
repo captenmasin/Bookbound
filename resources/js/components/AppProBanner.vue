@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
+import JoinProTrigger from '@/components/JoinProTrigger.vue'
 import { onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
@@ -29,7 +30,7 @@ onMounted(() => {
     <Transition>
         <section
             v-show="displayProBanner"
-            class="relative mb-6 overflow-hidden border border-primary bg-primary dark:bg-zinc-900 text-white shadow-[0_18px_60px_-28px_rgba(0,0,0,0.6)] md:mb-0 dark:border-white/10"
+            class="relative mb-6 overflow-hidden border border-primary bg-primary dark:bg-zinc-900 text-white md:mb-0 dark:border-white/10"
         >
             <div
                 class="pointer-events-none absolute inset-y-0 right-0 hidden w-1/3 border-l border-white/10 bg-white/5 lg:block"
@@ -83,13 +84,14 @@ onMounted(() => {
                     </div>
 
                     <div class="mt-6 flex flex-wrap items-center gap-3">
-                        <Button
-                            variant="white"
-                            size="lg"
-                            as-child
-                        >
-                            <a :href="useRoute('checkout')"> Upgrade to Pro </a>
-                        </Button>
+                        <JoinProTrigger as-child>
+                            <Button
+                                variant="white"
+                                size="lg"
+                            >
+                                Upgrade to Pro
+                            </Button>
+                        </JoinProTrigger>
                         <p class="text-sm text-white/65">
                             Cancel any time.
                         </p>
@@ -97,7 +99,7 @@ onMounted(() => {
                 </div>
 
                 <div
-                    class="flex flex-col gap-3 border-t border-white/10 pt-5 lg:w-1/3 pl-8 lg:flex-none lg:border-t-0 lg:pt-0"
+                    class="flex flex-col gap-3 border-t border-white/10 pt-5 lg:w-1/3 md:pl-8 lg:flex-none lg:border-t-0 lg:pt-0"
                 >
                     <div
                         class="text-[11px] font-semibold tracking-[0.26em] text-white/60 uppercase"
