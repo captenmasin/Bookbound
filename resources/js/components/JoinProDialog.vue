@@ -59,9 +59,6 @@ onUnmounted(() => {
                         <li>Private notes</li>
                         <li>Custom book covers</li>
                         <li class="opacity-50">
-                            Custom tags (coming soon)
-                        </li>
-                        <li class="opacity-50">
                             Shareable book collections (coming soon)
                         </li>
                         <li>And more!</li>

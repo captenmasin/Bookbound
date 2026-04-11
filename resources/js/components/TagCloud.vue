@@ -27,7 +27,7 @@ const tagsLimit = ref(props.limit)
         >
             <Link
                 :href="useRoute('books.search', { q: 'tag: ' + tag.name })"
-                class="px-2.5 text-xs py-1 rounded-[2px] bg-primary/10 uppercase text-zinc-800 hover:bg-primary hover:text-primary-foreground dark:bg-primary/10 md:transition-colors dark:hover:text-primary">
+                class="px-2.5 text-xs py-1 bg-primary/10 uppercase text-zinc-800 hover:bg-primary hover:text-primary-foreground dark:bg-primary/10 md:transition-colors dark:hover:text-primary">
                 {{ tag.name }}
             </Link>
         </li>
@@ -35,7 +35,7 @@ const tagsLimit = ref(props.limit)
             v-if="tags.length > tagsLimit"
             class="inline-block">
             <button
-                class="cursor-pointer rounded-full px-2 text-xs bg-primary/10 py-0.5 text-primary hover:bg-primary/20"
+                class="cursor-pointer px-2 text-xs bg-primary/10 py-0.75 text-primary hover:bg-primary/20"
                 @click="tagsLimit = 999"
             >
                 +{{ tags.length - tagsLimit }} more

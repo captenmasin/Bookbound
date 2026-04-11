@@ -68,7 +68,7 @@ const { userRating } = useBook(props.book)
                 :href="url"
                 :target="target"
                 prefetch>
-                <div class="relative aspect-book w-20 shrink-0 overflow-hidden rounded-sm shadow-sm md:w-40">
+                <div class="relative aspect-book w-20 shrink-0 overflow-hidden shadow-sm md:w-40">
                     <!--                    <span-->
                     <!--                        v-if="book.type"-->
                     <!--                        class="absolute top-1 right-1 rounded-full bg-white/75 px-1.5 py-px text-[10px] text-zinc-900 opacity-0 transition-all group-hover:opacity-100"-->
@@ -79,7 +79,7 @@ const { userRating } = useBook(props.book)
                         :src="book.cover ?? DefaultCover"
                         :alt="`Book cover image for ${book.title}`"
                         class="size-full bg-gray-200 object-cover">
-                    <div class="bg-black absolute bottom-0 text-white inset-x-0 text-center text-xs py-1">
+                    <div class="bg-white/50 backdrop-blur text-black absolute top-2 right-2 px-2 text-center text-xs py-1">
                         {{ book.type }}
                     </div>
                 </div>
@@ -124,7 +124,6 @@ const { userRating } = useBook(props.book)
             class="w-full shrink-0 pl-24 md:ml-auto md:w-40 md:max-w-64 md:max-w-none md:pl-0"
         >
             <BookActions
-                size="sm"
                 :book="book" />
         </div>
     </div>

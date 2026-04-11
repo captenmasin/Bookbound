@@ -115,7 +115,7 @@ router.on('navigate', (event) => {
                                 :is="item.icon"
                                 class="size-5" />
                         </div>
-                        <Label class="text-xs font-medium sm:text-sm">
+                        <Label class="text-xs capitalize tracking-tight font-medium sm:text-sm">
                             {{ item.title }}
                         </Label>
                     </Link>

@@ -13,15 +13,15 @@ withDefaults(
 
 <template>
     <div
-        class="flex items-center gap-4 md:gap-8"
+        class="flex md:items-center gap-4 md:gap-8"
         :style="`--colour: ${book.colour};`">
-        <div class="flex w-28 shrink-0 items-center gap-2 md:w-32">
+        <div class="flex w-20 shrink-0 items-center gap-2 md:w-40">
             <Link
                 :href="book.links.show"
                 :page-props="{ ...usePage().props, book }"
                 class="group"
                 component="books/Show">
-                <div class="aspect-book overflow-clip h-full w-full rounded-md object-cover shadow-xs transition-all group-hover:shadow-xl">
+                <div class="aspect-book overflow-clip h-full w-full object-cover shadow-xs transition-all group-hover:shadow-xl">
                     <Image
                         v-if="book.cover"
                         :src="book.cover"

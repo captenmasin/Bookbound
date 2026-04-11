@@ -2,9 +2,11 @@
 import ShareButton from '@/components/ShareButton.vue'
 import RatingForm from '@/components/books/RatingForm.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
-import { Review } from '@/types/review'
+import { Link } from '@inertiajs/vue3'
+import { computed, PropType } from 'vue'
 import type { Book } from '@/types/book'
 import { Label } from '@/components/ui/label'
+import { useRoute } from '@/composables/useRoute'
 import { usePlural } from '@/composables/usePlural'
 
 const props = defineProps({
@@ -18,21 +20,26 @@ const emit = defineEmits(['refresh'])
 function refresh () {
     emit('refresh')
 }
+
+const primaryCategory = computed(() => {
+    return props.book.primary_category ?? props.book.tags?.[0]?.name ?? null
+})
 </script>
 
 <template>
     <div class="flex-col flex">
         <div class="flex mb-1 items-center justify-between gap-4">
-            <p
-                :class="small? 'text-sm' : 'text-xs'"
+            <Link
+                v-if="primaryCategory"
+                :href="
+                    useRoute('books.search', { q: `tag: ${primaryCategory} ` })
+                "
+                :class="small ? 'text-sm' : 'text-xs'"
                 class="font-sans font-normal tracking-wider text-primary uppercase"
             >
-                {{
-                    book.primary_category ??
-                        book.tags?.[0]?.name ??
-                        "Uncategorised"
-                }}
-            </p>
+                {{ primaryCategory }}
+            </Link>
+            <div v-else />
             <ShareButton
                 :url="book.links.show"
                 variant="secondary"
@@ -62,7 +69,8 @@ function refresh () {
         <div class="mt-2.5 flex items-center divide-x gap-4">
             <div
                 v-if="!small || book.in_library"
-                class="grid gap-1 pr-4">
+                class="grid gap-1 pr-4 py-2.5"
+            >
                 <Label> Your rating </Label>
                 <RatingForm
                     v-if="book.in_library"

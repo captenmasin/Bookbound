@@ -35,7 +35,7 @@ const url = computed(() => {
         :id="`book-card-${book.id}`"
         class="book-card flex gap-4 transition-all active:scale-102">
         <div
-            class="group flex w-full flex-col overflow-hidden rounded-md shadow-sm"
+            class="group flex w-full flex-col overflow-hidden shadow-sm"
             :style="{
                 backgroundColor: book.colour,
             }"

@@ -15,7 +15,7 @@ const { updateMultipleSettings } = useUserSettings()
 const formError = ref(null)
 
 const settings = ref({
-    'library.tilt_books': page.props.auth.user.settings?.library?.tilt_books
+    'library.tilt_books': page.props.auth.user?.settings?.library?.tilt_books
 })
 
 const { isPwa } = usePwa()

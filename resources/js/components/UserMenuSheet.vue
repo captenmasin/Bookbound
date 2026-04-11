@@ -2,6 +2,7 @@
 import Icon from '@/components/Icon.vue'
 import UserInfo from '@/components/UserInfo.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import AppearanceTabs from '@/components/AppearanceTabs.vue'
 import type { User } from '@/types/user'
 import { LogOut } from 'lucide-vue-next'
 import { nextTick, ref, watch } from 'vue'
@@ -11,7 +12,13 @@ import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
 import { Separator } from '@/components/ui/separator'
 import { useAuthedUser } from '@/composables/useAuthedUser'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger
+} from '@/components/ui/sheet'
 
 interface Props {
     user: User;
@@ -19,7 +26,7 @@ interface Props {
         title: string;
         url?: string;
         icon?: any;
-        if?: boolean,
+        if?: boolean;
         target?: string;
         tag?: string;
         action?: () => void;
@@ -56,8 +63,7 @@ router.on('navigate', (event) => {
 <template>
     <div>
         <Sheet v-model:open="userMobileMenuOpen">
-            <SheetTrigger
-                :as-child="true">
+            <SheetTrigger :as-child="true">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -68,17 +74,20 @@ router.on('navigate', (event) => {
             </SheetTrigger>
             <SheetContent
                 class="max-h-screen overflow-auto"
-                style="padding-top: env(safe-area-inset-top, 0px);">
+                style="padding-bottom: env(safe-area-inset-bottom)"
+            >
                 <SheetHeader>
-                    <SheetTitle>
-                        <div class="flex items-center gap-2 px-1 text-left text-sm">
+                    <SheetTitle style="padding-top: env(safe-area-inset-top)">
+                        <div
+                            class="flex items-center gap-2 px-1 text-left text-sm pt-4 pb-4"
+                        >
                             <UserInfo
                                 :user="user"
                                 :show-email="true" />
                         </div>
                     </SheetTitle>
                 </SheetHeader>
-                <div class="-mt-4 flex h-full flex-col gap-2 px-6 pb-8">
+                <div class="-mt-4 flex flex-col gap-1 px-6 pb-12">
                     <template
                         v-for="item in items"
                         :key="item.title">
@@ -86,11 +95,21 @@ router.on('navigate', (event) => {
                             v-if="item.if || !('if' in item)"
                             :as-child="true">
                             <component
-                                :is="item.tag ? item.tag : (item.target === '_blank' ? 'a' : Link)"
+                                :is="
+                                    item.tag
+                                        ? item.tag
+                                        : item.target === '_blank'
+                                            ? 'a'
+                                            : Link
+                                "
                                 class="flex w-full items-center gap-4 py-2 text-lg font-medium text-foreground"
                                 :href="item.url"
                                 :prefetch="item.target !== '_blank'"
-                                @click="userMobileMenuOpen = false; item.action ? item.action() : null">
+                                @click="
+                                    userMobileMenuOpen = false;
+                                    item.action ? item.action() : null;
+                                "
+                            >
                                 <component
                                     :is="item.icon"
                                     class="size-4.5" />
@@ -100,23 +119,34 @@ router.on('navigate', (event) => {
                     </template>
 
                     <div class="mt-auto">
+                        <template v-if="!isPwa">
+                            <Separator
+                                class="mt-auto -mx-6 w-auto my-2 data-[orientation=horizontal]:w-auto"
+                            />
+                            <div class="pb-1">
+                                <p
+                                    class="mb-2 text-sm font-medium text-muted-foreground"
+                                >
+                                    Theme
+                                </p>
+                                <AppearanceTabs :icon-only="true" />
+                            </div>
+                        </template>
                         <div
                             v-if="isPwa"
-                            class="block text-sm font-medium text-foreground/20">
-                            <span v-if="isAndroid">
-                                Android
-                            </span>
-                            <span v-if="isIos">
-                                iOS
-                            </span>
-                            <span v-if="isMacos">
-                                macOS
-                            </span>
+                            class="block text-sm font-medium text-foreground/20"
+                        >
+                            <span v-if="isAndroid"> Android </span>
+                            <span v-if="isIos"> iOS </span>
+                            <span v-if="isMacos"> macOS </span>
                         </div>
-                        <Separator class="mt-auto my-2" />
+                        <Separator
+                            class="mt-auto -mx-6 w-auto my-2 data-[orientation=horizontal]:w-auto"
+                        />
                         <Link
                             class="flex w-full items-center gap-4 py-2 text-lg font-medium text-foreground"
-                            :href="useRoute('contact')">
+                            :href="useRoute('contact')"
+                        >
                             <Icon
                                 name="mail"
                                 class="size-4.5" />
@@ -125,7 +155,8 @@ router.on('navigate', (event) => {
                         <button
                             tabindex="-1"
                             class="flex w-full items-center gap-4 py-2 text-lg font-medium"
-                            @click="logout">
+                            @click="logout"
+                        >
                             <LogOut class="size-4.5" />
                             Log out
                         </button>

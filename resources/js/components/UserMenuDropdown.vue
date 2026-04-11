@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppearanceTabs from '@/components/AppearanceTabs.vue'
 import UserInfo from '@/components/UserInfo.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { Link } from '@inertiajs/vue3'
@@ -6,6 +7,7 @@ import type { User } from '@/types/user'
 import { LogOut } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useAuthedUser } from '@/composables/useAuthedUser'
+import { usePwa } from '@/composables/usePwa'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 interface Props {
@@ -22,6 +24,7 @@ interface Props {
 }
 
 const { logout } = useAuthedUser()
+const { isPwa } = usePwa()
 
 defineProps<Props>()
 </script>
@@ -40,7 +43,7 @@ defineProps<Props>()
         </DropdownMenuTrigger>
         <DropdownMenuContent
             align="end"
-            class="w-56">
+            class="w-72">
             <DropdownMenuLabel class="p-0 font-normal">
                 <div class="flex items-center gap-2 px-1 text-left text-sm py-1.5">
                     <UserInfo
@@ -71,6 +74,15 @@ defineProps<Props>()
                     </DropdownMenuItem>
                 </template>
             </DropdownMenuGroup>
+            <template v-if="!isPwa">
+                <DropdownMenuSeparator />
+                <div class="px-1 py-1.5">
+                    <p class="mb-2 text-xs font-medium text-muted-foreground">
+                        Theme
+                    </p>
+                    <AppearanceTabs :icon-only="true" />
+                </div>
+            </template>
             <DropdownMenuSeparator />
             <DropdownMenuItem :as-child="true">
                 <button

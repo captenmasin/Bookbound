@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import Image from '@/components/Image.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
+import TagCloud from '@/components/TagCloud.vue'
 import BookCard from '@/components/books/BookCard.vue'
-import ShareButton from '@/components/ShareButton.vue'
-import RatingForm from '@/components/books/RatingForm.vue'
 import BookActions from '@/components/books/BookActions.vue'
 import NotesSection from '@/components/books/NotesSection.vue'
-import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
 import ReviewsSection from '@/components/books/ReviewsSection.vue'
 import ShowBookHeader from '@/components/books/ShowBookHeader.vue'
 import UpdateBookCover from '@/components/books/UpdateBookCover.vue'
@@ -16,7 +14,6 @@ import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { type PropType, ref, watch } from 'vue'
 import { Deferred, router } from '@inertiajs/vue3'
-import { usePlural } from '@/composables/usePlural'
 import { useMarkdown } from '@/composables/useMarkdown'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { useUserSettings } from '@/composables/useUserSettings'
@@ -41,7 +38,7 @@ const props = defineProps({
 const { updateSingleSetting, getSingleSetting } = useUserSettings()
 const { authed } = useAuthedUser()
 
-const data = [
+const data: { title: string, value: string }[] = [
     {
         title: 'Type',
         value: props.book.binding || 'N/A'
@@ -52,7 +49,7 @@ const data = [
     },
     {
         title: 'Pages',
-        value: props.book.page_count || 'N/A'
+        value: props.book.page_count ? String(props.book.page_count) : 'N/A'
     },
     {
         title: 'Publisher',
@@ -73,8 +70,6 @@ const displayType = ref(
 )
 
 const refreshKey = ref(1)
-
-const detailsOpen = ref(false)
 
 watch(displayType, (newType) => {
     if (authed.value) {
@@ -103,7 +98,7 @@ defineOptions({
                 <div class="flex gap-4">
                     <div class="md:w-full w-28 shrink-0">
                         <UpdateBookCover :book="book">
-                            <div class="overflow-hidden rounded-md aspect-book">
+                            <div class="overflow-hidden aspect-book">
                                 <Image
                                     width="250"
                                     class="object-cover size-full"
@@ -131,6 +126,10 @@ defineOptions({
                         @updated="refreshRating"
                     />
                 </div>
+                <TagCloud
+                    v-if="book.tags && book.tags.length > 0"
+                    :tags="book.tags"
+                    class="mt-6" />
             </div>
 
             <div class="col-span-12 md:col-span-9">

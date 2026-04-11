@@ -11,14 +11,13 @@ import { useTimeAgo } from '@vueuse/core'
 import { Activity } from '@/types/activity'
 import { Button } from '@/components/ui/button'
 import { useRoute } from '@/composables/useRoute'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardTitle } from '@/components/ui/card'
 import { UserBookStatus } from '@/enums/UserBookStatus'
 import { Book, BookRecommendation } from '@/types/book'
 import { computed, onMounted, PropType, ref } from 'vue'
 import { useAuthedUser } from '@/composables/useAuthedUser'
-import { useCookies } from '@vueuse/integrations/useCookies'
 import { Deferred, Link, router, usePage } from '@inertiajs/vue3'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 type Stats = {
@@ -79,13 +78,9 @@ const props = defineProps({
     }
 })
 
-const cookies = useCookies(['displayProBanner'])
-
 const page = usePage()
-const { authedUser, subscribedToPro } = useAuthedUser()
+const { authedUser } = useAuthedUser()
 const hasUpgraded = ref(false)
-
-const displayProBanner = ref(false)
 
 const stats = [
     {
@@ -132,11 +127,6 @@ const firstName = computed(() => {
     return authedUser.value.name.split(' ')[0]
 })
 
-function closeProBanner () {
-    displayProBanner.value = false
-    cookies.set('displayProBanner', false)
-}
-
 onMounted(() => {
     router.prefetch(useRoute('user.books.index'), { method: 'get' }, { cacheFor: '5m' })
 
@@ -144,10 +134,6 @@ onMounted(() => {
 
     if (page.props.flash?.upgrade_success) {
         hasUpgraded.value = true
-    }
-
-    if (!subscribedToPro.value && cookies.get('displayProBanner') !== false) {
-        displayProBanner.value = true
     }
 })
 
@@ -199,40 +185,6 @@ defineOptions({ layout: AppLayout })
 
 <template>
     <div>
-        <Transition>
-            <Alert
-                v-show="displayProBanner"
-                class="relative mb-6 border-primary bg-primary p-6 pb-6 text-white md:mb-0 dark:border-neutral-900 dark:bg-neutral-950"
-            >
-                <Icon
-                    name="Sparkles"
-                    class="mt-1 size-6" />
-                <AlertTitle class="font-serif text-lg text-white md:text-xl">
-                    Get more with Pro!
-                </AlertTitle>
-                <AlertDescription>
-                    <p class="text-white">
-                        Upgrade to Pro for advanced features like unlimited books, private notes, and more.
-                    </p>
-                    <div class="mt-4 flex items-center gap-4">
-                        <Button
-                            variant="white"
-                            class="text-primary hover:text-white"
-                            as-child>
-                            <a :href="useRoute('checkout')"> Upgrade now </a>
-                        </Button>
-                    </div>
-                </AlertDescription>
-                <button
-                    class="absolute top-3 right-4 size-4 cursor-pointer text-white/50 hover:text-white"
-                    @click="closeProBanner">
-                    <Icon
-                        name="X"
-                        class="size-4" />
-                </button>
-            </Alert>
-        </Transition>
-
         <Dialog
             v-model:open="hasUpgraded"
             class="relative mb-6 md:mb-0">
@@ -269,7 +221,7 @@ defineOptions({ layout: AppLayout })
             </DialogContent>
         </Dialog>
 
-        <header class="mt-4 mb-8 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-10 md:items-center">
+        <header class="mb-8 flex w-full flex-col justify-between gap-2.5 xs:flex-row md:mt-10 md:items-center">
             <div
                 v-if="authedUser"
                 class="flex w-full flex-col">
@@ -298,10 +250,10 @@ defineOptions({ layout: AppLayout })
                     :key="stat.name"
                     :href="stat.link"
                     prefetch
-                    class="group relative flex items-center border border-card-outline bg-card px-4 py-3 text-primary hover:brightness-95 md:p-8 md:transition-all"
+                    class="group relative flex items-center border border-card-outline bg-card px-3 md:px-4 py-2.5 md:py-3 text-primary hover:brightness-95 md:p-8 md:transition-all"
                 >
                     <div class="w-full">
-                        <p class="mb-2 pr-5 text-xs tracking-wider text-primary/50 uppercase">
+                        <p class="mb-1 md:mb-2 md:pr-5 text-xs tracking-wider text-primary/50 uppercase">
                             {{ stat.name }}
                         </p>
                         <div class="flex w-full items-center justify-between">
@@ -379,7 +331,14 @@ defineOptions({ layout: AppLayout })
 
                     <Deferred data="recommendations">
                         <template #fallback>
-                            loading...
+                            <div
+                                class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 md:grid-cols-3 lg:grid-cols-5"
+                            >
+                                <Skeleton
+                                    v-for="n in 5"
+                                    :key="n"
+                                    class="aspect-book w-[200px] sm:w-auto" />
+                            </div>
                         </template>
 
                         <div

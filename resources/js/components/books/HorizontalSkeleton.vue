@@ -12,12 +12,12 @@ defineProps({
 <template>
     <div class="flex w-full flex-col gap-2 py-2 md:flex-row md:items-center md:gap-4">
         <div class="flex gap-4">
-            <Skeleton class="w-20 shrink-0 overflow-hidden rounded-sm aspect-book md:w-22" />
+            <Skeleton class="w-20 shrink-0 overflow-hidden aspect-book md:w-40" />
             <div class="flex w-full flex-col gap-1">
-                <Skeleton class="h-5 w-full rounded md:w-48" />
-                <Skeleton class="h-3 w-36 rounded md:mt-1" />
-                <Skeleton class="mt-1 h-3 w-full rounded md:mt-2 md:w-80" />
-                <Skeleton class="h-3 w-full rounded md:w-56" />
+                <Skeleton class="h-5 w-full md:w-48" />
+                <Skeleton class="h-3 w-36 md:mt-1" />
+                <Skeleton class="mt-1 h-3 w-full md:mt-2 md:w-80" />
+                <Skeleton class="h-3 w-full md:w-56" />
             </div>
         </div>
         <div

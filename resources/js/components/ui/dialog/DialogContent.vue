@@ -32,13 +32,13 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
             v-bind="forwarded"
             :class="
                 cn(
-                    'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg bg-popover/60 dark:bg-white/20 p-1 shadow-xs backdrop-blur-[1px] -translate-x-1/2 -translate-y-1/2 gap-4 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-50 data-[state=closed]:slide-out-to-bottom-[20%] data-[state=open]:slide-in-from-bottom-[10%] rounded-3xl',
+                    'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg bg-popover/60 dark:bg-white/20 p-1 shadow-xs backdrop-blur-[1px] -translate-x-1/2 -translate-y-1/2 gap-4 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-50 data-[state=closed]:slide-out-to-bottom-[20%] data-[state=open]:slide-in-from-bottom-[10%]',
                     props.class,
                 )
             "
         >
             <div
-                class="bg-popover rounded-(--dialog-inner-radius) p-6 border dark:border-white/30 border-black/20"
+                class="bg-popover rounded-none p-6 border-0 dark:border-white/30 border-black/20"
                 style="--dialog-inner-radius: calc(21px);">
                 <slot />
 

@@ -20,7 +20,7 @@ export const buttonVariants = cva(
                 secondary:
                     'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary-active',
 
-                white: 'border bg-white shadow-xs hover:bg-foreground/2 hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
+                white: 'border bg-white text-primary shadow-xs hover:bg-white/80 hover:text-primary dark:bg-white/20 dark:border-white/10 dark:hover:bg-input/50',
                 ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
                 link: 'text-primary uppercase !px-0 text-[12px] font-semibold tracking-tight underline-offset-4 cursor-pointer hover:underline'
             },

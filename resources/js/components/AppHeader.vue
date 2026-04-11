@@ -14,8 +14,23 @@ import { UserPermission } from '@/enums/UserPermission'
 import { useAuthedUser } from '@/composables/useAuthedUser'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useIsCurrentUrl } from '@/composables/useIsCurrentUrl'
-import { Activity, BriefcaseBusiness, ChartLine, NotebookPen, Settings, Shield, Sparkles, Star, Wallet } from 'lucide-vue-next'
-import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu'
+import {
+    NavigationMenu,
+    NavigationMenuItem,
+    NavigationMenuList,
+    navigationMenuTriggerStyle
+} from '@/components/ui/navigation-menu'
+import {
+    Activity,
+    BriefcaseBusiness,
+    ChartLine,
+    NotebookPen,
+    Settings,
+    Shield,
+    Sparkles,
+    Star,
+    Wallet
+} from 'lucide-vue-next'
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
@@ -30,7 +45,10 @@ withDefaults(defineProps<Props>(), {
 const { authed, authedUser, hasPermission } = useAuthedUser()
 
 const activeItemStyles = computed(
-    () => (url: string) => (useIsCurrentUrl(url) ? 'text-primary hover:text-primary dark:bg-neutral-800 dark:text-neutral-100' : '')
+    () => (url: string) =>
+        useIsCurrentUrl(url)
+            ? 'text-primary bg-primary/10 hover:text-primary dark:bg-neutral-800 dark:text-neutral-100'
+            : ''
 )
 
 const isVisible = ref(true)
@@ -121,24 +139,49 @@ onUnmounted(() => {
 })
 
 const isDesktop = useMediaQuery('(min-width: 768px)')
-const showDesktopMenu = computed(() => (hasMounted.value ? isDesktop.value : true))
+const showDesktopMenu = computed(() =>
+    hasMounted.value ? isDesktop.value : true
+)
+
+const SCROLL_THRESHOLD = 20
+
+const scrollY = ref(0)
+const hasScrolled = computed(() => scrollY.value > SCROLL_THRESHOLD)
+
+const onScroll = () => {
+    scrollY.value = window.scrollY || window.pageYOffset
+}
+
+onMounted(() => {
+    scrollY.value = window.scrollY || window.pageYOffset
+    window.addEventListener('scroll', onScroll, { passive: true })
+})
 </script>
 
 <template>
     <div
-        class="safe-h-14 safe-pt sticky top-0 z-50 border-b border-sidebar-border/80 bg-background transition-all duration-300 ease-in-out md:static md:safe-h-16 md:translate-y-0"
-        :class="{ '-translate-y-full': !isVisible }"
+        class="safe-h-14 safe-pt sticky top-0 z-50 border-b md:border-sidebar-border/50 bg-background transition-all duration-300 ease-in-out md:static md:safe-h-16 md:translate-y-0"
+        :class="{
+            '-translate-y-full': !isVisible,
+            'border-sidebar-border/0 shadow-sm': hasScrolled,
+            'border-transparent': !hasScrolled,
+        }"
     >
-        <div class="mx-auto flex h-full items-center px-4 md:px-12 md:max-w-screen-2xl pwa:md:max-w-none">
+        <div
+            class="mx-auto flex h-full items-center px-4 md:px-12 md:max-w-screen-2xl pwa:md:max-w-none"
+        >
             <div
                 v-if="authed"
-                :class="$page.props.backUrl ? 'ml-0 opacity-100' : '-ml-8 opacity-0'"
+                :class="
+                    $page.props.backUrl ? 'ml-0 opacity-100' : '-ml-8 opacity-0'
+                "
                 class="mr-2 transition-all duration-300 lg:hidden"
             >
                 <Link
                     tabindex="-1"
                     class="-ml-4 flex pl-2 text-primary"
-                    :href="$page.props.backUrl ?? useRoute('dashboard')">
+                    :href="$page.props.backUrl ?? useRoute('dashboard')"
+                >
                     <Icon
                         name="ChevronLeft"
                         class="size-8 stroke-[1.5px]" />
@@ -148,7 +191,8 @@ const showDesktopMenu = computed(() => (hasMounted.value ? isDesktop.value : tru
             <Link
                 :href="useRoute('dashboard')"
                 prefetch
-                class="flex items-center gap-x-2">
+                class="flex items-center gap-x-2"
+            >
                 <span class="sr-only"> Go to Home </span>
                 <AppLogo class="flex items-center" />
             </Link>
@@ -157,29 +201,41 @@ const showDesktopMenu = computed(() => (hasMounted.value ? isDesktop.value : tru
             <div class="hidden h-full lg:flex lg:flex-1">
                 <NavigationMenu
                     v-if="authed"
-                    class="ml-10 flex h-full items-stretch">
-                    <NavigationMenuList class="flex h-full items-stretch space-x-2">
+                    class="ml-10 flex h-full items-stretch"
+                >
+                    <NavigationMenuList
+                        class="flex h-full items-stretch space-x-2"
+                    >
                         <NavigationMenuItem
                             v-for="(item, index) in navItems"
                             :key="index"
-                            :class="item.mobileOnly ? 'flex lg:hidden' : 'flex lg:flex-1'"
+                            :class="
+                                item.mobileOnly
+                                    ? 'flex lg:hidden'
+                                    : 'flex lg:flex-1'
+                            "
                             class="relative flex h-full items-center"
                         >
                             <Link
                                 prefetch
-                                :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'h-9 cursor-pointer px-3']"
+                                :class="[
+                                    navigationMenuTriggerStyle(),
+                                    activeItemStyles(item.href),
+                                    'h-9 cursor-pointer px-3',
+                                ]"
                                 :href="item.href"
                             >
                                 <component
                                     :is="item.icon"
                                     v-if="item.icon"
-                                    class="mr-2 h-4 w-4" />
+                                    class="mr-2 h-4 w-4"
+                                />
                                 {{ item.title }}
                             </Link>
-                            <div
-                                v-if="useIsCurrentUrl(item.href)"
-                                class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-primary dark:bg-white"
-                            />
+                            <!--                            <div-->
+                            <!--                                v-if="useIsCurrentUrl(item.href)"-->
+                            <!--                                class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-primary dark:bg-white"-->
+                            <!--                            />-->
                         </NavigationMenuItem>
                     </NavigationMenuList>
                 </NavigationMenu>
@@ -187,7 +243,8 @@ const showDesktopMenu = computed(() => (hasMounted.value ? isDesktop.value : tru
 
             <div
                 v-if="authed && authedUser"
-                class="ml-auto flex items-center space-x-2">
+                class="ml-auto flex items-center space-x-2"
+            >
                 <div>
                     <div
                         v-if="authedUser.subscription.subscribed"
@@ -197,7 +254,9 @@ const showDesktopMenu = computed(() => (hasMounted.value ? isDesktop.value : tru
                     </div>
 
                     <JoinProTrigger v-else>
-                        <button class="mt-1.5 mr-2 hidden cursor-pointer items-center gap-1 text-xs font-medium text-primary xs:flex">
+                        <button
+                            class="mt-1.5 mr-2 hidden cursor-pointer items-center gap-1 text-xs font-medium text-primary xs:flex"
+                        >
                             <Icon
                                 name="Sparkles"
                                 class="size-4" />
@@ -209,12 +268,14 @@ const showDesktopMenu = computed(() => (hasMounted.value ? isDesktop.value : tru
                 <UserMenuDropdown
                     v-if="showDesktopMenu"
                     :user="authedUser"
-                    :items="userMenuItems" />
+                    :items="userMenuItems"
+                />
 
                 <UserMenuSheet
                     v-else
                     :user="authedUser"
-                    :items="userMenuItems" />
+                    :items="userMenuItems"
+                />
             </div>
             <div
                 v-else
