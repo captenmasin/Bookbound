@@ -16,9 +16,10 @@ import { BrowserMultiFormatReader } from '@zxing/browser'
 // refs for UI state
 const video = ref(null)
 const scanning = ref(false)
-const result = ref(null)
-const book = ref(null)
-const loading = ref(false)
+const currentResult = ref(null)
+const scannedBooks = ref([])
+const loadingIdentifier = ref(null)
+const processingIdentifier = ref(null)
 
 let controls = null
 
@@ -30,11 +31,11 @@ const codeReader = new BrowserMultiFormatReader()
 
 // start scanning ------------------------------------------------------------
 async function startScan () {
-    play()
+    if (scanning.value) {
+        return
+    }
 
-    // reset UI
-    result.value = null
-    book.value = null
+    play()
     scanning.value = true
 
     try {
@@ -44,38 +45,37 @@ async function startScan () {
             },
             video.value,
             async (output) => {
-                if (!output) return
+                if (!output || loadingIdentifier.value || processingIdentifier.value) {
+                    return
+                }
 
-                // we have a barcode!
                 const identifier = output.getText()
-                result.value = identifier
-                stopScan()
 
-                // hit your API
-                loading.value = true
+                if (!identifier || hasScannedBook(identifier)) {
+                    processingIdentifier.value = null
+                    return
+                }
+
+                processingIdentifier.value = identifier
+                loadingIdentifier.value = identifier
+
                 useRequest(useRoute('api.books.fetch_or_create', identifier), 'GET')
                     .then(response => {
                         if (response.book) {
-                            book.value = response.book
-                            loading.value = false
+                            currentResult.value = identifier
+                            scannedBooks.value.unshift(response.book)
+                            play()
+                            vibrate()
                         } else {
                             console.error('No book found for identifier:', identifier)
-                            result.value = null
-                            book.value = null
-                            loading.value = false
                         }
                     }).catch(error => {
                         console.error('Error fetching book:', error)
                         toast.error('Error fetching book details')
-                        loading.value = false
-                        result.value = null
-                        book.value = null
+                    }).finally(() => {
+                        loadingIdentifier.value = null
+                        processingIdentifier.value = null
                     })
-
-                play()
-                vibrate()
-
-                // stopScan()
             }
         )
     } catch (err) {
@@ -88,8 +88,13 @@ async function startScan () {
 function stopScan () {
     scanning.value = false
     if (controls) {
-        controls.stop() // stop the camera
+        controls.stop()
+        controls = null
     }
+}
+
+function hasScannedBook (identifier) {
+    return scannedBooks.value.some(book => book.identifier === identifier)
 }
 
 // const emit = defineEmits(['close'])
@@ -114,7 +119,7 @@ onMounted(() => {
     <div class="relative">
         <!-- mirrored only on front cam -->
         <div
-            v-show="scanning && !result">
+            v-show="scanning">
             <div class="relative h-56 overflow-hidden rounded shadow">
                 <video
                     ref="video"
@@ -128,40 +133,31 @@ onMounted(() => {
         </div>
 
         <div
-            v-if="!scanning && !result"
-            class="mb-5 flex items-center justify-center">
-            <Button
-                class="w-full"
-                variant="default"
-                @click="startScan">
-                <Icon
-                    name="ScanBarcode"
-                    class="w-4" />
-                Start scanning
-            </Button>
-        </div>
-
-        <div
-            v-if="result"
-            class="relative h-40 overflow-hidden rounded bg-white shadow">
+            v-if="currentResult"
+            class="mt-4 overflow-hidden rounded bg-white shadow">
+            <div class="border-b px-4 py-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Last scanned
+            </div>
             <VueBarcode
                 tag="svg"
-                :value="result"
-                class="absolute top-1/2 left-0 w-full -translate-y-1/2" />
+                :value="currentResult"
+                class="w-full bg-white px-4 py-6" />
         </div>
 
         <HorizontalSkeleton
-            v-if="loading"
+            v-if="loadingIdentifier"
             class="mt-4"
             :with-actions="false"
         />
 
         <div
-            v-if="book && !loading"
-            class="mt-4 p-1">
+            v-if="scannedBooks.length > 0"
+            class="mt-4 space-y-4 p-1">
             <BookCardHorizontal
+                v-for="scannedBook in scannedBooks"
+                :key="scannedBook.id"
                 target="_blank"
-                :book="book"
+                :book="scannedBook"
                 :narrow="true" />
         </div>
 
@@ -171,14 +167,13 @@ onMounted(() => {
 
         <div class="mt-8 w-full">
             <Button
-                v-if="result"
-                variant="default"
+                :variant="scanning ? 'secondary' : 'default'"
                 class="w-full"
-                @click="startScan">
+                @click="scanning ? stopScan() : startScan()">
                 <Icon
                     name="ScanBarcode"
                     class="w-4" />
-                Scan again
+                {{ scanning ? 'Stop scanning' : 'Start scanning' }}
             </Button>
         </div>
     </div>
