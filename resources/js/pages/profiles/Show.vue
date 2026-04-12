@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import Icon from '@/components/Icon.vue'
+import Image from '@/components/Image.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import PageTitle from '@/components/PageTitle.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import SingleReview from '@/components/SingleReview.vue'
-import SingleActivity from '@/components/SingleActivity.vue'
 import CustomPagination from '@/components/CustomPagination.vue'
 import BookCardHorizontal from '@/components/books/BookCardHorizontal.vue'
 import { computed } from 'vue'
 import { cn } from '@/lib/utils'
 import type { PropType } from 'vue'
+import { useTimeAgo } from '@vueuse/core'
+import { Card } from '@/components/ui/card'
 import type { Review } from '@/types/review'
 import type { PublicUser } from '@/types/user'
 import type { Activity } from '@/types/activity'
@@ -50,6 +52,10 @@ const headerBadgeClass = computed(() =>
         'bg-white/15 text-white border-white/20'
     )
 )
+
+function getTimeAgo (date: string | Date) {
+    return useTimeAgo(new Date(date))
+}
 </script>
 
 <template>
@@ -103,9 +109,7 @@ const headerBadgeClass = computed(() =>
                                 :class="headerBadgeClass"
                             >
                                 {{ user.books_count }}
-                                {{
-                                    user.books_count === 1 ? "book" : "books"
-                                }}
+                                {{ user.books_count === 1 ? "book" : "books" }}
                                 in library
                             </span>
                             <span
@@ -151,27 +155,27 @@ const headerBadgeClass = computed(() =>
                 <p>{{ user.name }} has not published any reviews.</p>
             </div>
 
-            <ul
-                v-else
-                class="divide-y divide-muted rounded-xl bg-white shadow dark:divide-zinc-950 dark:bg-zinc-900"
-            >
+            <ul v-else>
                 <li
                     v-for="review in reviews.data"
                     :key="review.uuid"
-                    class="group flex flex-col items-start gap-4 p-4 md:flex-row md:p-6"
+                    class="group flex flex-col items-start gap-4 md:flex-row"
                 >
-                    <BookCardHorizontal
+                    <div
                         v-if="review.book"
-                        :book="review.book"
-                        :include-actions="false"
-                        class="md:w-1/3"
-                    />
-                    <SingleReview
-                        v-if="review.book"
-                        :book="review.book"
-                        :review="review"
-                        class="flex-1 py-0"
-                    />
+                        class="relative aspect-book w-20 shrink-0 overflow-hidden shadow-sm md:w-40"
+                    >
+                        <Image :src="review.book.cover" />
+                    </div>
+
+                    <Card class="flex-1">
+                        <SingleReview
+                            v-if="review.book"
+                            :book="review.book"
+                            :review="review"
+                            class="flex-1 py-0"
+                        />
+                    </Card>
                 </li>
             </ul>
 
@@ -183,14 +187,14 @@ const headerBadgeClass = computed(() =>
         </section>
 
         <section class="space-y-4">
-            <div>
+            <div class="mb-1 flex items-center justify-between">
                 <h2 class="font-serif text-3xl font-semibold text-primary">
                     Recent Activity
                 </h2>
-                <p class="text-sm text-muted-foreground">
-                    Reading activity and updates from {{ user.name }}.
-                </p>
             </div>
+            <p class="text-sm text-muted-foreground">
+                Reading activity and updates from {{ user.name }}.
+            </p>
 
             <div
                 v-if="
@@ -207,16 +211,36 @@ const headerBadgeClass = computed(() =>
                 <p>{{ user.name }} has not logged any public activity.</p>
             </div>
 
-            <ul
+            <div
                 v-else
-                class="divide-y divide-muted rounded-xl bg-white shadow dark:divide-zinc-950 dark:bg-zinc-900"
+                class="rounded-md bg-white p-6 pb-0 ring-1 ring-primary/10"
             >
-                <SingleActivity
-                    v-for="activity in activities.data"
-                    :key="activity.id"
-                    :activity="activity"
-                />
-            </ul>
+                <div class="ml-2 space-y-0 border-l border-primary/10 pl-8">
+                    <div
+                        v-for="(activity, index) in activities.data"
+                        :key="activity.id"
+                        class="relative pb-10"
+                    >
+                        <div
+                            :class="
+                                index === 0
+                                    ? 'border-primary bg-primary'
+                                    : 'border-primary bg-white'
+                            "
+                            class="absolute top-1 -left-9.5 h-3 w-3 rounded-full border ring-4 ring-white"
+                        />
+                        <p
+                            class="mb-1 font-label text-[10px] tracking-widest text-primary/40 uppercase"
+                        >
+                            {{ getTimeAgo(activity.created_at) }}
+                        </p>
+                        <p
+                            class="font-serif text-sm text-pretty md:text-base"
+                            v-html="activity.description"
+                        />
+                    </div>
+                </div>
+            </div>
 
             <CustomPagination
                 v-if="activities.meta.total > activities.meta.per_page"

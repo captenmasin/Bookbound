@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Image from '@/components/Image.vue'
 import DefaultCover from '~/images/default-cover.svg'
 import BookActions from '@/components/books/BookActions.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
@@ -75,13 +76,14 @@ const { userRating } = useBook(props.book)
                     <!--                    >-->
                     <!--                        {{ book.type }}-->
                     <!--                    </span>-->
-                    <img
+                    <Image
                         :src="book.cover ?? DefaultCover"
                         :alt="`Book cover image for ${book.title}`"
                         class="size-full bg-gray-200 object-cover">
-                    <div class="bg-white/50 backdrop-blur text-black absolute top-2 right-2 px-2 text-center text-xs py-1">
-                        {{ book.type }}
-                    </div>
+                        <div class="bg-white/50 backdrop-blur text-black absolute top-2 right-2 px-2 text-center text-xs py-1">
+                            {{ book.type }}
+                        </div>
+                    </image>
                 </div>
             </component>
             <div class="flex w-full min-w-0 flex-col max-w-xl">
