@@ -7,10 +7,12 @@ use App\Models\Cover;
 use App\Models\Author;
 use App\Models\Rating;
 use App\Models\Review;
+use App\Enums\UserRole;
 use App\Models\Activity;
 use App\Models\Publisher;
 use Illuminate\Support\Str;
 use App\Enums\UserBookStatus;
+use App\Models\PreviousSearch;
 use Illuminate\Support\Facades\DB;
 use App\Actions\Books\AddBookToUser;
 use Illuminate\Foundation\Inspiring;
@@ -41,8 +43,8 @@ Artisan::command('make:admin', function () {
 
     $user->verifyEmail();
 
-    $user->assignRole(\App\Enums\UserRole::User);
-    $user->assignRole(\App\Enums\UserRole::Admin);
+    $user->assignRole(UserRole::User);
+    $user->assignRole(UserRole::Admin);
 });
 
 Artisan::command('reset', function () {
@@ -51,7 +53,7 @@ Artisan::command('reset', function () {
     Tag::all()->each(fn ($tag) => $tag->delete());
     Activity::all()->each(fn ($activity) => $activity->delete());
     Publisher::all()->each(fn ($publisher) => $publisher->delete());
-    \App\Models\PreviousSearch::all()->each(fn ($search) => $search->delete());
+    PreviousSearch::all()->each(fn ($search) => $search->delete());
     Media::where('model_type', Cover::class)->get()->each(fn ($book) => $book->delete());
     DB::table('book_user')->truncate();
     DB::table('author_book')->truncate();

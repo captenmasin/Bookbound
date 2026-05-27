@@ -236,6 +236,6 @@ describe('ImportBookFromData', function () {
             ->andReturn(null); // Cache callback returns null/empty data
 
         expect(fn () => app(ImportBookFromData::class)->handle($identifier))
-            ->toThrow(\Exception::class, "No data found for identifier: $identifier");
+            ->toThrow(Exception::class, "No data found for identifier: $identifier");
     });
 });

@@ -66,12 +66,12 @@ class DeployApp extends Command
         $this->call(GeneratePwaManifest::class);
 
         // Reload Octane if running
-        if ($this->isOctaneRunning()) {
-            $this->info('♻️ Reloading Octane...');
-            $this->call('octane:reload');
-        } else {
-            $this->info('🛑 Octane is not running. Skipping reload.');
-        }
+        //        if ($this->isOctaneRunning()) {
+        //            $this->info('♻️ Reloading Octane...');
+        //            $this->call('octane:reload');
+        //        } else {
+        //            $this->info('🛑 Octane is not running. Skipping reload.');
+        //        }
 
         // Re-cache the configuration
         $this->call('config:cache');
