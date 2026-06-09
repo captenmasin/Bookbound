@@ -58,14 +58,6 @@ class DeployApp extends Command
         // Generate PWA manifest
         $this->call(GeneratePwaManifest::class);
 
-        // Reload Octane if running
-        //        if ($this->isOctaneRunning()) {
-        //            $this->info('♻️ Reloading Octane...');
-        //            $this->call('octane:reload');
-        //        } else {
-        //            $this->info('🛑 Octane is not running. Skipping reload.');
-        //        }
-
         // Re-cache the configuration
         $this->call('config:cache');
         $this->call('route:cache');
@@ -106,12 +98,5 @@ class DeployApp extends Command
         $connection = config('queue.connections.'.config('queue.default'));
 
         return is_array($connection) && ($connection['driver'] ?? null) === 'redis';
-    }
-
-    protected function isOctaneRunning(): bool
-    {
-        $output = trim(shell_exec('php artisan octane:status'));
-
-        return str_contains($output, 'running');
     }
 }

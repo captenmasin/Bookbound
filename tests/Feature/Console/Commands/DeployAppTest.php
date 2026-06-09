@@ -55,11 +55,6 @@ it('uses the extended timeout for deploy npm commands', function () {
             return $key === 'ssr' ? $this->ssr : null;
         }
 
-        protected function isOctaneRunning(): bool
-        {
-            return false;
-        }
-
         protected function runShell(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void
         {
             $this->shellCommands[] = [
@@ -108,11 +103,6 @@ it('does not terminate horizon when the queue driver is not redis', function () 
             return false;
         }
 
-        protected function isOctaneRunning(): bool
-        {
-            return false;
-        }
-
         protected function runShell(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void {}
     };
 
@@ -147,11 +137,6 @@ it('terminates horizon when the queue driver is redis', function () {
         public function line($string, $style = null, $verbosity = null): void {}
 
         public function option($key = null): mixed
-        {
-            return false;
-        }
-
-        protected function isOctaneRunning(): bool
         {
             return false;
         }
@@ -193,11 +178,6 @@ it('uses the ssr build command when the flag is enabled', function () {
         public function option($key = null): mixed
         {
             return $key === 'ssr' ? $this->ssr : null;
-        }
-
-        protected function isOctaneRunning(): bool
-        {
-            return false;
         }
 
         protected function runShell(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void

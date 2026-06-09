@@ -11,8 +11,7 @@
         "filament/filament",
         "inertiajs/inertia-laravel",
         "nativephp/mobile",
-        "spatie/laravel-medialibrary",
-        "laravel/octane"
+        "spatie/laravel-medialibrary"
     ],
     "herd_mcp": true
 }
