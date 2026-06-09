@@ -3,49 +3,17 @@
 use App\Models\Tag;
 use App\Models\Book;
 use App\Models\User;
-use App\Models\Cover;
 use App\Models\Author;
 use App\Models\Rating;
 use App\Models\Review;
 use App\Enums\UserRole;
-use App\Models\Activity;
 use App\Models\Publisher;
-use Illuminate\Support\Str;
 use App\Enums\UserBookStatus;
-use App\Models\PreviousSearch;
-use Illuminate\Support\Facades\DB;
 use App\Actions\Books\AddBookToUser;
-use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use App\Console\Commands\ConfigureRelatedBooks;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-Schedule::command('horizon:snapshot')->everyMinute();
-// Schedule::command('horizon:snapshot')->everyFiveMinutes();
 Schedule::command(ConfigureRelatedBooks::class)->daily();
-
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
-
-Artisan::command('make:admin', function () {
-    $name = \Laravel\Prompts\text('Name:');
-    $username = \Laravel\Prompts\text('Username:');
-    $email = \Laravel\Prompts\text('Email:');
-    $password = \Laravel\Prompts\password('Password:');
-
-    $user = User::create([
-        'name' => $name,
-        'username' => $username,
-        'email' => $email,
-        'password' => bcrypt($password),
-    ]);
-
-    $user->verifyEmail();
-
-    $user->assignRole(UserRole::User);
-    $user->assignRole(UserRole::Admin);
-});
 
 Artisan::command('user:admin {user}', function () {
     $user = User::findOrFail($this->argument('user'));
@@ -55,60 +23,6 @@ Artisan::command('user:admin {user}', function () {
 
     $this->info("Granted admin role to {$user->name} (ID: {$user->id}).");
 })->purpose('Grant the admin role to an existing user by ID');
-
-Artisan::command('reset', function () {
-    Book::all()->each(fn ($book) => $book->delete());
-    Cover::all()->each(fn ($cover) => $cover->delete());
-    Tag::all()->each(fn ($tag) => $tag->delete());
-    Activity::all()->each(fn ($activity) => $activity->delete());
-    Publisher::all()->each(fn ($publisher) => $publisher->delete());
-    PreviousSearch::all()->each(fn ($search) => $search->delete());
-    Media::where('model_type', Cover::class)->get()->each(fn ($book) => $book->delete());
-    DB::table('book_user')->truncate();
-    DB::table('author_book')->truncate();
-    DB::table('authors')->truncate();
-    DB::table('book_tag')->truncate();
-
-    User::all()
-        ->each(function ($user) {
-            $user->forceFill([
-                'stripe_id' => null,
-            ]);
-            $user->save();
-        });
-
-    //    $admins = User::role('admin')->pluck('id');
-    //
-    //    User::whereNotIn('id', $admins)->get()->each(function ($user) {
-    //        $user->books()->detach();
-    //        $user->ratings()->delete();
-    //        $user->notes()->delete();
-    //        $user->reviews()->delete();
-    //        $user->delete();
-    //    });
-});
-
-Artisan::command('slug', function () {
-    Tag::all()->each(function ($tag) {
-        if (Tag::where('slug', $tag->slug)->exists()) {
-            $slug = Str::slug($tag->name).'-'.Str::random(5);
-        } else {
-            $slug = Str::slug($tag->name);
-        }
-
-        $tag->update(['slug' => $slug]);
-    });
-
-    Author::all()->each(function ($author) {
-        if (Author::where('slug', $author->slug)->exists()) {
-            $slug = Str::slug($author->name).'-'.Str::random(5);
-        } else {
-            $slug = Str::slug($author->name);
-        }
-
-        $author->update(['slug' => $slug]);
-    });
-});
 
 Artisan::command('flood', function () {
     User::factory(300)->create();
@@ -175,15 +89,4 @@ Artisan::command('flood', function () {
             }
         });
     });
-});
-
-Artisan::command('post:deploy', function () {
-    $userBooks = DB::table('book_user')->get();
-    foreach ($userBooks as $userBook) {
-        if ($userBook->status === 'Completed') {
-            DB::table('book_user')
-                ->where('id', $userBook->id)
-                ->update(['status' => UserBookStatus::Read]);
-        }
-    }
 });
