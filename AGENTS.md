@@ -843,3 +843,60 @@ When the platform is confirmed, give the relevant command(s) above and tell the 
 - `spatie/laravel-medialibrary` associates files with Eloquent models, with support for collections, conversions, and responsive images.
 - Always activate the `medialibrary-development` skill when working with media uploads, conversions, collections, responsive images, or any code that uses the `HasMedia` interface or `InteractsWithMedia` trait.
 </laravel-boost-guidelines>
+
+## Cursor Cloud specific instructions
+
+BookBound is a Laravel 12 + Inertia/Vue 3 personal book library app. Laravel Herd is **not** available in Cloud Agent VMs — use `php artisan serve` instead of `https://bookbound.test`.
+
+### System dependencies (one-time VM setup)
+
+PHP 8.4+ with extensions `exif`, `gd`, `sqlite3`, `mbstring`, `xml`, `curl`, `zip`, `bcmath`, `intl` (install via `ppa:ondrej/php` on Ubuntu). Node.js 22 is used for the frontend.
+
+### First-time app setup (after cloning)
+
+```bash
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate
+php artisan db:seed   # required for Spatie roles used during registration
+npm run build
+```
+
+Recommended Cloud Agent `.env` overrides (no Redis/Meilisearch needed):
+
+- `APP_URL=http://127.0.0.1:8000`
+- `QUEUE_CONNECTION=sync`
+- `SCOUT_DRIVER=database`
+- `BOOKS_API=google`
+- `MAIL_MAILER=log`
+- `TURNSTILE_ENABLED=false`
+
+### Running services
+
+| Service | Command |
+|---------|---------|
+| Laravel (required) | `php artisan serve --host=0.0.0.0 --port=8000` |
+| Vite HMR (dev) | `npm run dev -- --host 0.0.0.0` |
+| All-in-one (local) | `composer run dev` (starts serve + queue + pail + vite) |
+
+With `QUEUE_CONNECTION=sync`, a separate queue worker is not required. If using `redis`, also start `php artisan queue:listen`.
+
+### Lint / test / build
+
+See `package.json` and `composer.json` scripts. Common commands:
+
+- `vendor/bin/pint --dirty --format agent` — PHP formatting
+- `npm run format:check` — Prettier (some files may warn; this is pre-existing)
+- `npm run build` — production asset build (required before tests that hit rendered pages)
+- `php artisan test --compact` — Pest test suite
+- `npx playwright install --with-deps` — required once for Pest browser tests
+
+Tests use in-memory SQLite via `phpunit.xml` / `.env.testing` overrides (`QUEUE_CONNECTION=sync`, `SCOUT_DRIVER=database`).
+
+### Gotchas
+
+- Registration assigns a Spatie role — run `php artisan db:seed` before manual registration flows.
+- New users are redirected to email verification; mark `email_verified_at` in the DB or use verified factory users when testing authenticated flows manually.
+- External book search (`BOOKS_API=google`) needs outbound network access; if API calls fail, add books via factories/`AddBookToUser` for demos.
+- Do not run `vendor/bin/pint` without `--dirty` on a clean checkout — it reformats many unrelated files.
