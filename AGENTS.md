@@ -128,6 +128,13 @@ protected function isAccessible(User $user, ?string $path = null): bool
 - The application is served by Laravel Herd and will be available at: `https?://[kebab-case-project-dir].test`. Use the `get-absolute-url` tool to generate URLs for the user to ensure valid URLs.
 - You must not run any commands to make the site available via HTTP(S). It is always available through Laravel Herd.
 
+=== tests rules ===
+
+## Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
+
 === inertia-laravel/core rules ===
 
 ## Inertia
@@ -785,31 +792,46 @@ livewire(ListUsers::class)
 - New features: deferred props, infinite scroll, merging props, polling, prefetching, once props, flash data.
 - When using deferred props, add an empty state with a pulsing or animated skeleton.
 
-=== nativephp/mobile rules ===
+=== laravel/octane rules ===
 
-## NativePHP Mobile
+# Octane
 
-- NativePHP Mobile is a Laravel package for building native iOS and Android apps using PHP and native UI components. It runs a full PHP runtime directly on the device with SQLite — no web server required.
-- Documentation: `https://nativephp.com/docs/mobile/3/**`
-- IMPORTANT: Always activate the `nativephp-mobile` skill every time you work on any NativePHP functionality.
+- Octane boots the application once and reuses it across requests, so singletons persist between requests.
+- The Laravel container's `scoped` method may be used as a safe alternative to `singleton`.
+- Never inject the container, request, or config repository into a singleton's constructor; use a resolver closure or `bind()` instead:
 
-### Build Commands — Tell the User, Never Run
+```php
+// Bad
+$this->app->singleton(Service::class, fn (Application $app) => new Service($app['request']));
 
-**CRITICAL: Never execute any of these commands yourself. Always instruct the user to run them manually in their terminal.**
+// Good
+$this->app->singleton(Service::class, fn () => new Service(fn () => request()));
+```
 
-| Command | Purpose |
-|---|---|
-| `npm run build -- --mode=ios` | Build frontend assets for iOS |
-| `npm run build -- --mode=android` | Build frontend assets for Android |
-| `php artisan native:run ios` | Compile and run on iOS simulator/device |
-| `php artisan native:run android` | Compile and run on Android emulator/device |
-| `php artisan native:run ios --watch` | Build, deploy, then start hot reload — all in one |
-| `php artisan native:watch` | Hot reload (watch for file changes) |
-| `php artisan native:open` | Open project in Xcode or Android Studio |
+- Never append to static properties, as they accumulate in memory across requests.
 
-**Always ask which platform before giving any build or run command.** If the user hasn't specified iOS or Android, ask: "Which platform do you want to build/test on — iOS or Android?" Never assume a platform.
+=== spatie/laravel-medialibrary rules ===
 
-When the platform is confirmed, give the relevant command(s) above and tell the user to run it in their terminal. Do not run it yourself.
+## Media Library
+
+- `spatie/laravel-medialibrary` associates files with Eloquent models, with support for collections, conversions, and responsive images.
+- Always activate the `medialibrary-development` skill when working with media uploads, conversions, collections, responsive images, or any code that uses the `HasMedia` interface or `InteractsWithMedia` trait.
+</laravel-boost-guidelines>
+
+=== spatie/laravel-medialibrary rules ===
+
+## Media Library
+
+- `spatie/laravel-medialibrary` associates files with Eloquent models, with support for collections, conversions, and responsive images.
+- Always activate the `medialibrary-development` skill when working with media uploads, conversions, collections, responsive images, or any code that uses the `HasMedia` interface or `InteractsWithMedia` trait.
+</laravel-boost-guidelines>
+
+=== spatie/laravel-medialibrary rules ===
+
+## Media Library
+
+- `spatie/laravel-medialibrary` associates files with Eloquent models, with support for collections, conversions, and responsive images.
+- Always activate the `medialibrary-development` skill when working with media uploads, conversions, collections, responsive images, or any code that uses the `HasMedia` interface or `InteractsWithMedia` trait.
 </laravel-boost-guidelines>
 
 === spatie/laravel-medialibrary rules ===

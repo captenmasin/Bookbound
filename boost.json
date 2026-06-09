@@ -1,17 +1,18 @@
 {
     "agents": [
         "codex",
-        "phpstorm"
+        "cursor"
     ],
     "editors": [
         "codex",
-        "phpstorm"
+        "cursor"
     ],
     "guidelines": [
         "filament/filament",
         "inertiajs/inertia-laravel",
         "nativephp/mobile",
-        "spatie/laravel-medialibrary"
+        "spatie/laravel-medialibrary",
+        "laravel/octane"
     ],
     "herd_mcp": true
 }
