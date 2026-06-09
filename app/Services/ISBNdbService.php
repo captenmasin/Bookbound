@@ -35,8 +35,6 @@ class ISBNdbService implements BookApiServiceInterface
             return [];
         }
 
-        ray('ISBNdb query: '.$query);
-
         $queryParts = collect([
             'page' => $page,
             'pageSize' => $maxResults,

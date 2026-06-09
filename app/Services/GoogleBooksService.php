@@ -39,10 +39,7 @@ class GoogleBooksService implements BookApiServiceInterface
         int $maxResults = 30,
         $page = 1): array
     {
-        $query = $query.($author ? (' inauthor:"'.$author.'"') : '');
-        ray('Google books query: '.$query);
-
-        $query = trim($query);
+        $query = trim($query.($author ? (' inauthor:"'.$author.'"') : ''));
 
         $page = max(0, $page - 1);
 

@@ -20,16 +20,16 @@ class DeployApp extends Command
         $this->info('📀 Storage link');
         $this->call('storage:link');
 
-//        // NPM
-//        $this->runShell('pnpm ci');
-//
-//        if ($this->option('ssr')) {
-//            $this->info('🌐 Running SSR build...');
-//            $this->runShell('pnpm run build:ssr');
-//        } else {
-//            $this->info('📦 Running frontend build...');
-//            $this->runShell('pnpm run build');
-//        }
+        //        // NPM
+        //        $this->runShell('pnpm ci');
+        //
+        //        if ($this->option('ssr')) {
+        //            $this->info('🌐 Running SSR build...');
+        //            $this->runShell('pnpm run build:ssr');
+        //        } else {
+        //            $this->info('📦 Running frontend build...');
+        //            $this->runShell('pnpm run build');
+        //        }
 
         // Terminate Horizon
         $this->terminateHorizon();
