@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Cache\Console\ClearCommand;
 
 class DeployApp extends Command
@@ -17,6 +18,11 @@ class DeployApp extends Command
         $this->info('🔄 Running migrations and seeding the database...');
         $this->call('migrate', ['--force' => true]);
         $this->call('db:seed', ['--force' => true]);
+
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            $this->info('🔢 Syncing PostgreSQL sequences...');
+            $this->call('db:sync-sequences');
+        }
 
         // Laravel caches
         $this->info('🗄️  Clearing and caching Laravel configurations...');
