@@ -6,11 +6,11 @@ use Laravel\Scout\Searchable;
 use Spatie\Sluggable\HasSlug;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Sluggable\SlugOptions;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Facades\Cache;
 use App\Actions\Books\ImportBookCover;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Glorand\Model\Settings\Traits\HasSettingsField;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -96,7 +96,7 @@ class Book extends Model implements HasMedia
     public function updateColour(): void
     {
         $cover = $this->primaryCover()?->getFirstMedia('image');
-        $colour = $cover ? getDominantColour($cover->getPath()) : '#000000';
+        $colour = $cover ? getDominantColourFromMedia($cover) : '#000000';
         $this->settings()->set('colour', $colour);
     }
 
@@ -209,11 +209,11 @@ class Book extends Model implements HasMedia
     public function getPrimaryCoverAttribute(): string
     {
         $primaryCover = $this->primaryCover();
-        $primaryCoverImagePath = $primaryCover?->getFirstMediaPath('image');
+        $media = $primaryCover?->getFirstMedia('image');
 
         if (
-            ! $primaryCover?->hasMedia('image')
-            || ! File::exists($primaryCoverImagePath)
+            ! $media
+            || ! Storage::disk($media->disk)->exists($media->getPathRelativeToRoot())
         ) {
             $url = $this->original_cover ??
                 Vite::asset('resources/images/default-cover.svg');

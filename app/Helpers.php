@@ -1,25 +1,11 @@
 <?php
 
-if (! function_exists('getDominantColour')) {
-    function getDominantColour($imagePath): string
+use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+if (! function_exists('averageColourFromImageResource')) {
+    function averageColourFromImageResource(GdImage $img): string
     {
-        $imageType = exif_imagetype($imagePath);
-
-        // Create an image resource from the file based on its type
-        switch ($imageType) {
-            case IMAGETYPE_JPEG:
-                $img = imagecreatefromjpeg($imagePath);
-                break;
-            case IMAGETYPE_PNG:
-                $img = imagecreatefrompng($imagePath);
-                break;
-            case IMAGETYPE_GIF:
-                $img = imagecreatefromgif($imagePath);
-                break;
-            default:
-                throw new Exception('Unsupported image type.');
-        }
-
         $width = imagesx($img);
         $height = imagesy($img);
         $rTotal = $gTotal = $bTotal = $total = 0;
@@ -34,13 +20,62 @@ if (! function_exists('getDominantColour')) {
             }
         }
 
-        imagedestroy($img); // Free up memory
-
         $rAverage = round($rTotal / $total);
         $gAverage = round($gTotal / $total);
         $bAverage = round($bTotal / $total);
 
         return sprintf('#%02x%02x%02x', $rAverage, $gAverage, $bAverage);
+    }
+}
+
+if (! function_exists('getDominantColour')) {
+    function getDominantColour(string $imagePath): string
+    {
+        $imageType = exif_imagetype($imagePath);
+
+        switch ($imageType) {
+            case IMAGETYPE_JPEG:
+                $img = imagecreatefromjpeg($imagePath);
+                break;
+            case IMAGETYPE_PNG:
+                $img = imagecreatefrompng($imagePath);
+                break;
+            case IMAGETYPE_GIF:
+                $img = imagecreatefromgif($imagePath);
+                break;
+            default:
+                throw new Exception('Unsupported image type.');
+        }
+
+        try {
+            return averageColourFromImageResource($img);
+        } finally {
+            imagedestroy($img);
+        }
+    }
+}
+
+if (! function_exists('getDominantColourFromMedia')) {
+    function getDominantColourFromMedia(Media $media): string
+    {
+        $disk = Storage::disk($media->disk);
+        $path = $media->getPathRelativeToRoot();
+
+        if (! $disk->exists($path)) {
+            throw new Exception('Image file not found.');
+        }
+
+        $img = imagecreatefromstring($disk->get($path));
+
+        if ($img === false) {
+            throw new Exception('Unsupported image type.');
+        }
+
+        try {
+            return averageColourFromImageResource($img);
+        } finally {
+            imagedestroy($img);
+        }
     }
 }
 

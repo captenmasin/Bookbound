@@ -3,7 +3,6 @@
 use App\Models\Book;
 use App\Models\User;
 use App\Models\Cover;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Queue;
 use App\Actions\Books\ImportBookCover;
 use Illuminate\Support\Facades\Storage;
@@ -112,7 +111,7 @@ describe('Primary Cover Attribute Logic', function () {
         $book = Book::factory()->create(['original_cover' => $originalCoverUrl]);
         $cover = $book->primaryCover();
 
-        // Create fake media file but then mock File::exists to return false
+        // Create fake media file then delete it to simulate a missing file on disk
         Storage::disk('public')->put('test-cover.jpg', 'fake-image-content');
 
         $cover->addMediaFromDisk('test-cover.jpg', 'public')
@@ -120,10 +119,8 @@ describe('Primary Cover Attribute Logic', function () {
             ->usingFileName('cover.jpg')
             ->toMediaCollection('image');
 
-        // Mock File::exists to return false to simulate missing file
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
+        $media = $cover->getFirstMedia('image');
+        Storage::disk('public')->delete($media->getPathRelativeToRoot());
 
         $result = $book->fresh()->primary_cover;
 
@@ -188,8 +185,8 @@ describe('Book Cover Integration', function () {
             ->usingFileName('does-not-exist.jpg')
             ->toMediaCollection('image');
 
-        // Mock File::exists to return false to simulate corruption
-        File::shouldReceive('exists')->once()->andReturn(false);
+        $media = $cover->getFirstMedia('image');
+        Storage::disk('public')->delete($media->getPathRelativeToRoot());
 
         $result = $book->fresh()->primary_cover;
 

@@ -14,10 +14,18 @@ class ImportBookCover
         try {
             $book->primaryCover()->addMediaFromUrl($coverUrl)
                 ->toMediaCollection('image');
-
-            $book->updateColour();
         } catch (\Exception $e) {
             \Log::error('Failed to fetch cover image for book: '.$book->identifier, [
+                'error' => $e->getMessage(),
+            ]);
+
+            return;
+        }
+
+        try {
+            $book->updateColour();
+        } catch (\Exception $e) {
+            \Log::warning('Failed to extract cover colour for book: '.$book->identifier, [
                 'error' => $e->getMessage(),
             ]);
         }
