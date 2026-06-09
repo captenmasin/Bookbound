@@ -47,6 +47,15 @@ Artisan::command('make:admin', function () {
     $user->assignRole(UserRole::Admin);
 });
 
+Artisan::command('user:admin {user}', function () {
+    $user = User::findOrFail($this->argument('user'));
+
+    $user->assignRole(UserRole::User);
+    $user->assignRole(UserRole::Admin);
+
+    $this->info("Granted admin role to {$user->name} (ID: {$user->id}).");
+})->purpose('Grant the admin role to an existing user by ID');
+
 Artisan::command('reset', function () {
     Book::all()->each(fn ($book) => $book->delete());
     Cover::all()->each(fn ($cover) => $cover->delete());
