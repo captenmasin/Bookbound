@@ -69,7 +69,7 @@ describe('Primary Cover Attribute Logic', function () {
 
         expect($result)->toBe($originalCoverUrl);
 
-        ImportBookCover::assertPushed(1);
+        ImportBookCover::assertNotPushed();
     });
 
     it('returns default cover when no original_cover and no media', function () {
@@ -80,7 +80,7 @@ describe('Primary Cover Attribute Logic', function () {
         $result = $book->primary_cover;
 
         expect($result)->toContain('default-cover');
-        ImportBookCover::assertPushed(1);
+        ImportBookCover::assertNotPushed();
     });
 
     it('returns media url when cover has valid media file', function () {
@@ -126,7 +126,7 @@ describe('Primary Cover Attribute Logic', function () {
 
         expect($result)->toBe($originalCoverUrl);
 
-        ImportBookCover::assertPushed(1);
+        ImportBookCover::assertNotPushed();
     });
 });
 

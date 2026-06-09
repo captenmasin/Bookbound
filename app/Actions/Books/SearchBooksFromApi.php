@@ -42,8 +42,6 @@ class SearchBooksFromApi
             });
 
             if (count($books) > 0) {
-                ImportBooksFromApiSearch::dispatch($books);
-
                 Bus::chain([
                     new ImportBooksFromApiSearch($books),
                     new ImportAdditionalBooksFromApiSearch(query: $query, author: $author, subject: $subject),

@@ -26,9 +26,7 @@ describe('SearchBooksFromApi', function () {
 
         $capturedChain = null;
         Bus::partialMock();
-        Bus::shouldReceive('dispatch')
-            ->once()
-            ->with(Mockery::type(ImportBooksFromApiSearch::class));
+        Bus::shouldReceive('dispatch')->never();
 
         Bus::shouldReceive('chain')
             ->once()
@@ -107,9 +105,7 @@ describe('SearchBooksFromApi', function () {
 
         $capturedChain = null;
         Bus::partialMock();
-        Bus::shouldReceive('dispatch')
-            ->once()
-            ->with(Mockery::type(ImportBooksFromApiSearch::class));
+        Bus::shouldReceive('dispatch')->never();
 
         Bus::shouldReceive('chain')
             ->once()

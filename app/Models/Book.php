@@ -8,7 +8,6 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Facades\Cache;
-use App\Actions\Books\ImportBookCover;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -215,12 +214,8 @@ class Book extends Model implements HasMedia
             ! $media
             || ! Storage::disk($media->disk)->exists($media->getPathRelativeToRoot())
         ) {
-            $url = $this->original_cover ??
+            return $this->original_cover ??
                 Vite::asset('resources/images/default-cover.svg');
-
-            ImportBookCover::dispatch($this, $url);
-
-            return $url;
         }
 
         return $primaryCover->image;
