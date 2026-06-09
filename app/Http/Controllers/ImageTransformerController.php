@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Enums\AllowedOptions;
 use Illuminate\Http\Response;
 use App\Enums\AllowedMimeTypes;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
@@ -17,27 +17,25 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\RateLimiter;
 use Intervention\Image\Encoders\GifEncoder;
 use Intervention\Image\Encoders\PngEncoder;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Intervention\Image\Encoders\AutoEncoder;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
 
-class ImageTransformerController extends \Illuminate\Routing\Controller
+class ImageTransformerController extends Controller
 {
     public function __invoke(Request $request, string $options, string $path)
     {
-        $pathPrefix = config()->string('image-transform.public_path');
+        $path = $this->resolveSourcePath($path);
+        $disk = $this->sourceDisk();
 
-        $publicPath = public_path($pathPrefix.'/'.$path);
+        abort_unless($disk->exists($path), 404);
 
-        abort_unless($publicPath, 404);
+        $sourceContents = $disk->get($path);
+        $originalMimetype = $this->mimeType($disk, $path, $sourceContents);
 
-        // Check if the file exists
-        abort_unless(File::exists($publicPath), 404);
-
-        abort_unless(Str::startsWith($publicPath, public_path($pathPrefix)), 404);
-
-        abort_unless(in_array(File::mimeType($publicPath), AllowedMimeTypes::all(), true), 404);
+        abort_unless(in_array($originalMimetype, AllowedMimeTypes::all(), true), 404);
 
         $options = $this->parseOptions($options);
 
@@ -66,7 +64,7 @@ class ImageTransformerController extends \Illuminate\Routing\Controller
             $this->rateLimit($request, $path);
         }
 
-        $image = Image::read($publicPath);
+        $image = Image::read($sourceContents);
 
         if (Arr::hasAny($options, ['width', 'height'])) {
             $scale = $this->getSelectOptionValue($options, 'scale', ['true', 'false'], 'true');
@@ -128,9 +126,6 @@ class ImageTransformerController extends \Illuminate\Routing\Controller
 
         }
 
-        // We use the mime type instead of the extension to determine the format, because this is more reliable.
-        $originalMimetype = File::mimeType($publicPath);
-
         $format = $this->getStringOptionValue($options, 'format', $originalMimetype);
         $quality = $this->getPositiveIntOptionValue($options, 'quality', 100, 100);
 
@@ -185,6 +180,38 @@ class ImageTransformerController extends \Illuminate\Routing\Controller
         );
 
         abort_unless($passed, 429, 'Too many requests. Please try again later.');
+    }
+
+    protected function resolveSourcePath(string $path): string
+    {
+        $path = str_replace('\\', '/', $path);
+
+        abort_if(
+            str_starts_with($path, '/') ||
+            str_contains($path, '../') ||
+            str_contains($path, '/..') ||
+            $path === '..' ||
+            str_contains($path, "\0"),
+            404
+        );
+
+        return $path;
+    }
+
+    protected function sourceDisk(): FilesystemAdapter
+    {
+        return Storage::disk(config()->string('image-transform.source_disk'));
+    }
+
+    protected function mimeType(FilesystemAdapter $disk, string $path, string $contents): string
+    {
+        $mimeType = $disk->mimeType($path);
+
+        if (is_string($mimeType) && $mimeType !== 'application/octet-stream') {
+            return $mimeType;
+        }
+
+        return (new \finfo(FILEINFO_MIME_TYPE))->buffer($contents) ?: 'application/octet-stream';
     }
 
     /**

@@ -1,14 +1,19 @@
 <?php
 
+use App\Enums\AllowedOptions;
+
 use function Pest\Laravel\get;
 
+use App\Enums\AllowedMimeTypes;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ImageTransformerController;
 
 describe('ImageTransformerController', function () {
     beforeEach(function () {
         // Set up configuration for testing
         Config::set('image-transform.public_path', 'storage');
+        Config::set('image-transform.source_disk', 'public');
         Config::set('image-transform.cache.enabled', false);
         Config::set('image-transform.rate_limit.enabled', false);
         Config::set('image-transform.enabled_options', [
@@ -18,9 +23,23 @@ describe('ImageTransformerController', function () {
     });
 
     it('returns 404 for non-existent image', function () {
+        Storage::fake('public');
+
         $response = get('/image-transform/width=100/non-existent-image.jpg');
 
         $response->assertNotFound();
+    });
+
+    it('transforms an image from the configured storage disk', function () {
+        Storage::fake('public');
+
+        $imagePath = base_path('tests/Browser/fixtures/avatar.png');
+        Storage::disk('public')->put('5999/avatar.png', file_get_contents($imagePath));
+
+        $response = get('/image-transform/width=64,height=64,crop=center,scale=false/5999/avatar.png');
+
+        $response->assertSuccessful();
+        $response->assertHeader('Content-Type', 'image/png');
     });
 
     it('returns 404 for path outside public directory', function () {
@@ -248,7 +267,7 @@ describe('ImageTransformerController', function () {
     });
 
     it('validates allowed options enum', function () {
-        $allowedOptions = \App\Enums\AllowedOptions::all();
+        $allowedOptions = AllowedOptions::all();
 
         expect($allowedOptions)->toContain('width');
         expect($allowedOptions)->toContain('height');
@@ -265,7 +284,7 @@ describe('ImageTransformerController', function () {
     });
 
     it('validates allowed mime types enum', function () {
-        $allowedMimeTypes = \App\Enums\AllowedMimeTypes::all();
+        $allowedMimeTypes = AllowedMimeTypes::all();
 
         expect($allowedMimeTypes)->toContain('image/jpeg');
         expect($allowedMimeTypes)->toContain('image/png');

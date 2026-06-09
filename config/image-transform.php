@@ -16,6 +16,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Source Disk
+    |--------------------------------------------------------------------------
+    |
+    | The filesystem disk where source images are stored. This should match
+    | the disk used by the media library (MEDIA_DISK) when using cloud storage.
+    |
+    */
+
+    'source_disk' => env('IMAGE_TRANSFORM_SOURCE_DISK', env('MEDIA_DISK', 'public')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Route Prefix
     |--------------------------------------------------------------------------
     |
