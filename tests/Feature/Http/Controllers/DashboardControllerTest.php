@@ -27,6 +27,7 @@ describe('DashboardController', function () {
 
         $response = get('/dashboard');
         $response->assertOk();
+        $response->assertSee('<script data-page="app" type="application/json">', false);
     });
 
     it('includes live weather on the dashboard when geolocation and forecast lookups succeed', function () {

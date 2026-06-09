@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Enums\AllowedOptions;
 use Illuminate\Http\Response;
 use App\Enums\AllowedMimeTypes;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
@@ -22,7 +23,7 @@ use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
 
-class ImageTransformerController extends \Illuminate\Routing\Controller
+class ImageTransformerController extends Controller
 {
     public function __invoke(Request $request, string $options, string $path)
     {

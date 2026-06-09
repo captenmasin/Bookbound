@@ -8,9 +8,9 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 ## Foundational Context
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.5.4
+- php - 8.5.7
 - filament/filament (FILAMENT) - v4
-- inertiajs/inertia-laravel (INERTIA) - v2
+- inertiajs/inertia-laravel (INERTIA) - v3
 - laravel/cashier (CASHIER) - v15
 - laravel/framework (LARAVEL) - v12
 - laravel/horizon (HORIZON) - v5
@@ -27,7 +27,8 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/sail (SAIL) - v1
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
-- @inertiajs/vue3 (INERTIA) - v2
+- rector/rector (RECTOR) - v2
+- @inertiajs/vue3 (INERTIA) - v3
 - tailwindcss (TAILWINDCSS) - v4
 - vue (VUE) - v3
 - eslint (ESLINT) - v8
@@ -151,27 +152,6 @@ Route::get('/users', function () {
     ]);
 });
 </code-snippet>
-
-=== inertia-laravel/v2 rules ===
-
-## Inertia v2
-
-- Make use of all Inertia features from v1 and v2. Check the documentation before making any changes to ensure we are taking the correct approach.
-
-### Inertia v2 New Features
-- Deferred props.
-- Infinite scrolling using merging props and `WhenVisible`.
-- Lazy loading data on scroll.
-- Polling.
-- Prefetching.
-
-### Deferred Props & Empty States
-- When using deferred props on the frontend, you should add a nice empty state with pulsing/animated skeleton.
-
-### Inertia Form General Guidance
-- The recommended way to build forms when using Inertia is with the `<Form>` component - a useful example is below. Use the `search-docs` tool with a query of `form component` for guidance.
-- Forms can also be built using the `useForm` helper for more programmatic control, or to follow existing conventions. Use the `search-docs` tool with a query of `useForm helper` for guidance.
-- `resetOnError`, `resetOnSuccess`, and `setDefaultsOnSuccess` are available on the `<Form>` component. Use the `search-docs` tool with a query of `form component resetting` for guidance.
 
 === laravel/core rules ===
 
@@ -434,46 +414,6 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 
     import { Link } from '@inertiajs/vue3'
     <Link href="/">Home</Link>
-
-</code-snippet>
-
-=== inertia-vue/v2/forms rules ===
-
-## Inertia v2 + Vue Forms
-
-<code-snippet name="`<Form>` Component Example" lang="vue">
-
-<Form
-    action="/users"
-    method="post"
-    #default="{
-        errors,
-        hasErrors,
-        processing,
-        progress,
-        wasSuccessful,
-        recentlySuccessful,
-        setError,
-        clearErrors,
-        resetAndClearErrors,
-        defaults,
-        isDirty,
-        reset,
-        submit,
-  }"
->
-    <input type="text" name="name" />
-
-    <div v-if="errors.name">
-        {{ errors.name }}
-    </div>
-
-    <button type="submit" :disabled="processing">
-        {{ processing ? 'Creating...' : 'Create User' }}
-    </button>
-
-    <div v-if="wasSuccessful">User created successfully!</div>
-</Form>
 
 </code-snippet>
 

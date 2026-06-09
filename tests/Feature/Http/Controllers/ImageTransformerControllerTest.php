@@ -1,7 +1,10 @@
 <?php
 
+use App\Enums\AllowedOptions;
+
 use function Pest\Laravel\get;
 
+use App\Enums\AllowedMimeTypes;
 use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\ImageTransformerController;
 
@@ -248,7 +251,7 @@ describe('ImageTransformerController', function () {
     });
 
     it('validates allowed options enum', function () {
-        $allowedOptions = \App\Enums\AllowedOptions::all();
+        $allowedOptions = AllowedOptions::all();
 
         expect($allowedOptions)->toContain('width');
         expect($allowedOptions)->toContain('height');
@@ -265,7 +268,7 @@ describe('ImageTransformerController', function () {
     });
 
     it('validates allowed mime types enum', function () {
-        $allowedMimeTypes = \App\Enums\AllowedMimeTypes::all();
+        $allowedMimeTypes = AllowedMimeTypes::all();
 
         expect($allowedMimeTypes)->toContain('image/jpeg');
         expect($allowedMimeTypes)->toContain('image/png');
