@@ -11,7 +11,8 @@ export default defineConfig({
         laravel({
             input: ['resources/js/app.ts'],
             ssr: 'resources/js/ssr.ts',
-            refresh: true
+            refresh: true,
+            detectTls: 'bookbound.test'
         }),
         tailwindcss(),
         run([
@@ -48,14 +49,9 @@ export default defineConfig({
         emptyOutDir: true
     },
     optimizeDeps: {
-        include: ['vue', '@inertiajs/inertia', '@inertiajs/inertia-vue3'],
+        include: ['vue', '@inertiajs/vue3', '@inertiajs/core'],
         esbuildOptions: {
             target: 'es2020'
-        }
-    },
-    server: {
-        fs: {
-            strict: true
         }
     }
 })

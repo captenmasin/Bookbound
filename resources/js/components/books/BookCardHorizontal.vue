@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DefaultCover from '~/images/default-cover.svg'
+import DefaultCover from '~/images/default-cover.svg?url'
 import BookActions from '@/components/books/BookActions.vue'
 import StarRatingDisplay from '@/components/StarRatingDisplay.vue'
 import { Link } from '@inertiajs/vue3'

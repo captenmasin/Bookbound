@@ -52,15 +52,20 @@ class Book extends Model implements HasMedia
 
     public function toSearchableArray(): array
     {
-        return [
+        $array = [
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'authors' => $this->authors()->get()->pluck('name')->toArray(),
-            'tags' => $this->tags()->get()->pluck('name')->toArray(),
             'identifier' => $this->identifier,
             'path' => $this->path,
         ];
+
+        if (config('scout.driver') !== 'database') {
+            $array['authors'] = $this->authors()->get()->pluck('name')->toArray();
+            $array['tags'] = $this->tags()->get()->pluck('name')->toArray();
+        }
+
+        return $array;
     }
 
     protected static function booted(): void
@@ -97,6 +102,10 @@ class Book extends Model implements HasMedia
 
     public function relatedBooksBySearch(int $limit = 6)
     {
+        if (config('scout.driver') === 'database') {
+            return $this->relatedBooksByAuthorsAndTags($limit);
+        }
+
         $authors = $this->authors->pluck('name')->toArray();
         $tags = $this->tags->pluck('name')->toArray();
 

@@ -32,7 +32,7 @@ class DeployApp extends Command
         }
 
         // Terminate Horizon
-        $this->callSilent(TerminateCommand::class);
+        $this->terminateHorizon();
 
         // Laravel caches
         $this->info('🗄️  Clearing and caching Laravel configurations...');
@@ -41,20 +41,13 @@ class DeployApp extends Command
         $this->call('route:clear');
         $this->call('view:clear');
 
-        // SQLite file
-        $sqlitePath = database_path('database.sqlite');
-        if (! file_exists($sqlitePath)) {
-            touch($sqlitePath);
-            $this->info('🧱 Created SQLite database file.');
-        }
-
         // Migrate and seed
         $this->info('🔄 Running migrations and seeding the database...');
         $this->call('migrate', ['--force' => true]);
         $this->call('db:seed', ['--force' => true]);
 
         // Horizon again
-        $this->callSilent(TerminateCommand::class);
+        $this->terminateHorizon();
 
         // Generate Sitemap
         $this->call(GenerateSitemap::class);
@@ -95,6 +88,24 @@ class DeployApp extends Command
         }
 
         $this->line($result->output());
+    }
+
+    protected function terminateHorizon(): void
+    {
+        if (! $this->isHorizonInUse()) {
+            $this->info('🛑 Horizon is not in use. Skipping terminate.');
+
+            return;
+        }
+
+        $this->callSilent(TerminateCommand::class);
+    }
+
+    protected function isHorizonInUse(): bool
+    {
+        $connection = config('queue.connections.'.config('queue.default'));
+
+        return is_array($connection) && ($connection['driver'] ?? null) === 'redis';
     }
 
     protected function isOctaneRunning(): bool

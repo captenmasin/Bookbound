@@ -24,14 +24,19 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Node Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
@@ -49,10 +54,10 @@ jobs:
         run: php artisan migrate --no-interaction
 
       - name: Build Assets
-        run: npm run build
+        run: pnpm run build
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Tests
         run: ./vendor/bin/pest --parallel --coverage

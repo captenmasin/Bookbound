@@ -47,7 +47,7 @@ class SearchBooksFromApi
                 Bus::chain([
                     new ImportBooksFromApiSearch($books),
                     new ImportAdditionalBooksFromApiSearch(query: $query, author: $author, subject: $subject),
-                ])->onQueue('imports')->dispatch();
+                ])->dispatch();
             }
 
             return [

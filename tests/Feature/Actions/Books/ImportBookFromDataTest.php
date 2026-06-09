@@ -31,6 +31,27 @@ describe('ImportBookFromData', function () {
         ImportBookCover::assertPushed(0);
     });
 
+    test('imports book with a long description', function () {
+        $identifier = 'long-description-12345';
+        $description = str_repeat('A long book synopsis. ', 30);
+
+        $payload = [
+            'identifier' => $identifier,
+            'codes' => [
+                ['type' => 'ISBN_13', 'identifier' => '9780000000001'],
+            ],
+            'title' => 'A Book With A Long Description',
+            'published_date' => '2020-01-01',
+            'description' => $description,
+        ];
+
+        Queue::fake();
+
+        $book = app(ImportBookFromData::class)->handle($payload);
+
+        expect($book->description)->toBe($description);
+    });
+
     test('imports book from data', function () {
         $identifier = 'identifier-12345';
 

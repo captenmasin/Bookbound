@@ -1,7 +1,9 @@
 <?php
 
 use App\Console\Commands\DeployApp;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Process;
+use Laravel\Horizon\Console\TerminateCommand;
 
 it('passes the configured timeout to shell processes', function () {
     Process::fake();
@@ -74,6 +76,95 @@ it('uses the extended timeout for deploy npm commands', function () {
             ['command' => 'npm ci', 'timeout' => 900],
             ['command' => 'npm run build', 'timeout' => 900],
         ]);
+});
+
+it('does not terminate horizon when the queue driver is not redis', function () {
+    Config::set('queue.default', 'sync');
+
+    $command = new class extends DeployApp
+    {
+        public array $silentCommands = [];
+
+        public function call($command, array $arguments = []): int
+        {
+            return self::SUCCESS;
+        }
+
+        public function callSilent($command, array $arguments = []): int
+        {
+            $this->silentCommands[] = $command;
+
+            return self::SUCCESS;
+        }
+
+        public function error($string, $verbosity = null): void {}
+
+        public function info($string, $verbosity = null): void {}
+
+        public function line($string, $style = null, $verbosity = null): void {}
+
+        public function option($key = null): mixed
+        {
+            return false;
+        }
+
+        protected function isOctaneRunning(): bool
+        {
+            return false;
+        }
+
+        protected function runShell(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void {}
+    };
+
+    $command->handle();
+
+    expect($command->silentCommands)->not->toContain(TerminateCommand::class);
+});
+
+it('terminates horizon when the queue driver is redis', function () {
+    Config::set('queue.default', 'redis');
+
+    $command = new class extends DeployApp
+    {
+        public array $silentCommands = [];
+
+        public function call($command, array $arguments = []): int
+        {
+            return self::SUCCESS;
+        }
+
+        public function callSilent($command, array $arguments = []): int
+        {
+            $this->silentCommands[] = $command;
+
+            return self::SUCCESS;
+        }
+
+        public function error($string, $verbosity = null): void {}
+
+        public function info($string, $verbosity = null): void {}
+
+        public function line($string, $style = null, $verbosity = null): void {}
+
+        public function option($key = null): mixed
+        {
+            return false;
+        }
+
+        protected function isOctaneRunning(): bool
+        {
+            return false;
+        }
+
+        protected function runShell(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void {}
+    };
+
+    $command->handle();
+
+    expect($command->silentCommands)->toEqual([
+        TerminateCommand::class,
+        TerminateCommand::class,
+    ]);
 });
 
 it('uses the ssr build command when the flag is enabled', function () {

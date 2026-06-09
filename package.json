@@ -1,6 +1,7 @@
 {
     "private": true,
     "type": "module",
+    "packageManager": "pnpm@10.12.1",
     "scripts": {
         "build": "php artisan ziggy:generate; vite build",
         "build:ssr": "php artisan ziggy:generate; vite build && vite build --ssr",
@@ -34,6 +35,7 @@
     "dependencies": {
         "@chenfengyuan/vue-barcode": "^2.0.2",
         "@cyhnkckali/vue3-color-picker": "^2.1.2",
+        "@inertiajs/core": "^2.3.25",
         "@inertiajs/vue3": "^2.0.0",
         "@simplewebauthn/browser": "^13.1.2",
         "@tailwindcss/vite": "^4.1.1",
@@ -81,5 +83,11 @@
         "@rollup/rollup-linux-x64-gnu": "4.9.5",
         "@tailwindcss/oxide-linux-x64-gnu": "^4.0.1",
         "lightningcss-linux-x64-gnu": "^1.29.1"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild",
+            "vue-demi"
+        ]
     }
 }

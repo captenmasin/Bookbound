@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PlaceholderImage from '~/images/placeholder.svg'
+import PlaceholderImage from '~/images/placeholder.svg?url'
 import { ref, computed } from 'vue'
 import { ImageProps } from '@/types/image'
 import { useImageTransform } from '@/composables/useImageTransform'
