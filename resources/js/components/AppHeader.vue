@@ -34,7 +34,7 @@ const activeItemStyles = computed(
 )
 
 const isVisible = ref(true)
-let lastScroll = window.scrollY
+let lastScroll = 0
 
 const handleScroll = () => {
     const currentScroll = window.scrollY
@@ -110,6 +110,7 @@ const userMenuItems = ref([
 ])
 
 onMounted(() => {
+    lastScroll = window.scrollY
     window.addEventListener('scroll', handleScroll, { passive: true })
 })
 

@@ -1,4 +1,8 @@
 export function usePwa () {
+    if (typeof document === 'undefined') {
+        return { isPwa: false, isAndroid: false, isIos: false, isMacos: false }
+    }
+
     const pwaMode = document.cookie.split('; ').find(row => row.startsWith('pwa-mode='))
     const pwaDevice = document.cookie.split('; ').find(row => row.startsWith('pwa-device='))
 
