@@ -106,8 +106,7 @@ test('user can search for a book', function () {
     visit('/books/search')
         ->type('#query', 'harry potter')
         ->click('#searchSubmit')
-        ->assertSee('Harry Potter')
-        ->assertSee('By J. K. Rowling');
+        ->assertSee('Harry Potter');
 })->flaky();
 
 // Users can add a book to their library

@@ -11,9 +11,6 @@ use App\Models\Publisher;
 use App\Enums\UserBookStatus;
 use App\Actions\Books\AddBookToUser;
 use Illuminate\Support\Facades\Artisan;
-use App\Console\Commands\ConfigureRelatedBooks;
-
-Schedule::command(ConfigureRelatedBooks::class)->daily();
 
 Artisan::command('user:admin {user}', function () {
     $user = User::findOrFail($this->argument('user'));
