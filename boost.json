@@ -3,18 +3,22 @@
         "claude_code",
         "codex",
         "cursor",
-        "gemini",
-        "opencode",
-        "phpstorm"
+        "opencode"
     ],
-    "editors": [
-        "claude_code",
-        "codex",
-        "cursor",
-        "gemini",
-        "opencode",
-        "phpstorm"
-    ],
-    "guidelines": [],
-    "herd_mcp": true
+    "cloud": false,
+    "guidelines": true,
+    "mcp": true,
+    "nightwatch": false,
+    "sail": false,
+    "skills": [
+        "ai-sdk-development",
+        "laravel-best-practices",
+        "configuring-horizon",
+        "configure-nightwatch",
+        "octane-development",
+        "scout-development",
+        "pest-testing",
+        "inertia-vue-development",
+        "tailwindcss-development"
+    ]
 }
