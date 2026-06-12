@@ -88,8 +88,8 @@ php artisan key:generate
 # Setup DB
 php artisan migrate
 
-# Install NPM dependencies and build assets
-npm install && npm run dev
+# Install PNPM dependencies and build assets
+pnpm install && pnpm run dev
 
 # (Optional) Seed with sample books
 php artisan db:seed

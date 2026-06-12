@@ -45,7 +45,7 @@ return [
     |
     */
     'commands' => [
-        'Vite' => 'npm run dev',
+        'Vite' => 'pnpm run dev',
         'Queue' => Command::from('php artisan horizon')->lazy(),
         'Logs' => EnhancedTailCommand::file(storage_path('logs/laravel.log')),
         'Scheduler' => Command::from('php artisan schedule:work')->lazy(),

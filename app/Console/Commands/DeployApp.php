@@ -9,7 +9,7 @@ use Laravel\Horizon\Console\TerminateCommand;
 
 class DeployApp extends Command
 {
-    protected const NPM_COMMAND_TIMEOUT_SECONDS = 900;
+    protected const FRONTEND_COMMAND_TIMEOUT_SECONDS = 900;
 
     protected $signature = 'app:deploy {--ssr : Enable server-side rendering}';
 
@@ -20,15 +20,14 @@ class DeployApp extends Command
         $this->info('📀 Storage link');
         $this->call('storage:link');
 
-        // NPM
-        $this->runShell('npm ci');
+        $this->runShell('pnpm install --frozen-lockfile');
 
         if ($this->option('ssr')) {
             $this->info('🌐 Running SSR build...');
-            $this->runShell('npm run build:ssr');
+            $this->runShell('pnpm run build:ssr');
         } else {
             $this->info('📦 Running frontend build...');
-            $this->runShell('npm run build');
+            $this->runShell('pnpm run build');
         }
 
         // Terminate Horizon
@@ -83,7 +82,7 @@ class DeployApp extends Command
         return self::SUCCESS;
     }
 
-    protected function runShell(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void
+    protected function runShell(string $command, int $timeout = self::FRONTEND_COMMAND_TIMEOUT_SECONDS): void
     {
         $this->info("⚙️  Running: {$command}");
         $result = Process::timeout($timeout)->run($command);

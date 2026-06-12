@@ -8,7 +8,7 @@ it('passes the configured timeout to shell processes', function () {
 
     $command = new class extends DeployApp
     {
-        public function runShellForTest(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void
+        public function runShellForTest(string $command, int $timeout = self::FRONTEND_COMMAND_TIMEOUT_SECONDS): void
         {
             $this->runShell($command, $timeout);
         }
@@ -20,12 +20,12 @@ it('passes the configured timeout to shell processes', function () {
         public function error($string, $verbosity = null): void {}
     };
 
-    $command->runShellForTest('npm ci', 900);
+    $command->runShellForTest('pnpm install --frozen-lockfile', 900);
 
-    Process::assertRan(fn ($process) => $process->command === 'npm ci' && $process->timeout === 900);
+    Process::assertRan(fn ($process) => $process->command === 'pnpm install --frozen-lockfile' && $process->timeout === 900);
 });
 
-it('uses the extended timeout for deploy npm commands', function () {
+it('uses the extended timeout for deploy frontend commands', function () {
     $command = new class extends DeployApp
     {
         public array $shellCommands = [];
@@ -58,7 +58,7 @@ it('uses the extended timeout for deploy npm commands', function () {
             return false;
         }
 
-        protected function runShell(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void
+        protected function runShell(string $command, int $timeout = self::FRONTEND_COMMAND_TIMEOUT_SECONDS): void
         {
             $this->shellCommands[] = [
                 'command' => $command,
@@ -71,8 +71,8 @@ it('uses the extended timeout for deploy npm commands', function () {
 
     expect($exitCode)->toBe(0)
         ->and($command->shellCommands)->toBe([
-            ['command' => 'npm ci', 'timeout' => 900],
-            ['command' => 'npm run build', 'timeout' => 900],
+            ['command' => 'pnpm install --frozen-lockfile', 'timeout' => 900],
+            ['command' => 'pnpm run build', 'timeout' => 900],
         ]);
 });
 
@@ -109,7 +109,7 @@ it('uses the ssr build command when the flag is enabled', function () {
             return false;
         }
 
-        protected function runShell(string $command, int $timeout = self::NPM_COMMAND_TIMEOUT_SECONDS): void
+        protected function runShell(string $command, int $timeout = self::FRONTEND_COMMAND_TIMEOUT_SECONDS): void
         {
             $this->shellCommands[] = [
                 'command' => $command,
@@ -121,7 +121,7 @@ it('uses the ssr build command when the flag is enabled', function () {
     $command->handle();
 
     expect($command->shellCommands)->toBe([
-        ['command' => 'npm ci', 'timeout' => 900],
-        ['command' => 'npm run build:ssr', 'timeout' => 900],
+        ['command' => 'pnpm install --frozen-lockfile', 'timeout' => 900],
+        ['command' => 'pnpm run build:ssr', 'timeout' => 900],
     ]);
 });
