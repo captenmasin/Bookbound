@@ -9,8 +9,12 @@ Route::get('checkout', function (Request $request) {
         ->checkout([
             'success_url' => route('checkout-success'),
             'cancel_url' => route('checkout-cancel'),
+            'billing_address_collection' => 'required',
+            'customer_update' => [
+                'address' => 'auto',
+            ],
         ]);
-})->name('checkout');
+})->middleware(['auth'])->name('checkout');
 
 Route::get('billing', function (Request $request) {
     return $request->user()->redirectToBillingPortal(route('dashboard'));
