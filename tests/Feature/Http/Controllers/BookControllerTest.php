@@ -1,7 +1,12 @@
 <?php
 
+use App\Models\Tag;
 use App\Models\Book;
 use App\Models\User;
+use App\Models\Author;
+use App\Models\Rating;
+use App\Models\Review;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Inertia\Testing\AssertableInertia;
 use App\Actions\Books\ImportBookFromData;
@@ -21,6 +26,50 @@ describe('BookController', function () {
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('books/Show')
             ->has('book')
+        );
+    });
+
+    it('loads deferred related books and reviews on a partial reload', function () {
+        Cache::flush();
+
+        $user = User::factory()->create();
+        $reviewer = User::factory()->create();
+        $author = Author::factory()->create();
+        $tag = Tag::factory()->create();
+        $book = Book::factory()->create(['title' => 'Carrie']);
+        $relatedByAuthor = Book::factory()->create(['title' => 'The Shining']);
+        $relatedByTag = Book::factory()->create(['title' => 'Pet Sematary']);
+        Book::factory()->create(['title' => 'Pride and Prejudice']);
+
+        $book->authors()->attach($author);
+        $book->tags()->attach($tag);
+        $relatedByAuthor->authors()->attach($author);
+        $relatedByTag->tags()->attach($tag);
+
+        Review::factory()->create([
+            'book_id' => $book->id,
+            'user_id' => $reviewer->id,
+        ]);
+
+        Rating::factory()->create([
+            'book_id' => $book->id,
+            'user_id' => $reviewer->id,
+            'value' => 5,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('books.show', $book));
+
+        $response->assertSuccessful();
+        $response->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('books/Show')
+            ->reloadOnly(['related', 'reviews'], fn (AssertableInertia $page) => $page
+                ->has('related', 2)
+                ->has('reviews', 1)
+                ->where('related.0.id', $relatedByAuthor->id)
+                ->where('related.1.id', $relatedByTag->id)
+                ->missing('related.2')
+            )
         );
     });
 

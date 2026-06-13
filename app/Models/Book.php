@@ -6,6 +6,7 @@ use Laravel\Scout\Searchable;
 use Spatie\Sluggable\HasSlug;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Sluggable\SlugOptions;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
@@ -99,7 +100,7 @@ class Book extends Model implements HasMedia
         $this->settings()->set('colour', $colour);
     }
 
-    public function relatedBooksBySearch(int $limit = 6)
+    public function relatedBooksBySearch(int $limit = 6): Collection
     {
         if (config('scout.driver') === 'database') {
             return $this->relatedBooksByAuthorsAndTags($limit);
@@ -119,18 +120,32 @@ class Book extends Model implements HasMedia
             ->values();
     }
 
-    public function relatedBooksByAuthorsAndTags(int $limit = 6)
+    public function relatedBooksByAuthorsAndTags(int $limit = 6): Collection
     {
-        return Cache::remember('related_books_'.$this->id, now()->addHours(6), function () use ($limit) {
+        return Cache::remember('related_books_'.$this->id.'_limit_'.$limit, now()->addHours(6), function () use ($limit): Collection {
             $this->loadMissing(['authors', 'tags']);
 
             $authorIds = $this->authors->pluck('id');
             $tagIds = $this->tags->pluck('id');
 
-            // Load all other books with authors and tags, excluding same title
+            if ($authorIds->isEmpty() && $tagIds->isEmpty()) {
+                return collect();
+            }
+
             $candidates = Book::with(['authors', 'tags'])
                 ->where('id', '!=', $this->id)
                 ->where('title', '!=', $this->title)
+                ->where(function ($query) use ($authorIds, $tagIds): void {
+                    if ($authorIds->isNotEmpty()) {
+                        $query->whereHas('authors', fn ($query) => $query->whereIn('authors.id', $authorIds));
+                    }
+
+                    if ($tagIds->isNotEmpty()) {
+                        $method = $authorIds->isNotEmpty() ? 'orWhereHas' : 'whereHas';
+
+                        $query->{$method}('tags', fn ($query) => $query->whereIn('tags.id', $tagIds));
+                    }
+                })
                 ->get();
 
             $scored = $candidates->map(function ($book) use ($authorIds, $tagIds) {
