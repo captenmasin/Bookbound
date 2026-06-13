@@ -4,6 +4,7 @@ use App\Models\Book;
 use App\Models\User;
 use App\Enums\UserBookStatus;
 use Tests\Concerns\GiveSubscription;
+use Illuminate\Support\Facades\Queue;
 use Inertia\Testing\AssertableInertia;
 
 uses(GiveSubscription::class);
@@ -81,6 +82,41 @@ describe('UserBookController', function () {
         $response->assertInertia(fn (AssertableInertia $page) => $page
             ->component('books/Index')
             ->has('books', 2)
+        );
+    });
+
+    test('books page can be searched with the Scout database driver', function () {
+        config(['scout.driver' => 'database']);
+        Queue::fake();
+        $this->withoutVite();
+
+        $user = User::factory()->create();
+        $matchingBook = Book::factory()->create([
+            'title' => 'The Memory Lantern',
+        ]);
+        $otherBook = Book::factory()->create([
+            'title' => 'A Different Shelf',
+            'description' => 'Nothing relevant here.',
+        ]);
+        Book::factory()->create([
+            'title' => 'The Memory Lantern Companion',
+        ]);
+
+        $user->books()->attach($matchingBook, [
+            'status' => UserBookStatus::Read->value,
+        ]);
+        $user->books()->attach($otherBook, [
+            'status' => UserBookStatus::Read->value,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('user.books.index', ['search' => 'Memory Lantern']));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('books/Index')
+            ->has('books', 1)
+            ->where('books.0.id', $matchingBook->id)
         );
     });
 

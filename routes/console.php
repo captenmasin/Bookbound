@@ -23,7 +23,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 Schedule::command('horizon:snapshot')->everyMinute();
 // Schedule::command('horizon:snapshot')->everyFiveMinutes();
-Schedule::command(ConfigureRelatedBooks::class)->daily();
+Schedule::command(ConfigureRelatedBooks::class)
+    ->daily()
+    ->when(fn (): bool => config('scout.driver') === 'meilisearch')
+    ->withoutOverlapping()
+    ->onOneServer();
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());

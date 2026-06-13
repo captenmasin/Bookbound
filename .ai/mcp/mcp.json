@@ -15,6 +15,14 @@
       "env": {
         "SITE_PATH": "/Users/mason/Sites/bookbound"
       }
+    },
+    "nightwatch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://nightwatch.laravel.com/mcp"
+      ]
     }
   }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Book;
 use MeiliSearch\Client;
 use Illuminate\Console\Command;
 
@@ -12,19 +13,25 @@ class ConfigureRelatedBooks extends Command
 {
     protected $signature = 'books:related:configure';
 
-    public function handle()
+    public function handle(): int
     {
+        if (config('scout.driver') !== 'meilisearch') {
+            $this->info('Skipping related books search configuration because Scout is not using Meilisearch.');
+
+            return self::SUCCESS;
+        }
+
         $index = app()->environment().'_books';
         note('Configuring books index: '.$index);
 
         note('Flush books');
         $this->call('scout:flush', [
-            'model' => 'App\Models\Book',
+            'model' => Book::class,
         ]);
 
         note('Importing books');
         $this->call('scout:import', [
-            'model' => 'App\Models\Book',
+            'model' => Book::class,
         ]);
 
         $client = new Client(
@@ -74,5 +81,7 @@ class ConfigureRelatedBooks extends Command
         ]);
 
         info('Done!');
+
+        return self::SUCCESS;
     }
 }

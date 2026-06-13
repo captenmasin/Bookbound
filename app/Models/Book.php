@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Facades\Cache;
 use App\Actions\Books\ImportBookCover;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Glorand\Model\Settings\Traits\HasSettingsField;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 #[ObservedBy(BookObserver::class)]
 class Book extends Model implements HasMedia
@@ -56,16 +58,45 @@ class Book extends Model implements HasMedia
 
     public function toSearchableArray(): array
     {
-        return [
+        $searchable = [
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'authors' => $this->authors()->get()->pluck('name')->toArray(),
-            'tags' => $this->tags()->get()->pluck('name')->toArray(),
-            'categories' => $this->categories()->get()->pluck('name')->toArray(),
             'identifier' => $this->identifier,
             'path' => $this->path,
         ];
+
+        if (config('scout.driver') === 'database') {
+            return $searchable;
+        }
+
+        $this->loadMissing(['authors:id,name', 'tags:id,name', 'categories:id,name']);
+
+        return $searchable + [
+            'authors' => $this->authors->pluck('name')->toArray(),
+            'tags' => $this->tags->pluck('name')->toArray(),
+            'categories' => $this->categories->pluck('name')->toArray(),
+        ];
+    }
+
+    protected function makeAllSearchableUsing(Builder $query): Builder
+    {
+        $query->select(['id', 'title', 'description', 'identifier', 'path']);
+
+        if (config('scout.driver') !== 'database') {
+            $query->with(['authors:id,name', 'tags:id,name', 'categories:id,name']);
+        }
+
+        return $query;
+    }
+
+    public function makeSearchableUsing(EloquentCollection $models): EloquentCollection
+    {
+        if (config('scout.driver') === 'database') {
+            return $models;
+        }
+
+        return $models->loadMissing(['authors:id,name', 'tags:id,name', 'categories:id,name']);
     }
 
     protected static function booted(): void
