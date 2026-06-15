@@ -44,6 +44,27 @@ it('finds related books by shared authors when using the database scout driver',
         ->and($results->contains(fn (Book $result) => $result->is($unrelatedBook)))->toBeFalse();
 });
 
+it('scores related books in the database before limiting results', function () {
+    Cache::flush();
+
+    $author = Author::factory()->create(['name' => 'Stephen King']);
+    $tags = Tag::factory()->count(3)->create();
+
+    $book = Book::factory()->create(['title' => 'Carrie']);
+    $sharedAuthor = Book::factory()->create(['title' => 'The Shining']);
+    $sharedTags = Book::factory()->create(['title' => 'Pet Sematary']);
+
+    $book->authors()->attach($author);
+    $book->tags()->attach($tags->pluck('id'));
+    $sharedAuthor->authors()->attach($author);
+    $sharedTags->tags()->attach($tags->pluck('id'));
+
+    $results = $book->relatedBooksBySearch(1);
+
+    expect($results)->toHaveCount(1)
+        ->and($results->first()->is($sharedTags))->toBeTrue();
+});
+
 it('searches books without querying non-existent relationship columns', function () {
     Book::factory()->create(['title' => 'Stephen King Collection']);
 

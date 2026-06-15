@@ -122,19 +122,24 @@ class Book extends Model implements HasMedia
 
     public function relatedBooksByAuthorsAndTags(int $limit = 6): Collection
     {
-        return Cache::remember('related_books_'.$this->id.'_limit_'.$limit, now()->addHours(6), function () use ($limit): Collection {
+        if ($limit < 1) {
+            return collect();
+        }
+
+        return Cache::remember('related_books_v2_'.$this->id.'_limit_'.$limit, now()->addHours(6), function () use ($limit): Collection {
             $this->loadMissing(['authors', 'tags']);
 
-            $authorIds = $this->authors->pluck('id');
-            $tagIds = $this->tags->pluck('id');
+            $authorIds = $this->authors->pluck('id')->values();
+            $tagIds = $this->tags->pluck('id')->values();
 
             if ($authorIds->isEmpty() && $tagIds->isEmpty()) {
                 return collect();
             }
 
-            $candidates = Book::with(['authors', 'tags'])
-                ->where('id', '!=', $this->id)
-                ->where('title', '!=', $this->title)
+            $query = Book::query()
+                ->select('books.*')
+                ->where('books.id', '!=', $this->id)
+                ->where('books.title', '!=', $this->title)
                 ->where(function ($query) use ($authorIds, $tagIds): void {
                     if ($authorIds->isNotEmpty()) {
                         $query->whereHas('authors', fn ($query) => $query->whereIn('authors.id', $authorIds));
@@ -146,30 +151,37 @@ class Book extends Model implements HasMedia
                         $query->{$method}('tags', fn ($query) => $query->whereIn('tags.id', $tagIds));
                     }
                 })
-                ->get();
+                ->with(['authors', 'tags'])
+                ->groupBy('books.id')
+                ->limit($limit);
 
-            $scored = $candidates->map(function ($book) use ($authorIds, $tagIds) {
-                $score = 0;
+            if ($authorIds->isNotEmpty()) {
+                $query->leftJoin('author_book as matching_authors', function ($join) use ($authorIds): void {
+                    $join->on('books.id', '=', 'matching_authors.book_id')
+                        ->whereIn('matching_authors.author_id', $authorIds);
+                });
+            }
 
-                // Score for shared authors
-                $sharedAuthors = $book->authors->pluck('id')->intersect($authorIds);
-                $score += $sharedAuthors->count() * 5;
+            if ($tagIds->isNotEmpty()) {
+                $query->leftJoin('book_tag as matching_tags', function ($join) use ($tagIds): void {
+                    $join->on('books.id', '=', 'matching_tags.book_id')
+                        ->whereIn('matching_tags.tag_id', $tagIds);
+                });
+            }
 
-                // Score for shared tags
-                $sharedTags = $book->tags->pluck('id')->intersect($tagIds);
-                $score += $sharedTags->count() * 2;
+            $authorScoreSql = $authorIds->isNotEmpty()
+                ? 'count(distinct matching_authors.author_id) * 5'
+                : '0';
 
-                return [
-                    'book' => $book,
-                    'score' => $score,
-                ];
-            })->filter(fn ($entry) => $entry['score'] > 0)
-                ->sortByDesc('score')
-                ->take($limit)
-                ->pluck('book')
-                ->values(); // Re-index
+            $tagScoreSql = $tagIds->isNotEmpty()
+                ? 'count(distinct matching_tags.tag_id) * 2'
+                : '0';
 
-            return $scored;
+            return $query
+                ->orderByRaw("({$authorScoreSql} + {$tagScoreSql}) desc")
+                ->orderBy('title')
+                ->get()
+                ->values();
         });
     }
 
