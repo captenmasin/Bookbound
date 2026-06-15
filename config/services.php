@@ -14,6 +14,11 @@ return [
     |
     */
 
+    'cloudflare' => [
+        'account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
+        'key' => env('CLOUDFLARE_KEY'),
+    ],
+
     'pirsch' => [
         'enabled' => env('PIRSCH_ENABLED', false),
         'token' => env('PIRSCH_TOKEN'),

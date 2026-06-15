@@ -3,15 +3,6 @@
         "codex",
         "cursor"
     ],
-    "editors": [
-        "codex",
-        "cursor"
-    ],
-    "guidelines": [
-        "filament/filament",
-        "inertiajs/inertia-laravel",
-        "nativephp/mobile",
-        "spatie/laravel-medialibrary"
-    ],
-    "herd_mcp": true
+    "cloud": false,
+    "guidelines": true
 }

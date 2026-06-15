@@ -35,14 +35,20 @@ createInertiaApp({
 initializeTheme()
 
 router.on('prefetched', (event) => {
-    if (!event?.detail?.response) {
+    const response = (event as CustomEvent<{ response?: unknown }>).detail?.response
+
+    if (!response) {
         return
     }
 
-    const parsed = JSON.parse((event as any).detail.response as string)
+    const parsed = typeof response === 'string' ? JSON.parse(response) : response
 
-    const urls = parsed?.props?.prefetch
+    const urls = parsed && typeof parsed === 'object' && 'props' in parsed
+        ? (parsed as { props?: { prefetch?: unknown } }).props?.prefetch
+        : null
+
     if (!Array.isArray(urls) || urls.length === 0) return
+
     const unique = Array.from(
         new Set(urls.filter((u): u is string => typeof u === 'string' && u.length > 0))
     )
