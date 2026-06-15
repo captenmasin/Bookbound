@@ -9,7 +9,9 @@ use App\Models\Review;
 use App\Enums\UserRole;
 use App\Models\Publisher;
 use App\Enums\UserBookStatus;
+use App\Mail\ContactFormSubmission;
 use App\Actions\Books\AddBookToUser;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Artisan;
 
 Artisan::command('user:admin {user}', function () {
@@ -86,4 +88,15 @@ Artisan::command('flood', function () {
             }
         });
     });
+});
+
+Artisan::command('mail:test', function () {
+    $user = User::find(1);
+    Mail::to($user->email)->send(
+        new ContactFormSubmission(
+            name: $user->name,
+            email: $user->email,
+            message: 'Hello '.$user->name.' this is just a test',
+            userId: auth()->id() ?? null,
+        )->subject('test'));
 });
