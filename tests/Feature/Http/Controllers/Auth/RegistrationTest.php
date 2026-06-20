@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
 
 describe('Registration', function () {
@@ -12,7 +13,7 @@ describe('Registration', function () {
     test('new users can register', function () {
         $response = $this->post('/register', [
             'name' => 'Test User',
-            'username' => \Illuminate\Support\Str::random(),
+            'username' => Str::random(),
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -49,5 +50,17 @@ describe('Registration', function () {
         ]);
 
         $response->assertSessionHasErrors('username');
+    });
+
+    test('turnstile response is required when enabled', function () {
+        config()->set('services.turnstile.enabled', true);
+
+        $response = $this->postJson('/register', [
+            '_nightwatch_error' => 'NOT_ENABLED',
+        ]);
+
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('cf_response');
     });
 });

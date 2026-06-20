@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Enums\UserRole;
 use App\Support\Turnstile;
 use App\Actions\TrackEvent;
 use Illuminate\Http\Request;
@@ -35,32 +36,37 @@ class RegisteredUserController extends Controller
     /**
      * Handle an incoming registration request.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'username' => 'required|alpha_dash|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ];
+
         if (config('services.turnstile.enabled')) {
-            $cfToken = $request->get('cf_response');
+            $rules['cf_response'] = ['required', 'string'];
+        }
+
+        $validated = $request->validate($rules);
+
+        if (config('services.turnstile.enabled')) {
             $turnstile = new Turnstile;
-            $response = $turnstile->validate($cfToken);
+            $response = $turnstile->validate($validated['cf_response']);
 
             if ($response['status'] === 0) {
                 throw ValidationException::withMessages(['cf_response' => 'Captcha failed']);
             }
         }
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|alpha_dash|unique:'.User::class,
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-
         $user = User::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
         event(new Registered($user));
@@ -69,7 +75,7 @@ class RegisteredUserController extends Controller
             'user_id' => $user->id,
         ]);
 
-        $user->assignRole(Role::where('name', \App\Enums\UserRole::User->value)->first());
+        $user->assignRole(Role::where('name', UserRole::User->value)->first());
 
         Auth::login($user);
 
