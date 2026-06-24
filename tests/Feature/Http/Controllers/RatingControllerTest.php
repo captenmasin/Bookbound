@@ -4,6 +4,8 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\Rating;
 use App\Models\Review;
+use Illuminate\Support\Facades\Cache;
+use App\Actions\Books\GetPublicBookPageData;
 
 describe('RatingController', function () {
     test('user can create book rating', function () {
@@ -121,5 +123,25 @@ describe('RatingController', function () {
         ]);
 
         $response->assertRedirect(route('login'));
+    });
+
+    test('forgets the public page cache after storing a rating', function () {
+        Cache::flush();
+
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+        $user->books()->attach($book);
+        $action = app(GetPublicBookPageData::class);
+        $cacheKey = $action->cacheKey($book->path);
+
+        Cache::put($cacheKey, ['book' => []], 3600);
+
+        $this->actingAs($user)
+            ->post(route('ratings.store', $book), [
+                'rating' => ['value' => 4],
+            ])
+            ->assertRedirect();
+
+        expect(Cache::has($cacheKey))->toBeFalse();
     });
 });

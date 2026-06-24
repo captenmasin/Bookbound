@@ -11,9 +11,12 @@ use Illuminate\Http\Request;
 use App\Enums\AnalyticsEvent;
 use App\Http\Resources\ReviewResource;
 use App\Http\Requests\DestroyReviewRequest;
+use App\Actions\Books\GetPublicBookPageData;
 
 class ReviewController extends Controller
 {
+    public function __construct(private GetPublicBookPageData $publicBookPageData) {}
+
     public function index(Request $request)
     {
         $reviews = $request->user()->reviews()
@@ -75,6 +78,8 @@ class ReviewController extends Controller
             ]
         );
 
+        $this->publicBookPageData->forget($book);
+
         return back()->with('success', 'Review saved.');
     }
 
@@ -98,6 +103,8 @@ class ReviewController extends Controller
                 'book_title' => $book->title,
             ]
         );
+
+        $this->publicBookPageData->forget($book);
 
         return back()->with('success', 'Review deleted.');
     }

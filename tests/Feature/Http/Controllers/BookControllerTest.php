@@ -2,15 +2,19 @@
 
 use App\Models\Tag;
 use App\Models\Book;
+use App\Models\Note;
 use App\Models\User;
 use App\Models\Author;
 use App\Models\Rating;
 use App\Models\Review;
+use App\Enums\UserBookStatus;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Inertia\Testing\AssertableInertia;
 use App\Actions\Books\ImportBookFromData;
 use App\Contracts\BookApiServiceInterface;
+use App\Actions\Books\GetPublicBookPageData;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
@@ -156,5 +160,143 @@ describe('BookController', function () {
         $response = $this->get(route('books.search'));
 
         $response->assertRedirect(route('login'));
+    });
+
+    it('populates the public page cache on the first anonymous request', function () {
+        Cache::flush();
+
+        $book = Book::factory()->create();
+        $action = app(GetPublicBookPageData::class);
+        $cacheKey = $action->cacheKey($book->path);
+
+        expect(Cache::has($cacheKey))->toBeFalse();
+
+        $this->get(route('books.show', $book))->assertSuccessful();
+
+        expect(Cache::has($cacheKey))->toBeTrue();
+    });
+
+    it('serves a warmed anonymous book page without database queries', function () {
+        Cache::flush();
+
+        $book = Book::factory()->create(['title' => 'Cached Title']);
+
+        $this->get(route('books.show', $book))->assertSuccessful();
+
+        $this->expectsDatabaseQueryCount(0);
+
+        $this->get(route('books.show', $book))
+            ->assertSuccessful()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->component('books/Show')
+                ->where('book.identifier', $book->identifier)
+                ->where('book.title', 'Cached Title')
+            );
+    });
+
+    it('serves warmed deferred props without database queries on partial reload', function () {
+        Cache::flush();
+
+        $author = Author::factory()->create();
+        $tag = Tag::factory()->create();
+        $book = Book::factory()->create(['title' => 'Carrie']);
+        $relatedByAuthor = Book::factory()->create(['title' => 'The Shining']);
+        $relatedByTag = Book::factory()->create(['title' => 'Pet Sematary']);
+        $reviewer = User::factory()->create();
+
+        $book->authors()->attach($author);
+        $book->tags()->attach($tag);
+        $relatedByAuthor->authors()->attach($author);
+        $relatedByTag->tags()->attach($tag);
+
+        Review::factory()->create([
+            'book_id' => $book->id,
+            'user_id' => $reviewer->id,
+        ]);
+
+        $warmResponse = $this->get(route('books.show', $book));
+        $warmResponse->assertSuccessful();
+
+        $queryCount = 0;
+        DB::listen(function () use (&$queryCount) {
+            $queryCount++;
+        });
+
+        $warmResponse->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('books/Show')
+            ->reloadOnly(['related', 'reviews'], fn (AssertableInertia $page) => $page
+                ->has('related', 2)
+                ->has('reviews', 1)
+            )
+        );
+
+        expect($queryCount)->toBe(0);
+    });
+
+    it('keeps authenticated personalization separate from the anonymous cache', function () {
+        Cache::flush();
+
+        $book = Book::factory()->create();
+        $user = User::factory()->create();
+
+        $user->books()->attach($book, [
+            'status' => UserBookStatus::Reading->value,
+            'tags' => ['favorite'],
+        ]);
+
+        Note::factory()->create([
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'content' => 'Private note',
+        ]);
+
+        Rating::factory()->create([
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'value' => 4,
+        ]);
+
+        Review::factory()->create([
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'title' => 'My Review',
+            'content' => 'Private review',
+        ]);
+
+        $this->get(route('books.show', $book))->assertSuccessful();
+
+        $this->get(route('books.show', $book))
+            ->assertSuccessful()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->where('book.in_library', false)
+                ->where('book.user_status', null)
+                ->where('book.user_tags', [])
+                ->missing('book.user_notes')
+                ->where('book.user_rating', null)
+                ->where('book.user_review', null)
+            );
+
+        $this->actingAs($user)
+            ->get(route('books.show', $book))
+            ->assertSuccessful()
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->where('book.in_library', true)
+                ->where('book.user_status', UserBookStatus::Reading->value)
+                ->where('book.user_tags', ['favorite'])
+                ->has('book.user_notes', 1)
+                ->where('book.user_rating.value', 4)
+                ->where('book.user_review.title', 'My Review')
+            );
+    });
+
+    it('returns 404 for unknown book paths without caching a page entry', function () {
+        Cache::flush();
+
+        $action = app(GetPublicBookPageData::class);
+        $cacheKey = $action->cacheKey('missing-book-path');
+
+        $this->get(route('books.show', 'missing-book-path'))->assertNotFound();
+
+        expect(Cache::has($cacheKey))->toBeFalse();
     });
 });

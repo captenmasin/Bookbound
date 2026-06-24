@@ -3,7 +3,9 @@
 use App\Models\Book;
 use App\Models\User;
 use App\Models\Review;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Testing\AssertableInertia;
+use App\Actions\Books\GetPublicBookPageData;
 
 describe('ReviewController', function () {
     test('user can create book review', function () {
@@ -121,5 +123,25 @@ describe('ReviewController', function () {
         ]);
 
         $response->assertRedirect(route('login'));
+    });
+
+    test('forgets the public page cache after storing a review', function () {
+        Cache::flush();
+
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+        $action = app(GetPublicBookPageData::class);
+        $cacheKey = $action->cacheKey($book->path);
+
+        Cache::put($cacheKey, ['book' => []], 3600);
+
+        $this->actingAs($user)
+            ->post(route('reviews.store', $book), [
+                'content' => 'A public review.',
+                'title' => 'Great Read',
+            ])
+            ->assertRedirect();
+
+        expect(Cache::has($cacheKey))->toBeFalse();
     });
 });

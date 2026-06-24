@@ -6,12 +6,15 @@ use App\Models\Book;
 use App\Models\Rating;
 use App\Actions\TrackEvent;
 use App\Enums\AnalyticsEvent;
+use App\Actions\Books\GetPublicBookPageData;
 use App\Http\Requests\Ratings\StoreRatingRequest;
 use App\Http\Requests\Ratings\UpdateRatingRequest;
 use App\Http\Requests\Ratings\DestroyRatingRequest;
 
 class RatingController extends Controller
 {
+    public function __construct(private GetPublicBookPageData $publicBookPageData) {}
+
     public function store(StoreRatingRequest $request, Book $book)
     {
         $book->ratings()
@@ -28,6 +31,8 @@ class RatingController extends Controller
                 'book_title' => $book->title,
             ],
         ]);
+
+        $this->publicBookPageData->forget($book);
 
         return redirect()->back()
             ->with('success', 'Rating added successfully.');
@@ -48,6 +53,8 @@ class RatingController extends Controller
             ],
         ]);
 
+        $this->publicBookPageData->forget($book);
+
         return redirect()->back()
             ->with('success', 'Rating updated successfully.');
     }
@@ -63,6 +70,8 @@ class RatingController extends Controller
                 'book_title' => $book->title,
             ],
         ]);
+
+        $this->publicBookPageData->forget($book);
 
         return redirect()->back()
             ->with('success', 'Rating deleted successfully.');

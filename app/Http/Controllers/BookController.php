@@ -15,6 +15,7 @@ use App\Http\Resources\ReviewResource;
 use App\Actions\Books\FetchOrCreateBook;
 use App\Actions\Books\ImportBookFromData;
 use App\Actions\Books\SearchBooksFromApi;
+use App\Actions\Books\GetPublicBookPageData;
 use App\Http\Requests\Books\StoreBookRequest;
 use App\Http\Resources\PreviousSearchResource;
 
@@ -117,8 +118,31 @@ class BookController extends Controller
         return redirect()->back();
     }
 
-    public function show(Request $request, Book $book)
+    public function show(Request $request, string $book)
     {
+        if ($request->user()) {
+            return $this->showAuthenticatedBook($request, $book);
+        }
+
+        $payload = GetPublicBookPageData::run($book, $request);
+
+        return Inertia::render('books/Show', [
+            'book' => $payload['book'],
+            'averageRating' => $payload['average_rating'],
+            'related' => Inertia::defer(fn () => $payload['related']),
+            'reviews' => Inertia::defer(fn () => $payload['reviews']),
+            'breadcrumbs' => [
+                ['title' => 'Dashboard', 'href' => route('dashboard')],
+                ['title' => 'Books', 'href' => route('user.books.index')],
+                ['title' => Str::limit($payload['book']['title'], 52), 'href' => route('books.show', $book)],
+            ],
+        ])->withMeta($payload['meta']);
+    }
+
+    private function showAuthenticatedBook(Request $request, string $path)
+    {
+        $book = Book::query()->where('path', $path)->firstOrFail();
+
         $book->load(['authors', 'reviews', 'ratings', 'publisher', 'tags',
             'users' => fn ($query) => $query->where('user_id', Auth::id()),
             'notes' => fn ($query) => $query->where('user_id', Auth::id()),
@@ -128,7 +152,6 @@ class BookController extends Controller
             'book' => new BookResource($book),
             'averageRating' => number_format($book->ratings->avg('value') ?? 0, 1),
             'related' => Inertia::defer(function () use ($book) {
-                //                $relatedBooks = $book->relatedBooksByAuthorsAndTags(4);
                 $relatedBooks = $book->relatedBooksBySearch(4);
                 $relatedBooks->map(fn ($related) => $related->load(['authors']));
 
@@ -136,7 +159,7 @@ class BookController extends Controller
             }),
             'reviews' => Inertia::defer(fn () => ReviewResource::collection(
                 $book->reviews->load('user', 'book')
-                    ->reject(fn ($review) => Auth::check() ? $review->user_id === Auth::id() : false)
+                    ->reject(fn ($review) => $review->user_id === Auth::id())
             )),
             'breadcrumbs' => [
                 ['title' => 'Dashboard', 'href' => route('dashboard')],
