@@ -14,15 +14,15 @@ class DeployApp extends Command
     {
         $this->info('🔧 Starting deployment...');
 
-        // Migrate and seed
-        $this->info('🔄 Running migrations and seeding the database...');
-        $this->call('migrate', ['--force' => true]);
-        $this->call('db:seed', ['--force' => true]);
-
         if (DB::connection()->getDriverName() === 'pgsql') {
             $this->info('🔢 Syncing PostgreSQL sequences...');
             $this->call('db:sync-sequences');
         }
+
+        // Migrate and seed
+        $this->info('🔄 Running migrations and seeding the database...');
+        $this->call('migrate', ['--force' => true]);
+        $this->call('db:seed', ['--force' => true]);
 
         // Laravel caches
         $this->info('🗄️  Clearing and caching Laravel configurations...');
