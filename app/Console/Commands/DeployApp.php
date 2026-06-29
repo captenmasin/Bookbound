@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Cache\Console\ClearCommand;
 
 class DeployApp extends Command
@@ -39,6 +40,28 @@ class DeployApp extends Command
 
         // Generate PWA manifest
         $this->call(GeneratePwaManifest::class);
+
+        $this->line('Installing PNPM packages');
+        if (app()->environment('production')) {
+            Process::forever()->run('pnpm install --frozen-lockfile --silent');
+        } else {
+            Process::forever()->run('pnpm install --silent');
+        }
+        $this->info('PNPM packages installed');
+        $this->newLine();
+
+        $this->line('Removing vite public/hot file');
+        Process::forever()->run('rm -rf public/hot');
+        $this->newLine();
+
+        $this->line('Running PNPM build'.(config('inertia.ssr.enabled') ? ' (SSR)' : ''));
+        if (config('inertia.ssr.enabled')) {
+            Process::forever()->run('pnpm run build:ssr');
+        } else {
+            Process::forever()->run('pnpm run build');
+        }
+        $this->info('PNPM built');
+        $this->newLine();
 
         // Re-cache the configuration
         $this->call('config:cache');
