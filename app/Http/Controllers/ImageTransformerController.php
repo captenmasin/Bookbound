@@ -12,6 +12,7 @@ use App\Enums\AllowedMimeTypes;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
+use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\RateLimiter;
@@ -20,7 +21,6 @@ use Intervention\Image\Encoders\PngEncoder;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Intervention\Image\Encoders\AutoEncoder;
 use Intervention\Image\Encoders\JpegEncoder;
-use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
 
 class ImageTransformerController extends Controller
@@ -64,7 +64,10 @@ class ImageTransformerController extends Controller
             $this->rateLimit($request, $path);
         }
 
-        $image = Image::read($sourceContents);
+        $image = ImageManager::withDriver(
+            config()->string('image.driver'),
+            ...config()->array('image.options'),
+        )->read($sourceContents);
 
         if (Arr::hasAny($options, ['width', 'height'])) {
             $scale = $this->getSelectOptionValue($options, 'scale', ['true', 'false'], 'true');
