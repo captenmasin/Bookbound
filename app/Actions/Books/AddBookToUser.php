@@ -4,6 +4,7 @@ namespace App\Actions\Books;
 
 use App\Models\Book;
 use App\Models\User;
+use DomainException;
 use App\Actions\TrackEvent;
 use App\Enums\ActivityType;
 use App\Enums\AnalyticsEvent;
@@ -21,7 +22,7 @@ class AddBookToUser
     public function handle(Book $book, User $user, ?UserBookStatus $status = null): void
     {
         if ($user->books()->where('book_id', $book->id)->exists()) {
-            throw new \Exception('Book already exists in your library.');
+            throw new DomainException('Book already exists in your library.');
         }
 
         // Enforce subscription limit for maximum number of books
@@ -31,7 +32,7 @@ class AddBookToUser
             if ($max !== null) {
                 $message = "You can have up to {$max} books in your library. Remove a book or upgrade your plan to add more.";
             }
-            throw new \Exception($message);
+            throw new DomainException($message);
         }
 
         TrackEvent::dispatchAfterResponse(AnalyticsEvent::BookAdded, [
@@ -60,7 +61,7 @@ class AddBookToUser
             $book = Book::where('identifier', $request->get('identifier'))->first();
 
             if (! $book) {
-                throw new \Exception('Book not found.');
+                throw new DomainException('Book not found.');
             }
 
             $this->handle(
@@ -76,12 +77,22 @@ class AddBookToUser
                 ])
                 : redirect()->back()->with('success', 'Book added to your library successfully.');
         } catch (\Exception $e) {
+            $isExpectedException = $e instanceof DomainException;
+
+            if (! $isExpectedException) {
+                report($e);
+            }
+
+            $message = $isExpectedException
+                ? $e->getMessage()
+                : 'Unable to add this book to your library. Please try again.';
+
             return $request->wantsJson()
                 ? response()->json([
                     'success' => false,
-                    'message' => $e->getMessage(),
-                ], 400)
-                : redirect()->back()->with('error', $e->getMessage());
+                    'message' => $message,
+                ], $isExpectedException ? 400 : 500)
+                : redirect()->back()->with('error', $message);
         }
     }
 }

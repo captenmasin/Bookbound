@@ -43,12 +43,19 @@ class SyncPostgresSequences extends Command
         }
 
         foreach ($sequences as $sequence) {
-            $maxId = DB::table($sequence->table_name)->max($sequence->column_name) ?? 0;
+            $maxId = DB::transaction(function () use ($sequence): int {
+                $table = DB::connection()->getQueryGrammar()->wrapTable($sequence->table_name);
+                DB::statement("LOCK TABLE {$table} IN SHARE ROW EXCLUSIVE MODE");
 
-            DB::statement(
-                'SELECT setval(?, ?, true)',
-                [$sequence->sequence_name, $maxId]
-            );
+                $maxId = DB::table($sequence->table_name)->max($sequence->column_name) ?? 0;
+
+                DB::statement(
+                    'SELECT setval(?, ?, ?)',
+                    [$sequence->sequence_name, max($maxId, 1), $maxId > 0]
+                );
+
+                return $maxId;
+            });
 
             $this->line("Synced {$sequence->table_name}.{$sequence->column_name} → {$maxId}");
         }

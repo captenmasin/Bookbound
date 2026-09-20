@@ -6,7 +6,11 @@ use App\Enums\ActivityType;
 use App\Enums\UserBookStatus;
 use App\Support\SubscriptionLimits;
 use App\Actions\Books\AddBookToUser;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Exceptions;
 use App\Http\Requests\Books\StoreBookUserRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -167,7 +171,7 @@ describe('AddBookToUser', function () {
 
         expect($response->getStatusCode())->toBe(302)
             ->and($response)
-            ->toBeInstanceOf(\Illuminate\Http\RedirectResponse::class);
+            ->toBeInstanceOf(RedirectResponse::class);
     });
 
     test('asController() returns redirect error response when request does not want JSON and error occurs', function () {
@@ -186,7 +190,7 @@ describe('AddBookToUser', function () {
 
         expect($response->getStatusCode())->toBe(302)
             ->and($response)
-            ->toBeInstanceOf(\Illuminate\Http\RedirectResponse::class)
+            ->toBeInstanceOf(RedirectResponse::class)
             ->and($response->getSession()->get('error'))->toBe('Book already exists in your library.');
     });
 
@@ -222,8 +226,51 @@ describe('AddBookToUser', function () {
         $response = $action->asController($request);
 
         expect($response->getStatusCode())->toBe(302)
-            ->and($response)->toBeInstanceOf(\Illuminate\Http\RedirectResponse::class)
+            ->and($response)->toBeInstanceOf(RedirectResponse::class)
             ->and($response->getSession()->get('error'))->toBe('Book not found.');
+    });
+
+    test('database failures return a safe JSON error and are reported', function () {
+        $book = Book::factory()->create();
+        $user = User::factory()->create();
+        Exceptions::fake([QueryException::class]);
+        Schema::drop('book_user');
+
+        $request = StoreBookUserRequest::create('/api/user/books', 'POST', [
+            'identifier' => $book->identifier,
+            'status' => UserBookStatus::Reading->value,
+        ]);
+        $request->setUserResolver(fn () => $user);
+        $request->headers->set('Accept', 'application/json');
+
+        $response = app(AddBookToUser::class)->asController($request);
+
+        expect($response->getStatusCode())->toBe(500);
+        expect($response->getData(true))->toBe([
+            'success' => false,
+            'message' => 'Unable to add this book to your library. Please try again.',
+        ]);
+        Exceptions::assertReported(QueryException::class);
+    });
+
+    test('database failures flash a safe error and are reported', function () {
+        $book = Book::factory()->create();
+        $user = User::factory()->create();
+        Exceptions::fake([QueryException::class]);
+        Schema::drop('book_user');
+
+        $request = StoreBookUserRequest::create('/user/books', 'POST', [
+            'identifier' => $book->identifier,
+            'status' => UserBookStatus::Reading->value,
+        ]);
+        $request->setUserResolver(fn () => $user);
+
+        $response = app(AddBookToUser::class)->asController($request);
+
+        expect($response->getStatusCode())->toBe(302);
+        expect($response->getSession()->get('error'))
+            ->toBe('Unable to add this book to your library. Please try again.');
+        Exceptions::assertReported(QueryException::class);
     });
 
     test('subscription limits work correctly with SubscriptionLimits class', function () {
