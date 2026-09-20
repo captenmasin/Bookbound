@@ -23,13 +23,25 @@ class SyncPostgresSequences extends Command
 
         $sequences = DB::select('
             SELECT
-                s.relname AS sequence_name,
+                s.oid::regclass::text AS sequence_name,
                 t.relname AS table_name,
                 a.attname AS column_name
             FROM pg_class s
-            JOIN pg_depend d ON d.objid = s.oid
-            JOIN pg_class t ON d.refobjid = t.oid
-            JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = d.refobjsubid
+            JOIN (
+                SELECT objid AS sequence_id, refobjid AS table_id, refobjsubid AS column_number
+                FROM pg_depend
+                WHERE classid = \'pg_class\'::regclass
+                AND refclassid = \'pg_class\'::regclass
+                AND deptype IN (\'a\', \'i\')
+                UNION
+                SELECT d.refobjid, ad.adrelid, ad.adnum
+                FROM pg_attrdef ad
+                JOIN pg_depend d ON d.objid = ad.oid
+                WHERE d.classid = \'pg_attrdef\'::regclass
+                AND d.refclassid = \'pg_class\'::regclass
+            ) d ON d.sequence_id = s.oid
+            JOIN pg_class t ON d.table_id = t.oid
+            JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = d.column_number
             WHERE s.relkind = \'S\'
             AND t.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = \'public\')
             '.($table ? 'AND t.relname = ?' : '').'
@@ -39,7 +51,7 @@ class SyncPostgresSequences extends Command
         if ($sequences === []) {
             $this->warn($table ? "No sequences found for table \"{$table}\"." : 'No sequences found.');
 
-            return self::SUCCESS;
+            return $table ? self::FAILURE : self::SUCCESS;
         }
 
         foreach ($sequences as $sequence) {
